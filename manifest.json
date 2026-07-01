@@ -1,22 +1,15 @@
 {
-  "id": "./",
-  "name": "PesoTrack 1.1",
+  "name": "PesoTrack 1.0 Gold Master",
   "short_name": "PesoTrack",
-  "description": "Offline-first personal finance manager for Philippine banks, cards, wallets, cash, budgets, reports, and custom institutions.",
-  "start_url": "./",
+  "description": "Offline-first personal finance manager for Philippine accounts, cards, cash, wallets, budgets, and reports.",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "background_color": "#f6f7fb",
-  "theme_color": "#6c63ff",
+  "background_color": "#f6f4ee",
+  "theme_color": "#0f3d33",
   "orientation": "portrait",
-  "categories": ["finance", "productivity"],
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ],
-  "shortcuts": [
-    { "name": "Add Transaction", "short_name": "Add", "url": "./?action=add", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
-    { "name": "Accounts", "short_name": "Accounts", "url": "./?screen=accounts", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
   ]
 }
