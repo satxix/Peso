@@ -165,3 +165,12 @@ Cache bumped to v6.
   identity now instead of a generic default icon. Both 192 and 512 sizes
   regenerated.
 Cache bumped to v7.
+
+## Compact Add Transaction sheet
+The Transfer form in particular (type tabs + 2 account pickers + fee box
++ note + amount + numpad + save button) was taller than one screen,
+requiring scrolling to reach Save. Tightened padding, button heights, and
+font sizes throughout the sheet, and hid the picker buttons' third line
+of helper text (not essential once an account is chosen). Should now fit
+on one screen for Expense, Income, and Transfer alike on typical phones.
+Cache bumped to v8.
