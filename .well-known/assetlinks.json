@@ -1,8 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.satxix.twa",
-        "sha256_cert_fingerprints": ["C0:5A:65:C5:BA:C4:5E:47:74:A7:44:D7:51:8C:BE:75:95:9C:B4:48:C1:D5:52:F2:E1:66:68:81:89:B4:DA:2F"]
-      }
-    }]
