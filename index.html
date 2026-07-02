@@ -1375,6 +1375,29 @@ function renderReportList(target,obj,kind){let entries=Object.entries(obj).sort(
 function txnSummary(t){let left='',right='';if(t.type==='Income'){left=htmlText(t.category||'Income')+' · Deposit to '+safeAccountLabel(t.from);right='+'+peso(t.amount)}else if(t.type==='Expense'){left=htmlText(t.category||'Expense')+' · '+safeAccountLabel(t.from);right='-'+peso(t.amount)}else if(t.type==='Transfer'){left=safeAccountLabel(t.from)+' → '+safeAccountLabel(t.to)+(Number(t.fee||0)?' · Fee '+peso(t.fee):'');right=peso(t.amount)}else if(t.type==='Card Payment'){left=safeAccountLabel(t.from)+' → '+safeAccountLabel(t.to);right=peso(t.amount)}return {left,right}}
 function renderSettings(){let el=document.getElementById('settingsDataSummary');if(!el)return;el.textContent=`${data.accounts.length} accounts · ${data.txns.length} transactions · ${data.bills.length} bills`;if(document.getElementById('privacyToggle'))privacyToggle.checked=!!data.settings.privacy;if(document.getElementById('darkToggle'))darkToggle.classList.toggle('on',!!data.settings.dark);if(document.getElementById('pinToggle'))pinToggle.classList.toggle('on',!!data.settings.pinEnabled);if(document.getElementById('weekStart'))weekStart.value=String(data.settings.weekStart??'1');if(document.getElementById('currencySetting'))currencySetting.value=data.settings.currency||'PHP';let colors=['#6c63ff','#2563eb','#16a34a','#f59e0b','#ef4444','#8b5cf6','#0ea5e9'];let dots=document.getElementById('accentDots');if(dots)dots.innerHTML=colors.map(c=>`<button type="button" class="colorDot ${data.settings.accent===c?'active':''}" style="background:${c}" onclick="setAccent('${c}')" aria-label="Use accent ${c}"></button>`).join('');let cats=document.getElementById('settingsCategories');if(cats)cats.innerHTML=(data.categories||[]).map(c=>`<span class="categoryPill">${catIcon(c)} ${htmlText(c)}<button type="button" onclick="deleteCategory('${jsString(c)}')">×</button></span>`).join('')||'<div class="empty">No categories yet.</div>';renderReleaseQA()}
 
+/* Reports fix: transaction list follows selected period and account. */
+function renderTransactionsList(){
+  let el=document.getElementById('transactionReport');
+  if(!el)return;
+  let q=(document.getElementById('txnSearch')?.value||'').trim();
+  let {start,end}=periodStartEnd();
+  let acct=(document.getElementById('reportAccount')||{}).value||'All';
+  let arr=data.txns
+    .filter(t=>txInPeriod(t,start,end))
+    .filter(t=>acct==='All'||t.from===acct||t.to===acct)
+    .slice()
+    .reverse()
+    .filter(t=>txnMatches(t,q))
+    .slice(0,80);
+  let periodLabel=reportPeriod==='Today'?'today':`this ${reportPeriod.toLowerCase()}`;
+  el.innerHTML=arr.length?arr.map(t=>txnRow(t)).join(''):`<div class="reportEmpty">No transactions ${q?`match "${htmlText(q)}" `:''}for ${periodLabel}${acct==='All'?'':' in this account'}.</div>`;
+}
+const previousReportsRender=window.renderReports;
+window.renderReports=function(){
+  if(typeof previousReportsRender==='function')previousReportsRender();
+  renderTransactionsList();
+};
+
 /* Dashboard focus pass: daily essentials first, deeper planning tucked away. */
 (function(){
   const dashFocusCss=document.createElement('style');
