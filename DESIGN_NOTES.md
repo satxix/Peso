@@ -103,3 +103,65 @@ black with the same emerald cards elevated on top of it, and all text
 tokens flip to light automatically. Status bar / splash screen colors in
 manifest.json were updated to match. Cache bumped to v3 — close and
 reopen the app once after uploading for it to take effect.
+
+## Fixes after going dark-by-default
+Flipping the base theme to dark surfaced a few spots that were tied to
+the old assumption that "light mode" meant a light page:
+- The bottom nav's background was pinned to `var(--text)`, which is now
+  light — so the nav flipped to a light bar. Fixed to a fixed dark ink
+  color that doesn't depend on the text token.
+- The dashboard's four quick-action buttons (Expense/Transfer/Pay
+  Card/Reports) were never included in the card system pass — fixed.
+- The insight/signature cards used their own separate near-black tone
+  that barely showed up against the new equally-dark page — brought them
+  into the same emerald card family as everything else.
+Cache bumped to v4.
+
+## Readability fixes across Reports/Home
+Several elements relied on a `body.dark` CSS class that was never actually
+being toggled (we changed color tokens instead), so they stayed in their
+original light styling even in the new dark-by-default theme — and a few
+had light text that became invisible once the global text color flipped:
+- "Financial Command Center" card and its 4 stat tiles — was a
+  near-white glowing card with pale gold text on white; now dark emerald
+  like everything else.
+- Day/Week/Month/Year segmented control — was a light gray bar; now dark
+  with a solid accent-colored active state.
+- Spending heatmap cells — all 5 intensity levels recolored so every
+  level (including empty days) stays readable, using accent-opacity steps
+  instead of light indigo shades.
+- Status pills ("No urgent alerts", "utilization is healthy", etc.) —
+  these intentionally keep light pastel backgrounds (green/orange/red for
+  good/warn/danger), but now use dark text instead of the new light
+  default, since light-on-light was unreadable.
+- "Financial Story" card — was still on the old navy/indigo gradient,
+  never updated; now matches the emerald family.
+- Income/Expense/Net progress bar track — was a hardcoded light gray,
+  invisible against the dark page; now a translucent dark track.
+Cache bumped to v5.
+
+## Today's Pulse, 6-Month Cash Flow, Add Transaction
+Same recurring bug pattern — these had their own separate hardcoded light
+backgrounds that weren't covered by earlier passes:
+- Today's Pulse: the Income/Expense/Transfer cells inside the card had
+  their own light background, distinct from the card itself.
+- 6-Month Cash Flow: the bar track behind each income/expense bar was
+  light gray.
+- Add Transaction: the amount display, the number pad keys, and the
+  account/category picker buttons all had their own separate light
+  backgrounds not covered by the card system.
+Cache bumped to v6.
+
+## Remaining pills + new app icon
+- Fixed a mistake from the previous pass: "Covered" status pill had light
+  text on its light mint background (I'd set it to match the dark-card
+  pattern, but this pill intentionally keeps a light pastel background —
+  reverted to dark green text).
+- Cash Flow Forecast's "+₱0" delta pill, the account/category picker's
+  "+" circle, and the Transfer Fee box + its input all had their own
+  separate light backgrounds — fixed.
+- New app icon: deep emerald gradient square, a thin gold ring (coin
+  motif), and a bold gold ₱ mark — matches the app's actual color
+  identity now instead of a generic default icon. Both 192 and 512 sizes
+  regenerated.
+Cache bumped to v7.
