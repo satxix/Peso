@@ -1521,5 +1521,126 @@ function renderSettings(){let el=document.getElementById('settingsDataSummary');
   window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV2();}catch(e){}},220));
 })();
 
+/* Dashboard focus pass v3: remove redundant quick-action cards from Home. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #dashboard.focusV3 .premiumActions{display:none!important}
+    #dashboard.focusV3 .premiumHero{margin-bottom:14px}
+  `;
+  document.head.appendChild(css);
+  function focusDashboardV3(){
+    const dash=document.getElementById('dashboard');
+    if(!dash)return;
+    dash.classList.add('focusV3');
+    dash.dataset.focusV3='1';
+  }
+  const prevRender=window.render;
+  window.render=function(){
+    if(typeof prevRender==='function')prevRender();
+    try{focusDashboardV3();}catch(e){console.warn('Dashboard focus v3 skipped',e)}
+  };
+  window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV3();}catch(e){}},260));
+})();
+
+/* Accounts density pass: make account cards easier to scan. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #accounts .gm4Group{margin-bottom:14px}
+    #accounts .gm4GroupHead{margin-bottom:8px}
+    #accounts .gm4GroupHead h3{font-size:14px}
+    #accounts .gm4GroupHead span{font-size:11px}
+    #accounts .gm4GroupGrid{gap:9px}
+    #accounts .premiumAccountCard{min-height:132px!important;border-radius:20px!important;padding:12px!important;gap:7px!important;box-shadow:0 10px 24px rgba(0,0,0,.10)!important}
+    #accounts .premiumAccountCard:before{width:82px!important;height:82px!important;right:-32px!important;top:-34px!important}
+    #accounts .premiumAccountTop{margin-bottom:2px}
+    #accounts .premiumAccountTop .bank,#accounts .premiumAccountCard .bank{width:34px;height:34px;border-radius:13px;font-size:11px;margin-bottom:0}
+    #accounts .premiumBadge{font-size:10px;padding:5px 7px}
+    #accounts .premiumAcctName{font-size:14px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #accounts .premiumAcctInst{font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #accounts .premiumValue{font-size:20px;line-height:1.05;margin-top:2px}
+    #accounts .premiumMetaRow{font-size:10px;margin-top:3px}
+    #accounts .premiumProgress{height:6px;margin-top:5px!important}
+    #accounts .premiumAddCard{min-height:112px!important;border-radius:20px!important;padding:12px!important}
+    #accounts .premiumAddIcon{width:36px;height:36px;border-radius:14px;font-size:18px}
+    @media(max-width:370px){#accounts .gm4GroupGrid{grid-template-columns:1fr 1fr!important;gap:8px}#accounts .premiumValue{font-size:18px}#accounts .premiumAcctName{font-size:13px}}
+  `;
+  document.head.appendChild(css);
+})();
+
+/* Accounts glimpse pass: compact rows first, detail sheet on tap. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #accounts #accountGrid{display:block!important}
+    #accounts .acctGroup{margin:0 0 16px}
+    #accounts .acctGroupHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px}
+    #accounts .acctGroupHead h3{margin:0;font-size:13px;font-weight:950;color:var(--text)}
+    #accounts .acctGroupHead span{font-size:11px;color:var(--muted);font-weight:850;white-space:nowrap}
+    #accounts .acctList{display:grid;gap:8px}
+    #accounts .acctRow{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:18px;padding:10px 11px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+    #accounts .acctRow .bank{width:34px;height:34px;border-radius:13px;font-size:10px;margin:0}
+    #accounts .acctMain{min-width:0}
+    #accounts .acctName{display:block;font-size:14px;font-weight:950;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #accounts .acctMeta{display:flex;align-items:center;gap:6px;margin-top:4px;min-width:0}
+    #accounts .acctInst{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #accounts .acctChip{font-size:10px;color:var(--accent-2);background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:999px;padding:3px 6px;font-weight:950;white-space:nowrap}
+    #accounts .acctRight{text-align:right;min-width:88px}
+    #accounts .acctAmount{display:block;font-size:16px;font-weight:950;line-height:1.1;font-variant-numeric:tabular-nums}
+    #accounts .acctHint{display:block;font-size:10px;color:var(--muted);font-weight:850;margin-top:4px;white-space:nowrap}
+    #accounts .acctUtil{height:5px;background:var(--card-inset,rgba(255,255,255,.07));border-radius:999px;overflow:hidden;margin-top:6px}
+    #accounts .acctUtil i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
+    #accounts .acctUtil.warn i{background:var(--orange)}
+    #accounts .acctUtil.danger i{background:var(--red)}
+    #accounts .top .iconbtn{display:none!important}
+    #accounts .acctAddRow{border-style:dashed;grid-template-columns:auto 1fr;background:color-mix(in srgb,var(--card) 90%,var(--bg))}
+    #accounts .acctAddIcon{width:34px;height:34px;border-radius:13px;display:grid;place-items:center;background:var(--card-inset,rgba(255,255,255,.07));color:var(--accent-2);font-size:18px;font-weight:950}
+    @media(max-width:370px){#accounts .acctRow{grid-template-columns:auto minmax(0,1fr);padding:10px}#accounts .acctRight{grid-column:2;text-align:left;min-width:0}#accounts .acctAmount{font-size:15px}#accounts .acctHint{display:inline-block;margin-right:8px}}
+  `;
+  document.head.appendChild(css);
+
+  function accountGroupLabel(type){
+    return type==='Savings'?'Banks':type==='Credit Card'?'Cards':type==='Wallet'?'E-Wallets':type==='Cash'?'Cash':type==='Investment'?'Investments':'Other';
+  }
+  function accountGlimpseAmount(a){return a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0)}
+  function accountGlimpseHint(a){
+    if(a.type==='Credit Card'){
+      const limit=Number(a.limit||0), out=Number(a.outstanding||0);
+      return limit?`${Math.round(out/limit*100)}% used`:'Outstanding';
+    }
+    if(a.type==='Cash')return 'On hand';
+    if(a.type==='Wallet')return 'Wallet';
+    if(a.type==='Investment')return 'Value';
+    return 'Balance';
+  }
+  function accountRow(a){
+    const amount=accountGlimpseAmount(a);
+    const limit=Number(a.limit||0), out=Number(a.outstanding||0);
+    const util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;
+    const utilClass=util>=80?'danger':util>=50?'warn':'';
+    const utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';
+    return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">
+      ${logo(a)}
+      <span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span><span class="acctChip">${htmlText(accountGroupLabel(a.type))}</span></span></span>
+      <span class="acctRight"><b class="acctAmount">${peso(amount)}</b><span class="acctHint">${htmlText(accountGlimpseHint(a))}</span>${utilBar}</span>
+    </button>`;
+  }
+  function renderAccountRows(){
+    const grid=document.getElementById('accountGrid');
+    if(!grid)return;
+    const arr=data.accounts.filter(a=>acctFilter==='All'||a.type===acctFilter);
+    const order=['Savings','Cash','Wallet','Credit Card','Investment'];
+    const groups={};
+    arr.forEach(a=>{const key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});
+    const sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{
+      const total=groups[k].reduce((s,a)=>s+accountGlimpseAmount(a),0);
+      return `<section class="acctGroup"><div class="acctGroupHead"><h3>${accountGroupLabel(k)}</h3><span>${groups[k].length} account${groups[k].length===1?'':'s'} · ${peso(total)}</span></div><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`;
+    }).join('');
+    grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b>Tap + to add banks, cash on hand, wallets, cards, or investments.</div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;
+  }
+  window.renderAccounts=renderAccountRows;
+})();
+
 (function(){try{var p=new URLSearchParams(location.search);var action=p.get("action");if(!action)return;window.addEventListener("load",function(){setTimeout(function(){try{if(action==="add"&&typeof openTxn==="function")openTxn();else if(action==="accounts"&&typeof go==="function")go("accounts",document.querySelectorAll(".nav button")[1]);else if(action==="reports"&&typeof go==="function")go("reports",document.querySelectorAll(".nav button")[4]);}catch(e){}},280)});}catch(e){}})();
 </script></body></html>
