@@ -1543,6 +1543,37 @@ function renderSettings(){let el=document.getElementById('settingsDataSummary');
   window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV3();}catch(e){}},260));
 })();
 
+/* Dashboard focus pass v4: remove duplicate Home preview modules. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #dashboard.focusV4 #liquidBreakdown,
+    #dashboard.focusV4 #dashAccounts,
+    #dashboard.focusV4 #calendarPreview,
+    #dashboard.focusV4 .section[data-dashboard-hidden="true"]{display:none!important}
+  `;
+  document.head.appendChild(css);
+  function hideSectionTitle(title){
+    const head=[...document.querySelectorAll('#dashboard .section')].find(s=>s.querySelector('h2')?.textContent.trim()===title);
+    if(head)head.dataset.dashboardHidden='true';
+  }
+  function focusDashboardV4(){
+    const dash=document.getElementById('dashboard');
+    if(!dash)return;
+    hideSectionTitle('Money by Type');
+    hideSectionTitle('Accounts');
+    hideSectionTitle('Financial Calendar');
+    dash.classList.add('focusV4');
+    dash.dataset.focusV4='1';
+  }
+  const prevRender=window.render;
+  window.render=function(){
+    if(typeof prevRender==='function')prevRender();
+    try{focusDashboardV4();}catch(e){console.warn('Dashboard focus v4 skipped',e)}
+  };
+  window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV4();}catch(e){}},300));
+})();
+
 /* Accounts density pass: make account cards easier to scan. */
 (function(){
   const css=document.createElement('style');
@@ -1574,18 +1605,22 @@ function renderSettings(){let el=document.getElementById('settingsDataSummary');
   const css=document.createElement('style');
   css.textContent=`
     #accounts #accountGrid{display:block!important}
+    #accounts > .chips{display:none!important}
     #accounts .acctGroup{margin:0 0 16px}
-    #accounts .acctGroupHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px}
-    #accounts .acctGroupHead h3{margin:0;font-size:13px;font-weight:950;color:var(--text)}
+    #accounts .acctGroupHead{width:100%;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px;text-align:left}
+    #accounts .acctGroupName{font-size:13px;font-weight:950;color:var(--text)}
     #accounts .acctGroupHead span{font-size:11px;color:var(--muted);font-weight:850;white-space:nowrap}
+    #accounts .acctGroupHead .acctChevron{color:var(--accent-2);font-size:14px;font-weight:950;margin-left:6px}
+    #accounts .acctGroupTitle{display:flex;align-items:center;gap:7px;min-width:0}
+    #accounts .acctGroup.collapsed .acctList{display:none}
+    #accounts .acctGroup.collapsed{margin-bottom:10px}
     #accounts .acctList{display:grid;gap:8px}
     #accounts .acctRow{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:18px;padding:10px 11px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.08)}
     #accounts .acctRow .bank{width:34px;height:34px;border-radius:13px;font-size:10px;margin:0}
     #accounts .acctMain{min-width:0}
     #accounts .acctName{display:block;font-size:14px;font-weight:950;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    #accounts .acctMeta{display:flex;align-items:center;gap:6px;margin-top:4px;min-width:0}
+    #accounts .acctMeta{display:block;margin-top:4px;min-width:0}
     #accounts .acctInst{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    #accounts .acctChip{font-size:10px;color:var(--accent-2);background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:999px;padding:3px 6px;font-weight:950;white-space:nowrap}
     #accounts .acctRight{text-align:right;min-width:88px}
     #accounts .acctAmount{display:block;font-size:16px;font-weight:950;line-height:1.1;font-variant-numeric:tabular-nums}
     #accounts .acctHint{display:block;font-size:10px;color:var(--muted);font-weight:850;margin-top:4px;white-space:nowrap}
@@ -1622,7 +1657,7 @@ function renderSettings(){let el=document.getElementById('settingsDataSummary');
     const utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';
     return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">
       ${logo(a)}
-      <span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span><span class="acctChip">${htmlText(accountGroupLabel(a.type))}</span></span></span>
+      <span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span>
       <span class="acctRight"><b class="acctAmount">${peso(amount)}</b><span class="acctHint">${htmlText(accountGlimpseHint(a))}</span>${utilBar}</span>
     </button>`;
   }
@@ -1635,11 +1670,95 @@ function renderSettings(){let el=document.getElementById('settingsDataSummary');
     arr.forEach(a=>{const key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});
     const sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{
       const total=groups[k].reduce((s,a)=>s+accountGlimpseAmount(a),0);
-      return `<section class="acctGroup"><div class="acctGroupHead"><h3>${accountGroupLabel(k)}</h3><span>${groups[k].length} account${groups[k].length===1?'':'s'} · ${peso(total)}</span></div><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`;
+      return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span><i class="acctChevron">−</i></span><span>${groups[k].length} account${groups[k].length===1?'':'s'} · ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`;
     }).join('');
     grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b>Tap + to add banks, cash on hand, wallets, cards, or investments.</div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;
+    (data.settings.collapsedAccountGroups||[]).forEach(k=>{
+      const sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);
+      if(sec){sec.classList.add('collapsed');const chev=sec.querySelector('.acctChevron');if(chev)chev.textContent='+';}
+    });
   }
+  window.toggleAcctGroup=function(k){
+    data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];
+    const set=new Set(data.settings.collapsedAccountGroups);
+    if(set.has(k))set.delete(k);else set.add(k);
+    data.settings.collapsedAccountGroups=[...set];
+    try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
+    renderAccountRows();
+  };
   window.renderAccounts=renderAccountRows;
+})();
+
+/* Final dark contrast sweep: catch older hardcoded light surfaces. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    :root{
+      --pt-dark-surface:#173a30;
+      --pt-dark-surface-2:rgba(255,255,255,.07);
+      --pt-dark-border:rgba(255,255,255,.12);
+      --pt-dark-text:#f3efe4;
+      --pt-dark-muted:rgba(243,239,228,.66);
+    }
+    body,
+    body.dark{
+      --card:var(--pt-dark-surface);
+      --card-inset:var(--pt-dark-surface-2);
+      --text:var(--pt-dark-text);
+      --muted:var(--pt-dark-muted);
+      --line:var(--pt-dark-border);
+      color:var(--text);
+    }
+    .reportPanel,.settingsCard,.settingRow,.backupBtn,.field,.search,.txnSearch,.searchInputBig,.accountFilter,
+    .reportCard,.analyticsTile,.coachCard,.option,.emptyState,.empty,.row,.timelineItem,.calendarEvent,.resultCard,
+    .dashboardPlanningToggle,.acctRow,.acctAddRow,.gm4-empty,.gm4InstallCard,.gm4-card,.releaseItem,.categoryPill,
+    .payMode,.paymentModes,.paySummary,.recNote,.budgetCard,.billCard,.recurringCard,.ccCard,.premiumCreditCard,
+    .premiumPulse,.forecastBox,.premiumAddCard,.cashCategoryCard,.monthBox,.trendCard,.commandTile,.premiumCommand{
+      background:var(--card)!important;
+      color:var(--text)!important;
+      border-color:var(--line)!important;
+    }
+    .field,.search,.txnSearch,.searchInputBig,.accountFilter,select,input,textarea{
+      background:var(--card-inset)!important;
+      color:var(--text)!important;
+      border-color:var(--line)!important;
+    }
+    .seg,.reportTabs,.searchTabs,.calendarControls,.chips,.feeBox,.statBox,.metric,.dashMetric,.billMeta div,
+    .analyticsTrack,.reportBar,.budgetBar,.bar,.catTrack,.trendBar,.gm3-score,.acctUtil{
+      background:var(--card-inset)!important;
+      border-color:var(--line)!important;
+    }
+    .seg button,.reportTabs button,.searchTabs button,.calBtn,.chip,.tiny,.ghost,.dangerBtn{
+      color:var(--text)!important;
+      border-color:var(--line)!important;
+    }
+    .seg button.active,.reportTabs button.active,.searchTabs button.active,.calBtn.active,.chip.active,.payMode.active{
+      background:var(--accent)!important;
+      color:#fff!important;
+      border-color:transparent!important;
+    }
+    .sub,.small,.mutedNote,.acctInst,.acctHint,.acctGroupHead span,.gm4InstallCard span,.releaseItem span,
+    .settingsCard p,.settingRow .sub,.txnMeta,.miniChartLabel,.heroSub{
+      color:var(--muted)!important;
+    }
+    .name,.title,.premiumAcctName,.acctName,.acctAmount,.reportLine b,.releaseItem b,.settingsCard h3,
+    .settingRow label,.gm4-empty b,.gm4InstallCard b,.forecastValue,.amount,.value,.mValue{
+      color:var(--text)!important;
+    }
+    .statusPill,.insightItem.warn,.insightItem.good,.insightItem.danger,.insightTone.warn,.insightTone.good,.insightTone.danger{
+      color:#102018!important;
+    }
+    .dangerBtn,.tiny.danger{
+      background:rgba(239,68,68,.12)!important;
+      color:#fecaca!important;
+      border-color:rgba(248,113,113,.32)!important;
+    }
+    .backupBtn.primary,.save,.fab{
+      color:#fff!important;
+    }
+    ::placeholder{color:rgba(243,239,228,.45)!important}
+  `;
+  document.head.appendChild(css);
 })();
 
 (function(){try{var p=new URLSearchParams(location.search);var action=p.get("action");if(!action)return;window.addEventListener("load",function(){setTimeout(function(){try{if(action==="add"&&typeof openTxn==="function")openTxn();else if(action==="accounts"&&typeof go==="function")go("accounts",document.querySelectorAll(".nav button")[1]);else if(action==="reports"&&typeof go==="function")go("reports",document.querySelectorAll(".nav button")[4]);}catch(e){}},280)});}catch(e){}})();
