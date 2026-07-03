@@ -1324,7 +1324,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
     const s=safeSettings();
     if(s.gm4Onboarded) return;
     const wrap=document.createElement('div'); wrap.id='gm4Onboard'; wrap.className='gm4-onboard show';
-    wrap.innerHTML=`<div class="gm4-card"><div class="gm4-logo">₱</div><h2>Welcome to PesoTrack Gold Master</h2><p>Your offline financial command center for banks, cash, wallets, cards, investments, budgets, and forecasts.</p><div class="gm4-choices"><button type="button" onclick="gm4OnboardHome('dashboard')">Start with Dashboard<small>Best for daily money overview</small></button><button type="button" onclick="gm4OnboardHome('accounts')">Start with Accounts<small>Best for checking balances</small></button><button type="button" onclick="gm4OnboardHome('calendar')">Start with Calendar<small>Best for due dates and cash flow</small></button></div><div class="gm4-actions"><button type="button" onclick="gm4CloseOnboard(false)">Skip</button><button type="button" class="primary" onclick="gm4CloseOnboard(true)">Get Started</button></div></div>`;
+    wrap.innerHTML=`<div class="gm4-card"><div class="gm4-logo">P</div><h2>Welcome to PesoTrack</h2><p>Choose where you want to start. You can always change this later in Settings.</p><div class="gm4-choices"><button type="button" onclick="gm4OnboardHome('dashboard')">Home<small>Best for today's money snapshot</small></button><button type="button" onclick="gm4OnboardHome('accounts')">Accounts<small>Best for checking balances</small></button><button type="button" onclick="gm4OnboardHome('calendar')">Calendar<small>Best for due dates and cash flow</small></button></div><div class="gm4-actions"><button type="button" onclick="gm4CloseOnboard(false)">Skip</button><button type="button" class="primary" onclick="gm4CloseOnboard(true)">Get Started</button></div></div>`;
     document.body.appendChild(wrap);
   }
   window.gm4OnboardHome=function(id){ safeSettings().defaultHome=id; gm4Persist(); document.querySelectorAll('#gm4Onboard .gm4-choices button').forEach(b=>b.style.borderColor='var(--line)'); event?.currentTarget && (event.currentTarget.style.borderColor='var(--accent)'); };
@@ -1487,6 +1487,108 @@ window.renderReports=function(){
   moveTransactionsBeforeAnalytics();
 };
 window.addEventListener('load',()=>setTimeout(()=>{try{moveTransactionsBeforeAnalytics();}catch(e){}},200));
+
+/* Reports cleanup: focused views, fewer duplicate analytics panels. */
+(function(){
+  let reportView=data?.settings?.reportView||'Overview';
+  const css=document.createElement('style');
+  css.textContent=`
+    #reports .reportHidden{display:none!important}
+    #reports .gm3-story{display:none!important}
+    .reportViewTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px;padding:4px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+    .reportViewTabs button{border:0;border-radius:14px;background:transparent;color:var(--muted);font-weight:950;padding:10px 6px;font-size:12px;min-width:0}
+    .reportViewTabs button.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;box-shadow:0 8px 18px color-mix(in srgb,var(--accent) 26%,transparent)}
+    body.dark .reportViewTabs{background:var(--pt-dark-surface);border-color:var(--pt-dark-border)}
+    body.dark .reportViewTabs button{color:var(--pt-dark-muted)}
+    body.dark .reportViewTabs button.active{color:#fff}
+  `;
+  document.head.appendChild(css);
+
+  function panelByTitle(title){
+    return [...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()===title);
+  }
+  function setHidden(el,hidden){ if(el)el.classList.toggle('reportHidden',!!hidden); }
+  function ensureReportViewTabs(){
+    const reports=document.getElementById('reports');
+    if(!reports)return;
+    let tabs=document.getElementById('reportViewTabs');
+    if(!tabs){
+      tabs=document.createElement('div');
+      tabs.id='reportViewTabs';
+      tabs.className='reportViewTabs';
+      tabs.innerHTML=['Overview','Transactions','Categories','Budgets'].map(v=>`<button type="button" onclick="setReportView('${v}')">${v}</button>`).join('');
+      const nav=document.querySelector('#reports .reportPeriodNav');
+      const fallback=document.querySelector('#reports .gm3-reportHero');
+      (nav||fallback||reports.firstChild).parentNode.insertBefore(tabs,(nav?nav.nextSibling:fallback));
+    }
+    tabs.querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.textContent.trim()===reportView));
+  }
+  window.setReportView=function(view){
+    reportView=view;
+    data.settings.reportView=view;
+    save();
+    applyReportsCleanup();
+  };
+  function applyReportsCleanup(){
+    ensureReportViewTabs();
+    setHidden(document.querySelector('#reports .gm3-story'),true);
+    setHidden(document.getElementById('analyticsHealthHero'),true);
+    setHidden(panelByTitle('Analytics & Insights'),true);
+    setHidden(panelByTitle('Premium Analytics'),true);
+    setHidden(panelByTitle('Top Categories'),true);
+    setHidden(panelByTitle('Backup / Restore'),true);
+    setHidden(panelByTitle('Income Sources'),true);
+    setHidden(panelByTitle('Account Activity'),true);
+    setHidden(panelByTitle('Year in Review'),reportPeriod!=='Year');
+
+    const panels={
+      txns:panelByTitle('Transactions'),
+      cash:panelByTitle('Cash Flow'),
+      cats:panelByTitle('Spending by Category'),
+      budgets:panelByTitle('Monthly Budgets'),
+      insights:panelByTitle('Smart Insights')
+    };
+    Object.values(panels).forEach(p=>setHidden(p,true));
+    if(reportView==='Overview'){
+      setHidden(panels.txns,false);
+      setHidden(panels.cash,false);
+      setHidden(panels.insights,false);
+    }else if(reportView==='Transactions'){
+      setHidden(panels.txns,false);
+    }else if(reportView==='Categories'){
+      setHidden(panels.cats,false);
+      setHidden(panels.cash,false);
+    }else if(reportView==='Budgets'){
+      setHidden(panels.budgets,false);
+      setHidden(panels.insights,false);
+    }
+  }
+  const previous=window.renderReports;
+  window.renderReports=function(){
+    if(typeof previous==='function')previous();
+    applyReportsCleanup();
+  };
+window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}catch(e){}},260));
+})();
+
+/* Welcome and home header polish. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #premiumGreeting,.premiumGreeting{display:none!important}
+    .premiumTop{align-items:center;margin:4px 0 12px}
+    .premiumKicker{font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted)}
+    body.dark .gm4-onboard{background:rgba(2,6,23,.78)}
+    body.dark .gm4-card{background:#111827!important;color:#f8fafc!important;border-color:#334155!important;box-shadow:0 28px 80px rgba(0,0,0,.55)}
+    body.dark .gm4-card h2{color:#f8fafc!important}
+    body.dark .gm4-card p,body.dark .gm4-card small{color:#cbd5e1!important}
+    body.dark .gm4-choices button,body.dark .gm4-actions button{background:#1f2937!important;color:#f8fafc!important;border-color:#334155!important}
+    body.dark .gm4-choices button:hover,body.dark .gm4-actions button:hover{border-color:var(--accent)!important}
+    body.dark .gm4-actions .primary{background:linear-gradient(135deg,var(--accent),var(--accent-2))!important;border-color:transparent!important;color:#fff!important}
+    body.dark .gm4-logo{box-shadow:0 12px 28px rgba(0,0,0,.28)}
+  `;
+  document.head.appendChild(css);
+})();
 
 /* Dashboard focus pass: daily essentials first, deeper planning tucked away. */
 (function(){
@@ -1684,7 +1786,99 @@ window.addEventListener('load',()=>setTimeout(()=>{try{moveTransactionsBeforeAna
     if(typeof prevRender==='function')prevRender();
     try{focusDashboardV4();}catch(e){console.warn('Dashboard focus v4 skipped',e)}
   };
-  window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV4();}catch(e){}},300));
+window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV4();}catch(e){}},300));
+})();
+
+/* PM Home pass: daily control room instead of mini report. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #dashboard.pmHome .premiumHero{border-radius:28px;padding:18px;margin-bottom:12px}
+    #dashboard.pmHome .premiumHeroMain,#dashboard.pmHome .premiumMetrics{display:none!important}
+    #dashboard.pmHome .premiumCashBlock{display:block;margin-top:0}
+    #dashboard.pmHome .premiumCash{font-size:40px;margin:7px 0 4px}
+    #dashboard.pmHome .premiumHero .label:before{content:"Ready to use";font-size:12px;color:rgba(243,239,228,.66)}
+    #dashboard.pmHome .premiumHero .label{font-size:0}
+    #dashboard.pmHome .premiumHero .heroSub{max-width:260px}
+    #dashboard.pmHome .premiumHero .dashPill{display:inline-flex;margin-top:12px}
+    #dashboard.pmHome .premiumSummaryChips{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+    #dashboard.pmHome .premiumSummaryChips button{padding:10px;border-radius:16px}
+    #dashboard.pmHome .premiumSummaryChips span{display:none}
+    #dashboard.pmHome .premiumSummaryChips b{font-size:12px;text-align:center}
+    .pmPriorityCard{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:22px;padding:15px;margin:12px 0 14px;box-shadow:0 10px 28px rgba(18,24,40,.07)}
+    .pmPriorityTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .pmPriorityLabel{font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .pmPriorityCard h2{font-size:18px;line-height:1.15;margin:4px 0 5px;letter-spacing:-.025em}
+    .pmPriorityCard p{margin:0;color:var(--muted);font-size:13px;font-weight:750;line-height:1.35}
+    .pmPriorityCard button{border:0;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:950;padding:11px 13px;white-space:nowrap;box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 24%,transparent)}
+    #dashboard.pmHome .premiumSection{margin-top:18px}
+    #dashboard.pmHome .premiumSection h2{font-size:18px}
+    #dashboard.pmHome #upcoming .premiumTimelineItem:nth-child(n+4){display:none}
+    #dashboard.pmHome #recent .row:nth-child(n+5){display:none}
+    #dashboard.pmHome .dashboardPlanningToggle{margin-top:16px;border-style:dashed;box-shadow:none}
+    #dashboard.pmHome .dashboardPlanningToggle b:before{content:"Planning details";font-size:14px}
+    #dashboard.pmHome .dashboardPlanningToggle b span:before{content:"Forecast and deeper dashboard items";font-size:12px}
+    body.dark .pmPriorityCard{background:var(--pt-dark-surface);border-color:var(--pt-dark-border);box-shadow:0 14px 34px rgba(0,0,0,.22)}
+    body.dark .pmPriorityCard p{color:var(--pt-dark-muted)}
+  `;
+  document.head.appendChild(css);
+
+  function navButton(index){ return document.querySelectorAll('.nav button')[index]||null; }
+  function placePriorityCard(){
+    const dash=document.getElementById('dashboard');
+    const hero=dash?.querySelector('.premiumHero');
+    if(!dash||!hero)return null;
+    let card=document.getElementById('pmPriorityCard');
+    if(!card){
+      card=document.createElement('section');
+      card.id='pmPriorityCard';
+      card.className='pmPriorityCard';
+      hero.parentNode.insertBefore(card,hero.nextSibling);
+    }
+    return card;
+  }
+  function priorityModel(){
+    const unpaid=(data.bills||[]).filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+    const next=unpaid[0], dueDays=next?daysUntil(next.dueDate):null;
+    const today=todaysRange();
+    const todayCount=(data.txns||[]).filter(t=>{const d=new Date(t.date||Date.now());return d>=today.start&&d<today.end;}).length;
+    if(!(data.accounts||[]).length){
+      return {label:'Setup',title:'Add your first account',body:'Start with the bank, wallet, card, or cash account you check most often.',cta:'Add account',action:"openAddAccount()"};
+    }
+    if(next&&dueDays<=0){
+      return {label:'Urgent',title:`${next.cardName||'A bill'} needs attention`,body:`${peso(next.remaining||next.amount||0)} is ${dueDays<0?'overdue':'due today'}. Handle this before reviewing anything else.`,cta:'Open bills',action:"go('bills',navButton(3))"};
+    }
+    if(next&&dueDays<=3){
+      return {label:'Upcoming',title:`Prepare for ${next.cardName||'your next bill'}`,body:`${peso(next.remaining||next.amount||0)} is due in ${dueDays} day${dueDays===1?'':'s'}. Keep that cash separate.`,cta:'View bills',action:"go('bills',navButton(3))"};
+    }
+    if(!todayCount){
+      return {label:'Today',title:'Record your first transaction today',body:'A quick entry keeps the Home screen honest and makes Reports useful later.',cta:'Add transaction',action:'openTxn()'};
+    }
+    return {label:'Review',title:'You are up to date today',body:'Check the latest activity, then only go deeper if something looks off.',cta:'View reports',action:"go('reports',navButton(4))"};
+  }
+  window.pmHomeAction=function(action){
+    try{ new Function('navButton',action)(navButton); }catch(e){ console.warn('PM action skipped',e); }
+  };
+  function updatePmHome(){
+    const dash=document.getElementById('dashboard');
+    if(!dash)return;
+    dash.classList.add('pmHome');
+    const card=placePriorityCard();
+    const model=priorityModel();
+    if(card){
+      card.innerHTML=`<div class="pmPriorityTop"><div><div class="pmPriorityLabel">${htmlText(model.label)}</div><h2>${htmlText(model.title)}</h2><p>${htmlText(model.body)}</p></div><button type="button" onclick="pmHomeAction('${jsString(model.action)}')">${htmlText(model.cta)}</button></div>`;
+    }
+    const date=document.getElementById('dashDate');
+    if(date)date.textContent='Today, '+new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric'});
+    const safeHint=document.getElementById('safeSpendHint');
+    if(safeHint)safeHint.textContent='After unpaid bills are set aside';
+  }
+  const prevRender=window.render;
+  window.render=function(){
+    if(typeof prevRender==='function')prevRender();
+    try{updatePmHome();}catch(e){console.warn('PM home pass skipped',e)}
+  };
+  window.addEventListener('load',()=>setTimeout(()=>{try{updatePmHome();}catch(e){}},340));
 })();
 
 /* Accounts density pass: make account cards easier to scan. */
