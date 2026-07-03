@@ -504,7 +504,7 @@ body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--acce
 #txnSheet .pad button{height:38px!important;font-size:17px!important}
 #txnSheet .save{height:44px!important;margin-top:8px!important;font-size:14px!important}
 
-</style></head><body><main class="app"><div id="dashboard" class="screen active premiumDashboard"><div class="premiumTop"><div><div class="premiumKicker" id="dashDate">Your money snapshot today</div><div class="premiumGreeting" id="premiumGreeting">Good day, Arv</div></div><button class="premiumIconBtn" onclick="openAddAccount()">＋</button></div><section class="premiumHero"><div class="premiumHeroGlow"></div><div class="premiumHeroMain"><div class="healthRing premiumRing" id="healthRing"><b id="healthScoreDash">--</b></div><div class="premiumHeroText"><div class="label">Financial Health</div><div class="premiumHeroTitle" id="healthLabelDash">Calculating</div><div class="heroSub" id="healthSummaryDash">Savings, utilization, budgets, and bill status are considered.</div></div></div><div class="premiumCashBlock"><div><div class="label">Available Cash</div><div class="premiumCash" id="safeSpendHero">₱0</div><div class="heroSub" id="safeSpendHint">After unpaid bills are set aside</div></div><div class="dashPill" id="dashHealth">Ready</div></div><div class="premiumSummaryChips"><button onclick="go('bills',document.querySelectorAll('.nav button')[3])"><span>💳</span><b id="todayBills">0 due</b></button><button onclick="go('reports',document.querySelectorAll('.nav button')[4])"><span>💰</span><b id="todayNet">₱0</b></button><button onclick="go('calendar',null)"><span>📅</span><b id="nextEventChip">Calendar</b></button></div><div class="dashMetrics premiumMetrics"><div class="dashMetric"><div class="mLabel">Bank Accounts</div><div class="mValue" id="bankTotal">₱0</div></div><div class="dashMetric"><div class="mLabel">Cash on Hand</div><div class="mValue" id="cashHandTotal">₱0</div></div><div class="dashMetric"><div class="mLabel">E-Wallets</div><div class="mValue" id="walletTotal">₱0</div></div><div class="dashMetric"><div class="mLabel">Cards</div><div class="mValue" id="cardTotal">₱0</div></div></div><span id="netWorth" class="hide">₱0</span><span id="cashTotal" class="hide">₱0</span><span id="billsDue" class="hide">₱0</span><span id="safeSpend" class="hide">₱0</span><span id="healthSavingsDash" class="hide">--</span><span id="healthUtilDash" class="hide">--</span></section><section class="premiumPulse"><div class="pulseHead"><div><div class="label">Today’s Pulse</div><h2>Activity at a glance</h2></div><span class="sub">Income · Expense · Transfer</span></div><div class="pulseGrid"><div><span>Income</span><b class="green" id="todayIncome">₱0</b></div><div><span>Expense</span><b class="red" id="todayExpense">₱0</b></div><div><span>Transfer</span><b id="todayTransfer">₱0</b></div></div></section><section class="premiumPulse" id="liquidBreakdown"><div class="pulseHead"><div><div class="label">Money by Type</div><h2>Separated clearly</h2></div><span class="sub">Banks · Cash · Wallets</span></div><div class="cashCategoryGrid" id="moneyTypeGrid"></div></section><section class="insightCard premiumInsight"><div class="premiumInsightIcon">✦</div><div><b id="insightTitle">No urgent action</b><div class="sub" id="insightText">Add accounts and transactions to get useful insights.</div></div></section><div class="premiumActions"><button onclick="openTxn()"><b>＋ Expense</b><span>Add spending fast</span></button><button onclick="setQuickTransfer()"><b>⇄ Transfer</b><span>Move money</span></button><button onclick="go('bills',document.querySelectorAll('.nav button')[3])"><b>💳 Pay Card</b><span>Settle bills</span></button><button onclick="go('reports',document.querySelectorAll('.nav button')[4])"><b>📊 Reports</b><span>View trends</span></button></div><div class="section premiumSection"><h2>Upcoming</h2><span class="sub">Bills and scheduled items</span></div><div class="premiumTimeline" id="upcoming"></div><div class="section premiumSection"><h2>Financial Calendar</h2><span class="sub">Next 30 days</span></div><div class="timeline" id="calendarPreview"></div><div class="section premiumSection"><h2>Cash Flow Forecast</h2><span class="sub">Next 30 days</span></div><div id="cashForecast" class="forecastBox"></div><div class="section premiumSection"><h2>Accounts</h2><span class="sub">Snapshot</span></div><div class="accountStrip premiumAccountStrip" id="dashAccounts"></div><div class="section premiumSection"><h2>Recent Activity</h2></div><div class="list premiumRecent" id="recent"></div></div><div id="calendar" class="screen"><div class="top"><div><div class="title">Financial Calendar</div><div class="sub">Bills, salary, recurring items, and upcoming cash flow</div></div><button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])">⌂</button></div><div class="calendarControls"><button class="calBtn active" onclick="setCalendarRange(30,this)">30 Days</button><button class="calBtn" onclick="setCalendarRange(60,this)">60 Days</button><button class="calBtn" onclick="setCalendarRange(90,this)">90 Days</button></div><section class="hero"><div class="label">Projected Balance</div><div class="amount" id="calendarProjected">₱0</div><div class="sub" id="calendarProjectedSub">Based on current cash, unpaid bills, and recurring entries.</div></section><div class="list" id="calendarFull"></div></div><div id="search" class="screen"><div class="top"><div><div class="title">Search</div><div class="sub">Find transactions, accounts, notes, categories, and bills</div></div><button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])">⌂</button></div><div class="searchBox"><input class="searchInputBig" id="globalSearchInput" placeholder="Search BDO, coffee, salary, GCash..." oninput="renderGlobalSearch()"><div class="searchTabs"><button class="active" onclick="setSearchFilter('All',this)">All</button><button onclick="setSearchFilter('Transactions',this)">Transactions</button><button onclick="setSearchFilter('Accounts',this)">Accounts</button><button onclick="setSearchFilter('Bills',this)">Bills</button></div></div><div id="globalSearchResults"></div></div><div id="accounts" class="screen"><div class="top"><div><div class="title">Accounts</div><div class="sub">Only accounts you add appear here</div></div><button class="iconbtn" onclick="openAddAccount()">＋</button></div><div class="chips"><button class="chip active" onclick="filterAccounts('All',this)">All</button><button class="chip" onclick="filterAccounts('Savings',this)">Banks</button><button class="chip" onclick="filterAccounts('Cash',this)">Cash</button><button class="chip" onclick="filterAccounts('Wallet',this)">Wallet</button><button class="chip" onclick="filterAccounts('Credit Card',this)">Credit</button><button class="chip" onclick="filterAccounts('Investment',this)">Invest</button></div><div class="grid" id="accountGrid"></div></div><div id="bills" class="screen"><div class="top"><div><div class="title">Bills</div><div class="sub">Credit cards, settlements, and recurring items</div></div></div><div class="section"><h2>Credit Card Center</h2><span class="sub">Statement and due dates</span></div><div class="ccGrid" id="creditCenter"></div><div class="list" id="billList"></div><div class="section"><h2>Recurring</h2><button class="ghost" onclick="openRecurring()">＋ Add</button></div><div class="list" id="recurringList"></div></div><div id="reports" class="screen"><div class="top"><div><div class="title">Reports</div><div class="sub">Income vs Expense</div></div></div><div class="reportTabs"><button class="active" onclick="setReportPeriod('Today',this)">Day</button><button onclick="setReportPeriod('Week',this)">Week</button><button onclick="setReportPeriod('Month',this)">Month</button><button onclick="setReportPeriod('Year',this)">Year</button></div><select class="accountFilter" id="reportAccount" onchange="renderReports()"><option value="All">All accounts</option></select><section class="gm3-reportHero"><div class="section" style="margin:0 0 10px"><h2>Executive Summary</h2><span class="sub" id="gm3ReportRange">This period</span></div><div class="gm3-scorecard"><div class="gm3-score"><span>Savings Rate</span><b id="gm3SavingsRate">0%</b></div><div class="gm3-score"><span>Cash Flow</span><b id="gm3CashFlow">₱0</b></div><div class="gm3-score"><span>Top Category</span><b id="gm3TopCategory">—</b></div><div class="gm3-score"><span>Activity</span><b id="gm3ActivityCount">0 entries</b></div></div><div class="gm3-pillrow" id="gm3ReportPills"></div></section><section class="gm3-story"><div class="sub">Financial Story</div><h3 id="gm3StoryTitle">Your period at a glance</h3><div class="gm3-story-grid"><div class="gm3-story-tile"><span>Income</span><b id="gm3StoryIncome">₱0</b></div><div class="gm3-story-tile"><span>Expense</span><b id="gm3StoryExpense">₱0</b></div><div class="gm3-story-tile"><span>Saved</span><b id="gm3StorySaved">₱0</b></div><div class="gm3-story-tile"><span>Score</span><b id="gm3StoryScore">—</b></div></div><div class="gm3-story-list" id="gm3StoryLines"></div></section><div class="reportCards"><div class="reportCard"><div class="small">Income</div><div class="value green" id="reportIncome">₱0</div></div><div class="reportCard"><div class="small">Expense</div><div class="value red" id="reportExpense">₱0</div></div><div class="reportCard"><div class="small">Net</div><div class="value blue" id="reportNet">₱0</div></div></div><section class="reportPanel"><h3>Analytics & Insights</h3><div class="analyticsHero" style="margin-top:0"><div class="healthWrap"><div class="healthRing" id="healthRingReport"><b id="healthScoreReport">--</b></div><div><div class="label">Financial Health Score</div><div class="name" id="healthLabelReport">Calculating</div><div class="sub" id="healthExplainReport">Based on this month’s cash flow, card utilization, budgets, and unpaid bills.</div></div></div><div class="trendGrid"><div class="trendCard"><span>Savings Rate</span><b id="savingsRateReport">--</b><div class="spark" id="incomeSpark"></div></div><div class="trendCard"><span>Expense Trend</span><b id="expenseTrendReport">--</b><div class="spark" id="expenseSpark"></div></div></div></div><div class="monthCompare" id="monthCompareReport"></div><div id="smartAnalyticsReport"></div></section><section class="reportPanel"><h3>Top Categories</h3><div id="analyticsCategories"></div></section><section class="reportPanel"><h3>Year in Review</h3><div id="yearReviewReport"></div></section><section class="analyticsHero" id="analyticsHealthHero"><div class="healthRow"><div><div class="sub">Financial Health</div><div class="healthScore" id="premiumHealthScore">--</div><div class="sub" id="premiumHealthLabel">Analyzing your month</div></div><div class="healthRing" id="premiumHealthRing"><b id="premiumHealthRingText">--</b></div></div></section><section class="reportPanel"><div class="analyticsSectionTitle"><h3>Premium Analytics</h3><span class="analyticsBadge">Phase 4</span></div><div class="analyticsGrid"><div class="analyticsTile"><div class="small">Savings Rate</div><div class="big" id="premiumSavingsRate">0%</div><div class="miniChartLabel"><span>Income less expense</span><span id="premiumSavedAmount">₱0</span></div></div><div class="analyticsTile"><div class="small">Monthly Comparison</div><div class="big" id="premiumMonthlyCompare">—</div><div class="miniChartLabel"><span>This month vs last</span><span id="premiumCompareDelta">₱0</span></div></div></div><div class="analyticsTile"><div class="analyticsSectionTitle"><h3>6-Month Cash Flow</h3><span class="small">Income / Expense</span></div><div id="premiumTrendBars" class="trendBars"></div><div id="premiumTrendLabels" class="trendLabels"></div></div><div class="analyticsGrid"><div class="analyticsTile"><div class="analyticsSectionTitle"><h3>Top Categories</h3></div><div id="premiumCategoryViz" class="categoryViz"></div></div><div class="analyticsTile"><div class="analyticsSectionTitle"><h3>Spending Heatmap</h3><span class="small">This month</span></div><div id="premiumHeatmap" class="heatmap"></div></div></div><div class="coachCard"><div class="coachIcon">✦</div><div class="coachText"><b id="premiumCoachTitle">Financial Coach</b><div class="sub" id="premiumCoachText">Add transactions to unlock personalized insights.</div></div></div></section><section class="reportPanel"><h3>Cash Flow</h3><div id="cashFlowBars"></div></section><section class="reportPanel"><h3>Spending by Category</h3><div id="categoryReport"></div></section><section class="reportPanel"><div class="panelHead"><h3>Monthly Budgets</h3><button class="tiny" onclick="openBudget()">＋ Add</button></div><div id="budgetReport" class="budgetGrid"></div></section><section class="reportPanel"><h3>Smart Insights</h3><div id="insightReport" class="insightList"></div></section><section class="reportPanel"><h3>Income Sources</h3><div id="incomeReport"></div></section><section class="reportPanel"><h3>Account Activity</h3><div id="accountReport"></div></section><section class="reportPanel"><h3>Transactions</h3><input class="txnSearch" id="txnSearch" placeholder="Search account, category, amount…" oninput="renderTransactionsList()"><div id="transactionReport"></div></section><section class="reportPanel"><h3>Backup / Restore</h3><div class="backupGrid"><button class="backupBtn primary" onclick="exportBackup()">Export Backup</button><button class="backupBtn" onclick="importBackup()">Restore Backup</button><button class="backupBtn" onclick="exportReportCSV()">Export Report CSV</button><button class="backupBtn" onclick="exportTransactionsCSV()">Export Transactions CSV</button></div><input class="hide" id="restoreFile" type="file" accept="application/json" onchange="handleRestore(this)"><div class="mutedNote">Export saves your accounts, transactions, and bills as a JSON file. Restore replaces the current local data after confirmation.</div></section></div><div id="settings" class="screen"><div class="top"><div><div class="title">Settings</div><div class="sub">Personalize, back up, and keep local data private</div></div><button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])">⌂</button></div><div class="settingsGrid"><div class="settingsCard"><h3>Local Data</h3><p id="settingsDataSummary">Accounts and transactions saved offline.</p></div><div class="settingsCard"><h3>App Status</h3><p>Offline-first HTML app. Export a backup before clearing browser data or changing devices.</p><span class="versionBadge">✓ PesoTrack 1.0 RC</span></div></div><section class="reportPanel"><div class="panelHead"><h3>Release Check</h3><button class="tiny" onclick="runReleaseQA()">Run Check</button></div><div id="releaseQA" class="releaseChecklist"></div><div class="mutedNote">This checks local data consistency before you rely on this build day to day.</div></section><section class="reportPanel"><h3>Appearance</h3><div class="settingRow"><div><label>Accent Color</label><div class="sub">Changes active buttons and highlights</div></div><div class="colorDots" id="accentDots"></div></div><div class="settingRow"><div><label>Balance Privacy</label><div class="sub">Hide amounts on dashboard and cards</div></div><input type="checkbox" id="privacyToggle" onchange="togglePrivacy(this.checked)"></div><div class="settingRow"><div><label>Dark Mode</label><div class="sub">Use a softer dark interface at night</div></div><button type="button" id="darkToggle" class="switch" onclick="toggleDarkMode()" aria-label="Toggle dark mode"></button></div></section><section class="reportPanel"><h3>Privacy Lock</h3><div class="settingRow"><div><label>Privacy PIN</label><div class="sub">Hide the app behind a local 4-digit screen lock</div></div><button type="button" id="pinToggle" class="switch" onclick="togglePinLock()" aria-label="Toggle PIN lock"></button></div><div class="pinActions"><button class="backupBtn" onclick="changePin()">Change PIN</button><button class="backupBtn" onclick="lockApp()">Lock Now</button></div><div class="mutedNote">This PIN is a local privacy screen, not encryption. Export backups regularly before changing phones, clearing browser data, or testing new builds.</div></section><section class="reportPanel"><h3>Preferences</h3><div class="settingRow"><div><label>First day of week</label><div class="sub">Used by weekly reports</div></div><select class="field" id="weekStart" onchange="saveSettings()"><option value="1">Monday</option><option value="0">Sunday</option></select></div><div class="settingRow"><div><label>Currency</label><div class="sub">Display currency</div></div><select class="field" id="currencySetting" onchange="saveSettings()"><option value="PHP">PHP ₱</option></select></div></section><section class="reportPanel"><div class="panelHead"><h3>Categories</h3><button class="tiny" onclick="addCategoryFromSettings()">＋ Add</button></div><div class="categoryGrid" id="settingsCategories"></div></section><section class="reportPanel"><h3>Backup / Restore</h3><div class="backupGrid"><button class="backupBtn primary" onclick="exportBackup()">Export Backup</button><button class="backupBtn" onclick="importBackup()">Restore Backup</button></div><div class="mutedNote">Your data is stored locally on this device. Export a dated backup before changing phones, clearing app data, or testing major changes.</div></section><section class="reportPanel dangerZone"><h3>Danger Zone</h3><div class="mutedNote">This permanently removes all local PesoTrack data on this browser.</div><button class="dangerBtn" onclick="resetAllData()">Reset All Data</button></section></div></main><div id="modalBackdrop" class="modalBackdrop" onclick="closeTopModal()"></div><div id="toast" class="toast">Saved</div><nav class="nav"><button class="active" onclick="go('dashboard',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11.2 12 4l8 7.2M6 9.8V20h12V9.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Home</span></button><button onclick="go('accounts',this)"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="6.5" width="17" height="12" rx="2.3" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10.5h17" stroke="currentColor" stroke-width="1.8"/></svg><span>Accounts</span></button><button class="fab" onclick="openTxn()" aria-label="Add transaction"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></button><button onclick="go('bills',this)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4.5" width="16" height="15" rx="2.4" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 9h9M7.5 12.5h9M7.5 16h5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Bills</span></button><button onclick="go('reports',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M5 19.5V13M12 19.5V7M19 19.5v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Reports</span></button></nav><section id="txnSheet" class="sheet"><div class="top"><div class="title" id="txnTitle">Add Transaction</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div class="seg"><button class="active" onclick="setTxnType('Expense',this)">Expense</button><button onclick="setTxnType('Income',this)">Income</button><button onclick="setTxnType('Transfer',this)">Transfer</button></div><div class="pick" id="txnPick"></div><input class="field" id="txnNote" placeholder="Note (optional)"><div class="display" id="amtDisplay">₱0</div><div class="pad" id="pad"></div><button class="save" id="txnSaveBtn">Save Transaction</button><button class="dangerBtn hide" id="txnDeleteBtn" onclick="deleteEditingTxn()">Delete Transaction</button></section><section id="accountSheet" class="sheet"><div class="top"><div class="title" id="acctTitle">Add Account</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><select class="field" id="atype" onchange="renderAccountFields()"><option>Savings</option><option>Credit Card</option><option>Wallet</option><option>Investment</option><option>Cash</option></select><div class="logoPickLabel">Choose a bank</div><div class="logoPickGrid" id="logoPickGrid"></div><input type="hidden" id="instLogo" value="otherbank"><input class="field" id="inst" placeholder="Bank / institution name, e.g. BPI, GCash, Maya" oninput="autoPickLogo(this.value)"><input class="field" id="aname" placeholder="Account name, e.g. Payroll"><div id="dynamicFields"></div><button class="save" onclick="saveAccount()">Save Account</button></section><section id="settleSheet" class="sheet"><div class="top"><div class="title">Settle Bill</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div id="settleBody"></div></section><section id="accountDetailSheet" class="sheet"><div class="top"><div class="title">Account Details</div><button class="ghost" onclick="closeSheets()">Close</button></div><div id="accountDetailBody"></div></section><section id="recurringSheet" class="sheet"><div class="top"><div class="title" id="recTitle">Add Recurring</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div class="recNote">Create monthly entries like salary, subscriptions, MP2, utilities, or recurring card purchases. Due items are generated automatically when you open the app.</div><label class="small">Type</label><select class="field" id="recType" onchange="renderRecurringFields()"><option>Income</option><option>Expense</option></select><input class="field" id="recName" placeholder="Name, e.g. Salary or Netflix"><div id="recDynamic"></div><label class="small">Amount</label><input class="field" id="recAmount" type="number" placeholder="Amount"><label class="small">Day of month</label><input class="field" id="recDay" type="number" min="1" max="31" placeholder="e.g. 15"><label class="toggleRow"><input type="checkbox" id="recEnabled" checked><span><b>Enabled</b><div class="sub">Generate automatically every month</div></span></label><button class="save" onclick="saveRecurring()">Save Recurring</button><button class="dangerBtn hide" id="recDeleteBtn" onclick="deleteRecurring()">Delete Recurring</button></section><section id="budgetSheet" class="sheet"><div class="top"><div class="title" id="budgetTitle">Add Budget</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div class="recNote">Set a monthly spending limit by category. Budgets compare against expenses for the current month.</div><label class="small">Category</label><select class="field" id="budgetCategory"><option>Food</option><option>Groceries</option><option>Transport</option><option>Shopping</option><option>Bills</option><option>Utilities</option><option>Health</option><option>Subscription</option><option>MP2</option><option>Investment</option><option>Transfer Fees</option><option>Other</option></select><label class="small">Monthly Limit</label><input class="field" id="budgetAmount" type="number" placeholder="e.g. 8000"><button class="save" onclick="saveBudget()">Save Budget</button><button class="dangerBtn hide" id="budgetDeleteBtn" onclick="deleteBudget()">Delete Budget</button></section><section id="pickerSheet" class="sheet"><div class="sheetHead"><div><div class="title" id="pickerTitle">Choose</div><div class="sub" id="pickerSub">Select from your saved items</div></div><button class="ghost" onclick="closePicker()">Cancel</button></div><input class="search" id="pickerSearch" placeholder="Search" oninput="renderPicker()"><div id="pickerList"></div></section><section id="lockOverlay" class="lockOverlay"><div class="lockCard"><div class="lockIcon">🔒</div><div class="title">PesoTrack Locked</div><div class="sub">Enter your 4-digit PIN</div><div class="lockDots" id="lockDots">○ ○ ○ ○</div><div class="lockPad" id="lockPad"></div><div class="sub" id="lockMsg" aria-live="polite"></div></div></section><script>
+</style></head><body><main class="app"><div id="dashboard" class="screen active premiumDashboard"><div class="premiumTop"><div><div class="premiumKicker" id="dashDate">Your money snapshot today</div><div class="premiumGreeting" id="premiumGreeting">Good day, Arv</div></div><button class="premiumIconBtn" onclick="openAddAccount()">＋</button></div><section class="premiumHero"><div class="premiumHeroGlow"></div><div class="premiumHeroMain"><div class="healthRing premiumRing" id="healthRing"><b id="healthScoreDash">--</b></div><div class="premiumHeroText"><div class="label">Financial Health</div><div class="premiumHeroTitle" id="healthLabelDash">Calculating</div><div class="heroSub" id="healthSummaryDash">Savings, utilization, budgets, and bill status are considered.</div></div></div><div class="premiumCashBlock"><div><div class="label">Available Cash</div><div class="premiumCash" id="safeSpendHero">₱0</div><div class="heroSub" id="safeSpendHint">After unpaid bills are set aside</div></div><div class="dashPill" id="dashHealth">Ready</div></div><div class="premiumSummaryChips"><button onclick="go('bills',document.querySelectorAll('.nav button')[3])"><span>💳</span><b id="todayBills">0 due</b></button><button onclick="go('reports',document.querySelectorAll('.nav button')[4])"><span>💰</span><b id="todayNet">₱0</b></button><button onclick="go('calendar',null)"><span>📅</span><b id="nextEventChip">Calendar</b></button></div><div class="dashMetrics premiumMetrics"><div class="dashMetric"><div class="mLabel">Bank Accounts</div><div class="mValue" id="bankTotal">₱0</div></div><div class="dashMetric"><div class="mLabel">Cash on Hand</div><div class="mValue" id="cashHandTotal">₱0</div></div><div class="dashMetric"><div class="mLabel">E-Wallets</div><div class="mValue" id="walletTotal">₱0</div></div><div class="dashMetric"><div class="mLabel">Cards</div><div class="mValue" id="cardTotal">₱0</div></div></div><span id="netWorth" class="hide">₱0</span><span id="cashTotal" class="hide">₱0</span><span id="billsDue" class="hide">₱0</span><span id="safeSpend" class="hide">₱0</span><span id="healthSavingsDash" class="hide">--</span><span id="healthUtilDash" class="hide">--</span></section><section class="premiumPulse"><div class="pulseHead"><div><div class="label">Today’s Pulse</div><h2>Activity at a glance</h2></div><span class="sub">Income · Expense · Transfer</span></div><div class="pulseGrid"><div><span>Income</span><b class="green" id="todayIncome">₱0</b></div><div><span>Expense</span><b class="red" id="todayExpense">₱0</b></div><div><span>Transfer</span><b id="todayTransfer">₱0</b></div></div></section><section class="premiumPulse" id="liquidBreakdown"><div class="pulseHead"><div><div class="label">Money by Type</div><h2>Separated clearly</h2></div><span class="sub">Banks · Cash · Wallets</span></div><div class="cashCategoryGrid" id="moneyTypeGrid"></div></section><section class="insightCard premiumInsight"><div class="premiumInsightIcon">✦</div><div><b id="insightTitle">No urgent action</b><div class="sub" id="insightText">Add accounts and transactions to get useful insights.</div></div></section><div class="premiumActions"><button onclick="openTxn()"><b>＋ Expense</b><span>Add spending fast</span></button><button onclick="setQuickTransfer()"><b>⇄ Transfer</b><span>Move money</span></button><button onclick="go('bills',document.querySelectorAll('.nav button')[3])"><b>💳 Pay Card</b><span>Settle bills</span></button><button onclick="go('reports',document.querySelectorAll('.nav button')[4])"><b>📊 Reports</b><span>View trends</span></button></div><div class="section premiumSection"><h2>Upcoming</h2><span class="sub">Bills and scheduled items</span></div><div class="premiumTimeline" id="upcoming"></div><div class="section premiumSection"><h2>Financial Calendar</h2><span class="sub">Next 30 days</span></div><div class="timeline" id="calendarPreview"></div><div class="section premiumSection"><h2>Cash Flow Forecast</h2><span class="sub">Next 30 days</span></div><div id="cashForecast" class="forecastBox"></div><div class="section premiumSection"><h2>Accounts</h2><span class="sub">Snapshot</span></div><div class="accountStrip premiumAccountStrip" id="dashAccounts"></div><div class="section premiumSection"><h2>Recent Activity</h2></div><div class="list premiumRecent" id="recent"></div></div><div id="calendar" class="screen"><div class="top"><div><div class="title">Financial Calendar</div><div class="sub">Bills, salary, recurring items, and upcoming cash flow</div></div><button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])">⌂</button></div><div class="calendarControls"><button class="calBtn active" onclick="setCalendarRange(30,this)">30 Days</button><button class="calBtn" onclick="setCalendarRange(60,this)">60 Days</button><button class="calBtn" onclick="setCalendarRange(90,this)">90 Days</button></div><section class="hero"><div class="label">Projected Balance</div><div class="amount" id="calendarProjected">₱0</div><div class="sub" id="calendarProjectedSub">Based on current cash, unpaid bills, and recurring entries.</div></section><div class="list" id="calendarFull"></div></div><div id="search" class="screen"><div class="top"><div><div class="title">Search</div><div class="sub">Find transactions, accounts, notes, categories, and bills</div></div><button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])">⌂</button></div><div class="searchBox"><input class="searchInputBig" id="globalSearchInput" placeholder="Search BDO, coffee, salary, GCash..." oninput="renderGlobalSearch()"><div class="searchTabs"><button class="active" onclick="setSearchFilter('All',this)">All</button><button onclick="setSearchFilter('Transactions',this)">Transactions</button><button onclick="setSearchFilter('Accounts',this)">Accounts</button><button onclick="setSearchFilter('Bills',this)">Bills</button></div></div><div id="globalSearchResults"></div></div><div id="accounts" class="screen"><div class="top"><div><div class="title">Accounts</div><div class="sub">Only accounts you add appear here</div></div><button class="iconbtn" onclick="openAddAccount()">＋</button></div><div class="chips"><button class="chip active" onclick="filterAccounts('All',this)">All</button><button class="chip" onclick="filterAccounts('Savings',this)">Banks</button><button class="chip" onclick="filterAccounts('Cash',this)">Cash</button><button class="chip" onclick="filterAccounts('Wallet',this)">Wallet</button><button class="chip" onclick="filterAccounts('Credit Card',this)">Credit</button><button class="chip" onclick="filterAccounts('Investment',this)">Invest</button></div><div class="grid" id="accountGrid"></div></div><div id="bills" class="screen"><div class="top"><div><div class="title">Bills</div><div class="sub">Credit cards, settlements, and recurring items</div></div></div><div class="section"><h2>Credit Card Center</h2><span class="sub">Statement and due dates</span></div><div class="ccGrid" id="creditCenter"><div class="billSetupCard ccFallback"><b>Credit Card Center needs a card account</b><p>Add or finish setting up a credit card account so statement dates, due dates, and settlement details can appear here.</p><button type="button" onclick="openAddCreditCard()">Add Credit Card</button></div></div><div class="list" id="billList"></div><div class="section"><h2>Recurring</h2><button class="ghost" onclick="openRecurring()">＋ Add</button></div><div class="list" id="recurringList"></div></div><div id="reports" class="screen"><div class="top"><div><div class="title">Reports</div><div class="sub">Income vs Expense</div></div></div><div class="reportTabs"><button class="active" onclick="setReportPeriod('Today',this)">Day</button><button onclick="setReportPeriod('Week',this)">Week</button><button onclick="setReportPeriod('Month',this)">Month</button><button onclick="setReportPeriod('Year',this)">Year</button></div><select class="accountFilter" id="reportAccount" onchange="renderReports()"><option value="All">All accounts</option></select><section class="gm3-reportHero"><div class="section" style="margin:0 0 10px"><h2>Executive Summary</h2><span class="sub" id="gm3ReportRange">This period</span></div><div class="gm3-scorecard"><div class="gm3-score"><span>Savings Rate</span><b id="gm3SavingsRate">0%</b></div><div class="gm3-score"><span>Cash Flow</span><b id="gm3CashFlow">₱0</b></div><div class="gm3-score"><span>Top Category</span><b id="gm3TopCategory">—</b></div><div class="gm3-score"><span>Activity</span><b id="gm3ActivityCount">0 entries</b></div></div><div class="gm3-pillrow" id="gm3ReportPills"></div></section><section class="gm3-story"><div class="sub">Financial Story</div><h3 id="gm3StoryTitle">Your period at a glance</h3><div class="gm3-story-grid"><div class="gm3-story-tile"><span>Income</span><b id="gm3StoryIncome">₱0</b></div><div class="gm3-story-tile"><span>Expense</span><b id="gm3StoryExpense">₱0</b></div><div class="gm3-story-tile"><span>Saved</span><b id="gm3StorySaved">₱0</b></div><div class="gm3-story-tile"><span>Score</span><b id="gm3StoryScore">—</b></div></div><div class="gm3-story-list" id="gm3StoryLines"></div></section><div class="reportCards"><div class="reportCard"><div class="small">Income</div><div class="value green" id="reportIncome">₱0</div></div><div class="reportCard"><div class="small">Expense</div><div class="value red" id="reportExpense">₱0</div></div><div class="reportCard"><div class="small">Net</div><div class="value blue" id="reportNet">₱0</div></div></div><section class="reportPanel"><h3>Analytics & Insights</h3><div class="analyticsHero" style="margin-top:0"><div class="healthWrap"><div class="healthRing" id="healthRingReport"><b id="healthScoreReport">--</b></div><div><div class="label">Financial Health Score</div><div class="name" id="healthLabelReport">Calculating</div><div class="sub" id="healthExplainReport">Based on this month’s cash flow, card utilization, budgets, and unpaid bills.</div></div></div><div class="trendGrid"><div class="trendCard"><span>Savings Rate</span><b id="savingsRateReport">--</b><div class="spark" id="incomeSpark"></div></div><div class="trendCard"><span>Expense Trend</span><b id="expenseTrendReport">--</b><div class="spark" id="expenseSpark"></div></div></div></div><div class="monthCompare" id="monthCompareReport"></div><div id="smartAnalyticsReport"></div></section><section class="reportPanel"><h3>Top Categories</h3><div id="analyticsCategories"></div></section><section class="reportPanel"><h3>Year in Review</h3><div id="yearReviewReport"></div></section><section class="analyticsHero" id="analyticsHealthHero"><div class="healthRow"><div><div class="sub">Financial Health</div><div class="healthScore" id="premiumHealthScore">--</div><div class="sub" id="premiumHealthLabel">Analyzing your month</div></div><div class="healthRing" id="premiumHealthRing"><b id="premiumHealthRingText">--</b></div></div></section><section class="reportPanel"><div class="analyticsSectionTitle"><h3>Premium Analytics</h3><span class="analyticsBadge">Phase 4</span></div><div class="analyticsGrid"><div class="analyticsTile"><div class="small">Savings Rate</div><div class="big" id="premiumSavingsRate">0%</div><div class="miniChartLabel"><span>Income less expense</span><span id="premiumSavedAmount">₱0</span></div></div><div class="analyticsTile"><div class="small">Monthly Comparison</div><div class="big" id="premiumMonthlyCompare">—</div><div class="miniChartLabel"><span>This month vs last</span><span id="premiumCompareDelta">₱0</span></div></div></div><div class="analyticsTile"><div class="analyticsSectionTitle"><h3>6-Month Cash Flow</h3><span class="small">Income / Expense</span></div><div id="premiumTrendBars" class="trendBars"></div><div id="premiumTrendLabels" class="trendLabels"></div></div><div class="analyticsGrid"><div class="analyticsTile"><div class="analyticsSectionTitle"><h3>Top Categories</h3></div><div id="premiumCategoryViz" class="categoryViz"></div></div><div class="analyticsTile"><div class="analyticsSectionTitle"><h3>Spending Heatmap</h3><span class="small">This month</span></div><div id="premiumHeatmap" class="heatmap"></div></div></div><div class="coachCard"><div class="coachIcon">✦</div><div class="coachText"><b id="premiumCoachTitle">Financial Coach</b><div class="sub" id="premiumCoachText">Add transactions to unlock personalized insights.</div></div></div></section><section class="reportPanel"><h3>Cash Flow</h3><div id="cashFlowBars"></div></section><section class="reportPanel"><h3>Spending by Category</h3><div id="categoryReport"></div></section><section class="reportPanel"><div class="panelHead"><h3>Monthly Budgets</h3><button class="tiny" onclick="openBudget()">＋ Add</button></div><div id="budgetReport" class="budgetGrid"></div></section><section class="reportPanel"><h3>Smart Insights</h3><div id="insightReport" class="insightList"></div></section><section class="reportPanel"><h3>Income Sources</h3><div id="incomeReport"></div></section><section class="reportPanel"><h3>Account Activity</h3><div id="accountReport"></div></section><section class="reportPanel"><h3>Transactions</h3><input class="txnSearch" id="txnSearch" placeholder="Search account, category, amount…" oninput="renderTransactionsList()"><div id="transactionReport"></div></section><section class="reportPanel"><h3>Backup / Restore</h3><div class="backupGrid"><button class="backupBtn primary" onclick="exportBackup()">Export Backup</button><button class="backupBtn" onclick="importBackup()">Restore Backup</button><button class="backupBtn" onclick="exportReportCSV()">Export Report CSV</button><button class="backupBtn" onclick="exportTransactionsCSV()">Export Transactions CSV</button></div><input class="hide" id="restoreFile" type="file" accept="application/json" onchange="handleRestore(this)"><div class="mutedNote">Export saves your accounts, transactions, and bills as a JSON file. Restore replaces the current local data after confirmation.</div></section></div><div id="settings" class="screen"><div class="top"><div><div class="title">Settings</div><div class="sub">Personalize, back up, and keep local data private</div></div><button class="iconbtn" onclick="go('dashboard',document.querySelectorAll('.nav button')[0])">⌂</button></div><div class="settingsGrid"><div class="settingsCard"><h3>Local Data</h3><p id="settingsDataSummary">Accounts and transactions saved offline.</p></div><div class="settingsCard"><h3>App Status</h3><p>Offline-first HTML app. Export a backup before clearing browser data or changing devices.</p><span class="versionBadge">✓ PesoTrack 1.0 RC</span></div></div><section class="reportPanel"><div class="panelHead"><h3>Release Check</h3><button class="tiny" onclick="runReleaseQA()">Run Check</button></div><div id="releaseQA" class="releaseChecklist"></div><div class="mutedNote">This checks local data consistency before you rely on this build day to day.</div></section><section class="reportPanel"><h3>Appearance</h3><div class="settingRow"><div><label>Accent Color</label><div class="sub">Changes active buttons and highlights</div></div><div class="colorDots" id="accentDots"></div></div><div class="settingRow"><div><label>Balance Privacy</label><div class="sub">Hide amounts on dashboard and cards</div></div><input type="checkbox" id="privacyToggle" onchange="togglePrivacy(this.checked)"></div><div class="settingRow"><div><label>Dark Mode</label><div class="sub">Use a softer dark interface at night</div></div><button type="button" id="darkToggle" class="switch" onclick="toggleDarkMode()" aria-label="Toggle dark mode"></button></div></section><section class="reportPanel"><h3>Privacy Lock</h3><div class="settingRow"><div><label>Privacy PIN</label><div class="sub">Hide the app behind a local 4-digit screen lock</div></div><button type="button" id="pinToggle" class="switch" onclick="togglePinLock()" aria-label="Toggle PIN lock"></button></div><div class="pinActions"><button class="backupBtn" onclick="changePin()">Change PIN</button><button class="backupBtn" onclick="lockApp()">Lock Now</button></div><div class="mutedNote">This PIN is a local privacy screen, not encryption. Export backups regularly before changing phones, clearing browser data, or testing new builds.</div></section><section class="reportPanel"><h3>Preferences</h3><div class="settingRow"><div><label>First day of week</label><div class="sub">Used by weekly reports</div></div><select class="field" id="weekStart" onchange="saveSettings()"><option value="1">Monday</option><option value="0">Sunday</option></select></div><div class="settingRow"><div><label>Currency</label><div class="sub">Display currency</div></div><select class="field" id="currencySetting" onchange="saveSettings()"><option value="PHP">PHP ₱</option></select></div></section><section class="reportPanel"><div class="panelHead"><h3>Categories</h3><button class="tiny" onclick="addCategoryFromSettings()">＋ Add</button></div><div class="categoryGrid" id="settingsCategories"></div></section><section class="reportPanel"><h3>Backup / Restore</h3><div class="backupGrid"><button class="backupBtn primary" onclick="exportBackup()">Export Backup</button><button class="backupBtn" onclick="importBackup()">Restore Backup</button></div><div class="mutedNote">Your data is stored locally on this device. Export a dated backup before changing phones, clearing app data, or testing major changes.</div></section><section class="reportPanel dangerZone"><h3>Danger Zone</h3><div class="mutedNote">This permanently removes all local PesoTrack data on this browser.</div><button class="dangerBtn" onclick="resetAllData()">Reset All Data</button></section></div></main><div id="modalBackdrop" class="modalBackdrop" onclick="closeTopModal()"></div><div id="toast" class="toast">Saved</div><nav class="nav"><button class="active" onclick="go('dashboard',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M4 11.2 12 4l8 7.2M6 9.8V20h12V9.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Home</span></button><button onclick="go('accounts',this)"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="6.5" width="17" height="12" rx="2.3" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10.5h17" stroke="currentColor" stroke-width="1.8"/></svg><span>Accounts</span></button><button class="fab" onclick="openTxn()" aria-label="Add transaction"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></button><button onclick="go('bills',this)"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4.5" width="16" height="15" rx="2.4" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 9h9M7.5 12.5h9M7.5 16h5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Bills</span></button><button onclick="go('reports',this)"><svg viewBox="0 0 24 24" fill="none"><path d="M5 19.5V13M12 19.5V7M19 19.5v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Reports</span></button></nav><section id="txnSheet" class="sheet"><div class="top"><div class="title" id="txnTitle">Add Transaction</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div class="seg"><button class="active" onclick="setTxnType('Expense',this)">Expense</button><button onclick="setTxnType('Income',this)">Income</button><button onclick="setTxnType('Transfer',this)">Transfer</button></div><div class="pick" id="txnPick"></div><input class="field" id="txnNote" placeholder="Note (optional)"><div class="display" id="amtDisplay">₱0</div><div class="pad" id="pad"></div><button class="save" id="txnSaveBtn">Save Transaction</button><button class="dangerBtn hide" id="txnDeleteBtn" onclick="deleteEditingTxn()">Delete Transaction</button></section><section id="accountSheet" class="sheet"><div class="top"><div class="title" id="acctTitle">Add Account</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><select class="field" id="atype" onchange="renderAccountFields()"><option>Savings</option><option>Credit Card</option><option>Wallet</option><option>Investment</option><option>Cash</option></select><div class="logoPickLabel">Choose a bank</div><div class="logoPickGrid" id="logoPickGrid"></div><input type="hidden" id="instLogo" value="otherbank"><input class="field" id="inst" placeholder="Bank / institution name, e.g. BPI, GCash, Maya" oninput="autoPickLogo(this.value)"><input class="field" id="aname" placeholder="Account name, e.g. Payroll"><div id="dynamicFields"></div><button class="save" onclick="saveAccount()">Save Account</button></section><section id="settleSheet" class="sheet"><div class="top"><div class="title">Settle Bill</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div id="settleBody"></div></section><section id="accountDetailSheet" class="sheet"><div class="top"><div class="title">Account Details</div><button class="ghost" onclick="closeSheets()">Close</button></div><div id="accountDetailBody"></div></section><section id="recurringSheet" class="sheet"><div class="top"><div class="title" id="recTitle">Add Recurring</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div class="recNote">Create monthly entries like salary, subscriptions, MP2, utilities, or recurring card purchases. Due items are generated automatically when you open the app.</div><label class="small">Type</label><select class="field" id="recType" onchange="renderRecurringFields()"><option>Income</option><option>Expense</option></select><input class="field" id="recName" placeholder="Name, e.g. Salary or Netflix"><div id="recDynamic"></div><label class="small">Amount</label><input class="field" id="recAmount" type="number" placeholder="Amount"><label class="small">Day of month</label><input class="field" id="recDay" type="number" min="1" max="31" placeholder="e.g. 15"><label class="toggleRow"><input type="checkbox" id="recEnabled" checked><span><b>Enabled</b><div class="sub">Generate automatically every month</div></span></label><button class="save" onclick="saveRecurring()">Save Recurring</button><button class="dangerBtn hide" id="recDeleteBtn" onclick="deleteRecurring()">Delete Recurring</button></section><section id="budgetSheet" class="sheet"><div class="top"><div class="title" id="budgetTitle">Add Budget</div><button class="ghost" onclick="closeSheets()">Cancel</button></div><div class="recNote">Set a monthly spending limit by category. Budgets compare against expenses for the current month.</div><label class="small">Category</label><select class="field" id="budgetCategory"><option>Food</option><option>Groceries</option><option>Transport</option><option>Shopping</option><option>Bills</option><option>Utilities</option><option>Health</option><option>Subscription</option><option>MP2</option><option>Investment</option><option>Transfer Fees</option><option>Other</option></select><label class="small">Monthly Limit</label><input class="field" id="budgetAmount" type="number" placeholder="e.g. 8000"><button class="save" onclick="saveBudget()">Save Budget</button><button class="dangerBtn hide" id="budgetDeleteBtn" onclick="deleteBudget()">Delete Budget</button></section><section id="pickerSheet" class="sheet"><div class="sheetHead"><div><div class="title" id="pickerTitle">Choose</div><div class="sub" id="pickerSub">Select from your saved items</div></div><button class="ghost" onclick="closePicker()">Cancel</button></div><input class="search" id="pickerSearch" placeholder="Search" oninput="renderPicker()"><div id="pickerList"></div></section><section id="lockOverlay" class="lockOverlay"><div class="lockCard"><div class="lockIcon">🔒</div><div class="title">PesoTrack Locked</div><div class="sub">Enter your 4-digit PIN</div><div class="lockDots" id="lockDots">○ ○ ○ ○</div><div class="lockPad" id="lockPad"></div><div class="sub" id="lockMsg" aria-live="polite"></div></div></section><script>
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function htmlText(v,fallback=''){let s=String(v??'').trim();return escapeHtml(s||fallback)}
 function jsString(v){return String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ')}
@@ -612,8 +612,50 @@ function daysUntilDate(d){let today=new Date();today.setHours(0,0,0,0);let x=new
 function statusClass(status){status=String(status||'Unpaid');return status==='Paid'?'paid':(status==='Partial'?'partial':'unpaid')}
 function cardOpenBills(cardId){return data.bills.filter(b=>b.cardId===cardId&&billStatus(b)!=='Paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))}
 function cardAllBills(cardId){return data.bills.filter(b=>b.cardId===cardId).sort((a,b)=>new Date(b.statementDate||b.dueDate)-new Date(a.statementDate||a.dueDate))}
-function renderCreditCenter(){let el=document.getElementById('creditCenter');if(!el)return;let cards=data.accounts.filter(a=>a.type==='Credit Card');if(!cards.length){el.innerHTML='<div class="emptyState">Add a credit card account to see statement dates, due dates, utilization, and settlement options here.</div>';return}el.innerHTML=cards.map(card=>{let st=nextStatementDate(card),due=dueFromStatement(card,st),open=cardOpenBills(card.id),nearest=open[0],out=Number(card.outstanding||0),limit=Number(card.limit||0),util=limit?Math.min(100,(out/limit)*100):0,avail=Math.max(0,limit-out),dd=nearest?daysUntilDate(nearest.dueDate):daysUntilDate(due),dueText=nearest?`Due ${displayDate(nearest.dueDate)}`:`Next due ${displayDate(due)}`,progClass=util>=80?'danger':util>=50?'warn':'';return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft">${logo(card)}<div style="min-width:0"><div class="premiumCreditTitle">${card.name}</div><div class="premiumCreditSub">${card.institution||'Credit Card'} · ${dueText}</div></div></div><span class="premiumDuePill ${premiumDueClass(dd)}">${nearest?(dd<0?'Overdue':dd===0?'Due today':`${dd}d left`):'No bill'}</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>${peso(out)}</b><div class="premiumProgress ${progClass}" style="margin-top:12px"><i style="width:${util}%"></i></div><div class="premiumMetaRow" style="margin-top:9px"><span>${util.toFixed(0)}% used</span><span>${peso(avail)} available</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>${peso(limit)}</b></div><div><span>Statement</span><b>${displayDate(st)}</b></div></div></div><div class="premiumCreditActions"><button onclick="openAccountDetail('${card.id}')">Details</button>${nearest?`<button class="primary" onclick="openSettle('${nearest.id}')">Settle</button>`:`<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>`}</div></div>`}).join('')}function renderBills(){renderCreditCenter();let bills=data.bills.slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));bills.forEach(b=>b.status=billStatus(b));let current=bills.filter(b=>b.status!=='Paid'),history=bills.filter(b=>b.status==='Paid');billList.innerHTML=`<div class="statementSection"><h3>Current Statements</h3>${current.length?current.map(b=>renderBillCard(b)).join(''):'<div class="row"><span class="sub">No unpaid credit card statements.</span></div>'}</div><div class="statementSection"><h3>Statement History</h3>${history.length?history.slice().reverse().map(b=>renderBillCard(b,true)).join(''):'<div class="row"><span class="sub">Paid statements will appear here.</span></div>'}</div>`}
-function setReportPeriod(p,el){reportPeriod=p;document.querySelectorAll('.reportTabs button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderReports()}
+function renderCreditCenter(){
+  let el=document.getElementById('creditCenter');
+  if(!el)return;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const billRows=(rows)=>rows&&rows.length?`<div class="ccStatementList">${rows.slice(0,4).map(b=>`<div class="ccStatementMini"><div><b>${esc(billPeriod(b))}</b><span class="sub">Due ${esc(b.dueDate||'')}</span></div><div style="text-align:right"><b>${peso(b.remaining||0)}</b><span class="statusPill ${statusClass(billStatus(b))}">${billStatus(b)}</span></div></div>`).join('')}</div>`:'';
+  const groupedBills={};
+  (data.bills||[]).forEach(b=>{let key=b.cardId||b.cardName||'Card Statement';if(!groupedBills[key])groupedBills[key]=[];groupedBills[key].push(b)});
+  Object.values(groupedBills).forEach(rows=>rows.sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)));
+  let cards=(data.accounts||[]).filter(a=>a.type==='Credit Card');
+  let virtualCards=Object.entries(groupedBills).filter(([key])=>!cards.some(a=>a.id===key)).map(([key,rows])=>{
+    let open=rows.find(b=>billStatus(b)!=='Paid')||rows[0]||{};
+    return {id:key,name:open.cardName||key||'Credit Card',institution:'Statement record',type:'Credit Card',limit:0,outstanding:rows.filter(b=>billStatus(b)!=='Paid').reduce((s,b)=>s+Number(b.remaining||0),0),_virtual:true,_bills:rows};
+  });
+  let allCards=cards.concat(virtualCards);
+  if(!allCards.length){
+    el.innerHTML='<div class="billSetupCard"><b>Credit Card Center needs a card account</b><p>Add or finish setting up a credit card account so statement dates, due dates, and settlement details can appear here.</p><button type="button" onclick="openAddCreditCard()">Add Credit Card</button></div>';
+    return;
+  }
+  el.innerHTML=allCards.map(card=>{
+    let rows=card._bills||groupedBills[card.id]||[];
+    let nearest=rows.find(b=>billStatus(b)!=='Paid')||null;
+    let statementDay=Number(card.statementDay||0), dueDay=Number(card.dueDay||0);
+    let hasSchedule=statementDay&&dueDay&&!card._virtual;
+    let st=hasSchedule?nextStatementDate(card):null;
+    let due=hasSchedule?dueFromStatement(card,st):null;
+    let out=Number(card.outstanding||0)||rows.filter(b=>billStatus(b)!=='Paid').reduce((s,b)=>s+Number(b.remaining||0),0);
+    let limit=Number(card.limit||0), util=limit?Math.min(100,(out/limit)*100):0, avail=Math.max(0,limit-out);
+    let dd=nearest?daysUntilDate(nearest.dueDate):(due?daysUntilDate(due):null);
+    let dueText=nearest?`Due ${displayDate(nearest.dueDate)}`:(due?`Next due ${displayDate(due)}`:(card._virtual?'From statement records':'Add statement and due days'));
+    let progClass=util>=80?'danger':util>=50?'warn':'';
+    let pill=nearest?(dd<0?'Overdue':dd===0?'Due today':`${dd}d left`):(due?'No bill':(card._virtual?'Statement':'Setup needed'));
+    let icon=card._virtual?'<div class="bank otherbank">CC</div>':logo(card);
+    let primary=nearest?`<button class="primary" onclick="openSettle('${String(nearest.id).replace(/'/g,"\\'")}')">Settle</button>`:`<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>`;
+    let secondary=card._virtual?'<button onclick="openAddCreditCard()">Create Account</button>':`<button onclick="openAccountDetail('${String(card.id).replace(/'/g,"\\'")}')">${(!statementDay||!dueDay||!limit)?'Finish Setup':'Details'}</button>`;
+    return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft">${icon}<div style="min-width:0"><div class="premiumCreditTitle">${esc(card.name||'Credit Card')}</div><div class="premiumCreditSub ${(!statementDay||!dueDay||!limit)&&!card._virtual?'missing':''}">${esc(card.institution||'Credit Card')} - ${esc(dueText)}</div></div></div><span class="premiumDuePill ${dd===null?'':premiumDueClass(dd)}">${pill}</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>${peso(out)}</b><div class="premiumProgress ${progClass}" style="margin-top:12px"><i style="width:${util}%"></i></div><div class="premiumMetaRow" style="margin-top:9px"><span>${limit?util.toFixed(0)+'% used':'Limit missing'}</span><span>${limit?peso(avail)+' available':'Add limit'}</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>${limit?peso(limit):'Add'}</b></div><div><span>Statement</span><b>${st?displayDate(st):(nearest?displayDate(nearest.statementDate||nearest.dueDate):'Add')}</b></div><div><span>Due day</span><b>${dueDay||'Add'}</b></div></div></div>${billRows(rows)}<div class="premiumCreditActions">${secondary}${primary}</div></div>`;
+  }).join('');
+}
+function renderBills(){
+  renderCreditCenter();
+  let bills=(data.bills||[]).slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+  bills.forEach(b=>b.status=billStatus(b));
+  let current=bills.filter(b=>b.status!=='Paid'),history=bills.filter(b=>b.status==='Paid');
+  billList.innerHTML=`<div class="statementSection"><h3>Current Statements</h3>${current.length?current.map(b=>renderBillCard(b)).join(''):'<div class="row"><span class="sub">No unpaid credit card statements.</span></div>'}</div><div class="statementSection"><h3>Statement History</h3>${history.length?history.slice().reverse().map(b=>renderBillCard(b,true)).join(''):'<div class="row"><span class="sub">Paid statements will appear here.</span></div>'}</div>`;
+}function setReportPeriod(p,el){reportPeriod=p;document.querySelectorAll('.reportTabs button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderReports()}
 function periodStartEnd(){let now=new Date(),start,end;if(reportPeriod==='Today'){start=new Date(now.getFullYear(),now.getMonth(),now.getDate());end=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1)}else if(reportPeriod==='Week'){let d=(now.getDay()+6)%7;start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-d);end=new Date(start.getFullYear(),start.getMonth(),start.getDate()+7)}else if(reportPeriod==='Year'){start=new Date(now.getFullYear(),0,1);end=new Date(now.getFullYear()+1,0,1)}else{start=new Date(now.getFullYear(),now.getMonth(),1);end=new Date(now.getFullYear(),now.getMonth()+1,1)}return {start,end}}
 function txInPeriod(t,start,end){let d=new Date(t.date||Date.now());return d>=start&&d<end}
 function groupAdd(obj,key,amt){obj[key]=(obj[key]||0)+Number(amt||0)}
@@ -1571,6 +1613,394 @@ window.addEventListener('load',()=>setTimeout(()=>{try{moveTransactionsBeforeAna
 window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}catch(e){}},260));
 })();
 
+/* Reports clarity pass: period controls drive every report view. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    .reportScopeNote{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:18px;padding:11px 12px;margin:0 0 12px;font-size:12px;font-weight:800;line-height:1.35}
+    .reportScopeNote b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}
+    body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--pt-dark-border);color:var(--pt-dark-muted)}
+  `;
+  document.head.appendChild(css);
+
+  function selectedReportTxns(){
+    const {start,end}=periodStartEnd();
+    return (data.txns||[]).filter(t=>txInPeriod(t,start,end));
+  }
+  function syncReportPeriodButtons(){
+    document.querySelectorAll('#reports .reportTabs button').forEach(btn=>{
+      const text=btn.textContent.trim();
+      const period=text==='Day'?'Today':text;
+      btn.classList.toggle('active',period===reportPeriod);
+    });
+  }
+  function reorderReportControls(){
+    const reports=document.getElementById('reports');
+    const periodTabs=document.querySelector('#reports .reportTabs');
+    const nav=document.getElementById('reportPeriodNav');
+    const views=document.getElementById('reportViewTabs');
+    const hero=document.querySelector('#reports .gm3-reportHero');
+    if(!reports||!periodTabs)return;
+    const anchor=reports.querySelector('.accountFilter')||hero;
+    reports.insertBefore(periodTabs,anchor);
+    if(nav)reports.insertBefore(nav,periodTabs.nextSibling);
+    if(views)reports.insertBefore(views,(nav||periodTabs).nextSibling);
+  }
+  function ensureReportScopeNote(){
+    const views=document.getElementById('reportViewTabs');
+    if(!views)return null;
+    let note=document.getElementById('reportScopeNote');
+    if(!note){
+      note=document.createElement('div');
+      note.id='reportScopeNote';
+      note.className='reportScopeNote';
+      views.parentNode.insertBefore(note,views.nextSibling);
+    }
+    return note;
+  }
+  function monthLabelForSelectedPeriod(){
+    const {start}=periodStartEnd();
+    return start.toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+  }
+  function renderBudgetReportForSelectedMonth(){
+    const el=document.getElementById('budgetReport');
+    if(!el)return;
+    const {start}=periodStartEnd();
+    const mStart=new Date(start.getFullYear(),start.getMonth(),1);
+    const mEnd=new Date(start.getFullYear(),start.getMonth()+1,1);
+    const spend={};
+    (data.txns||[]).filter(t=>txInPeriod(t,mStart,mEnd)).forEach(t=>{
+      if(t.type==='Expense')groupAdd(spend,t.category||'Other',Number(t.amount||0));
+      if(t.type==='Transfer'&&Number(t.fee||0))groupAdd(spend,'Transfer Fees',Number(t.fee||0));
+    });
+    const arr=data.budgets||[];
+    const monthName=monthLabelForSelectedPeriod();
+    el.innerHTML=arr.length?arr.map(b=>{
+      const used=Number(spend[b.category]||0),limit=Number(b.amount||0),pct=limit?Math.round((used/limit)*100):0,barClass=pct>=100?'danger':pct>=80?'warn':'';
+      return `<div class="budgetCard"><div class="budgetTop"><div><b>${catIcon(b.category)} ${htmlText(b.category)}</b><div class="sub">${htmlText(monthName)} monthly limit ${peso(limit)}</div></div><span class="budgetPct">${pct}%</span></div><div class="budgetBar ${barClass}"><i style="width:${Math.min(100,pct)}%"></i></div><div class="budgetMeta"><span>Used ${peso(used)}</span><span>Left ${peso(Math.max(0,limit-used))}</span></div><div class="budgetActions"><button class="tiny" onclick="openBudget('${jsString(b.id)}')">Edit</button><button class="tiny danger" onclick="deleteBudget('${jsString(b.id)}')">Delete</button></div></div>`;
+    }).join(''):`<div class="reportEmpty">No budgets yet. Budgets are monthly, so they follow the month that contains the selected period.</div>`;
+  }
+  function updateReportsScope(){
+    syncReportPeriodButtons();
+    reorderReportControls();
+    const note=ensureReportScopeNote();
+    const view=data.settings.reportView||'Overview';
+    const count=selectedReportTxns().length;
+    if(note){
+      const budgetText=view==='Budgets'?'Budgets are monthly and use '+monthLabelForSelectedPeriod()+'.':'This view uses the selected '+(reportPeriod==='Today'?'day':reportPeriod.toLowerCase())+' range.';
+      note.innerHTML=`<b>${htmlText(view)} for ${htmlText(reportPeriodTitle())}</b>${count} transaction${count===1?'':'s'} in this period. ${htmlText(budgetText)}`;
+    }
+    renderBudgetReportForSelectedMonth();
+  }
+  const oldSetReportView=window.setReportView;
+  window.setReportView=function(view){
+    if(typeof oldSetReportView==='function')oldSetReportView(view);
+    renderReports();
+  };
+  const previous=window.renderReports;
+  window.renderReports=function(){
+    if(typeof previous==='function')previous();
+    updateReportsScope();
+  };
+  window.addEventListener('load',()=>setTimeout(()=>{try{updateReportsScope();}catch(e){}},360));
+})();
+
+/* Reports tap reliability: stable delegated view-tab clicks. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #reports .reportTabs,#reports .reportViewTabs,#reports .reportPeriodNav{position:relative;z-index:5;pointer-events:auto}
+    #reports .reportViewTabs{touch-action:manipulation;isolation:isolate}
+    #reports .reportViewTabs button{min-height:48px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;cursor:pointer;user-select:none;-webkit-user-select:none;position:relative;z-index:6}
+    #reports .reportScopeNote{position:relative;z-index:1;pointer-events:none}
+  `;
+  document.head.appendChild(css);
+
+  const validViews=['Overview','Transactions','Categories','Budgets'];
+  function normalizeReportView(view){
+    return validViews.includes(view)?view:'Overview';
+  }
+  function hardenReportViewTabs(){
+    const tabs=document.getElementById('reportViewTabs');
+    if(!tabs)return;
+    tabs.querySelectorAll('button').forEach(btn=>{
+      const view=normalizeReportView(btn.dataset.reportView||btn.textContent.trim());
+      btn.dataset.reportView=view;
+      btn.type='button';
+      btn.removeAttribute('onclick');
+      btn.classList.toggle('active',(data.settings.reportView||'Overview')===view);
+    });
+  }
+  const previousSetReportView=window.setReportView;
+  window.setReportView=function(view){
+    const next=normalizeReportView(view);
+    data.settings.reportView=next;
+    try{ localStorage.setItem(KEY,JSON.stringify(data)); }catch(e){}
+    if(typeof previousSetReportView==='function'){
+      try{ previousSetReportView(next); }catch(e){}
+    }
+    hardenReportViewTabs();
+    renderReports();
+  };
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest&&e.target.closest('#reportViewTabs button');
+    if(!btn)return;
+    e.preventDefault();
+    e.stopPropagation();
+    window.setReportView(btn.dataset.reportView||btn.textContent.trim());
+  },true);
+  const previous=window.renderReports;
+  window.renderReports=function(){
+    if(typeof previous==='function')previous();
+    hardenReportViewTabs();
+  };
+  window.addEventListener('load',()=>setTimeout(()=>{try{hardenReportViewTabs();}catch(e){}},420));
+})();
+
+/* Bills clarity: make Credit Card Center useful even when setup is incomplete. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    .billSetupCard{border:1px dashed color-mix(in srgb,var(--accent) 42%,var(--line));background:var(--card);color:var(--text);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:0 10px 26px rgba(18,24,40,.05)}
+    .billSetupCard b{display:block;font-size:16px;margin-bottom:5px}
+    .billSetupCard p{margin:0;color:var(--muted);font-size:13px;font-weight:750;line-height:1.38}
+    .billSetupCard button{margin-top:12px;width:100%;border:0;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:950;padding:12px}
+    #creditCenter:empty::before{content:"Credit Card Center needs a card account. Add or finish setting up a credit card account to show statement dates and due dates.";display:block;border:1px dashed color-mix(in srgb,var(--accent) 42%,var(--line));background:var(--card);color:var(--muted);border-radius:22px;padding:16px;margin-bottom:12px;font-size:13px;font-weight:800;line-height:1.4;box-shadow:0 10px 26px rgba(18,24,40,.05)}
+    .premiumCreditSub.missing{color:var(--orange)!important}
+    body.dark .billSetupCard{background:var(--pt-dark-surface);border-color:color-mix(in srgb,var(--accent) 44%,var(--pt-dark-border));box-shadow:0 14px 34px rgba(0,0,0,.22)}
+    body.dark .billSetupCard p{color:var(--pt-dark-muted)}
+    body.dark #creditCenter:empty::before{background:var(--pt-dark-surface);border-color:color-mix(in srgb,var(--accent) 44%,var(--pt-dark-border));color:var(--pt-dark-muted);box-shadow:0 14px 34px rgba(0,0,0,.22)}
+  `;
+  document.head.appendChild(css);
+
+  function isCreditLike(a){
+    return a&&(
+      a.type==='Credit Card' ||
+      /credit|card/i.test(String(a.type||'')) ||
+      Number(a.limit||0)>0 ||
+      Number(a.outstanding||0)>0 ||
+      Number(a.statementDay||0)>0 ||
+      Number(a.dueDay||0)>0
+    );
+  }
+  window.openAddCreditCard=function(){
+    openAddAccount();
+    setTimeout(()=>{
+      try{
+        if(document.getElementById('atype')){
+          atype.value='Credit Card';
+          renderAccountFields();
+        }
+      }catch(e){}
+    },0);
+  };
+  function safeDisplayDate(d){
+    try{return displayDate(d)}catch(e){return new Date(d).toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
+  }
+  function cardSetupNeeded(card){
+    return !Number(card.statementDay||0)||!Number(card.dueDay||0)||!Number(card.limit||0);
+  }
+  window.renderCreditCenter=function(){
+    const el=document.getElementById('creditCenter');
+    if(!el)return;
+    const cards=(data.accounts||[]).filter(isCreditLike);
+    if(!cards.length){
+      el.innerHTML=`<div class="billSetupCard"><b>No credit cards set up yet</b><p>Add a credit card account with its statement day, due day, and limit. Then this center will show upcoming statement dates, due dates, utilization, and settlement actions.</p><button type="button" onclick="openAddCreditCard()">Add Credit Card</button></div>`;
+      return;
+    }
+    el.innerHTML=cards.map(card=>{
+      const statementDay=Number(card.statementDay||0);
+      const dueDay=Number(card.dueDay||0);
+      const hasSchedule=statementDay&&dueDay;
+      const st=hasSchedule?nextStatementDate(card):null;
+      const due=hasSchedule?dueFromStatement(card,st):null;
+      const open=cardOpenBills(card.id);
+      const nearest=open[0];
+      const out=Number(card.outstanding||0),limit=Number(card.limit||0),util=limit?Math.min(100,(out/limit)*100):0,avail=Math.max(0,limit-out);
+      const dd=nearest?daysUntilDate(nearest.dueDate):(due?daysUntilDate(due):null);
+      const dueText=nearest?`Due ${safeDisplayDate(nearest.dueDate)}`:(due?`Next due ${safeDisplayDate(due)}`:'Add statement and due days');
+      const progClass=util>=80?'danger':util>=50?'warn':'';
+      const missing=cardSetupNeeded(card);
+      return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft">${logo(card)}<div style="min-width:0"><div class="premiumCreditTitle">${htmlText(card.name,'Credit Card')}</div><div class="premiumCreditSub ${missing?'missing':''}">${htmlText(card.institution||'Credit Card')} · ${htmlText(dueText)}</div></div></div><span class="premiumDuePill ${dd===null?'':premiumDueClass(dd)}">${nearest?(dd<0?'Overdue':dd===0?'Due today':`${dd}d left`):(due?'No bill':'Setup needed')}</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>${peso(out)}</b><div class="premiumProgress ${progClass}" style="margin-top:12px"><i style="width:${util}%"></i></div><div class="premiumMetaRow" style="margin-top:9px"><span>${limit?util.toFixed(0)+'% used':'Limit missing'}</span><span>${limit?peso(avail)+' available':'Add limit'}</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>${limit?peso(limit):'Add'}</b></div><div><span>Statement</span><b>${st?safeDisplayDate(st):'Add'}</b></div><div><span>Due day</span><b>${dueDay||'Add'}</b></div></div></div><div class="premiumCreditActions"><button onclick="openAccountDetail('${jsString(card.id)}')">${missing?'Finish Setup':'Details'}</button>${nearest?`<button class="primary" onclick="openSettle('${jsString(nearest.id)}')">Settle</button>`:`<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>`}</div></div>`;
+    }).join('');
+  };
+  const prevRenderBills=window.renderBills;
+  window.renderBills=function(){
+    if(typeof prevRenderBills==='function')prevRenderBills();
+    renderCreditCenter();
+  };
+window.addEventListener('load',()=>setTimeout(()=>{try{renderCreditCenter();}catch(e){}},440));
+})();
+
+/* Final product cleanup: reliable Bills cards, no duplicate command center. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #premiumCommand,.premiumCommand{display:none!important}
+    .pmPriorityCard button{min-width:112px;max-width:132px;white-space:normal!important;line-height:1.12;text-align:center;padding:11px 12px;overflow:visible}
+    .pmPriorityTop{align-items:center}
+    .pmPriorityTop>div{min-width:0}
+    .ccStatementList{margin-top:12px;display:grid;gap:8px}
+    .ccStatementMini{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,var(--bg));border-radius:16px;padding:10px}
+    .ccStatementMini b,.ccStatementMini span{display:block}
+    .ccStatementMini .sub{font-size:12px}
+    body.dark .ccStatementMini{background:var(--pt-dark-surface-2);border-color:var(--pt-dark-border)}
+  `;
+  document.head.appendChild(css);
+
+  function removeCommandCenter(){
+    document.getElementById('premiumCommand')?.remove();
+  }
+  function creditLikeAccounts(){
+    return (data.accounts||[]).filter(a=>{
+      const hay=`${a.type||''} ${a.name||''} ${a.institution||''}`;
+      return a.type==='Credit Card'||/credit|card|visa|mastercard|amex|hsbc/i.test(hay)||Number(a.limit||0)>0||Number(a.outstanding||0)>0||Number(a.statementDay||0)>0||Number(a.dueDay||0)>0;
+    });
+  }
+  function billsByCard(){
+    const map={};
+    (data.bills||[]).forEach(b=>{
+      const key=b.cardId||b.cardName||'card-bill';
+      if(!map[key])map[key]=[];
+      map[key].push(b);
+    });
+    Object.values(map).forEach(arr=>arr.sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)));
+    return map;
+  }
+  function virtualCardsFromBills(accounts){
+    const existing=new Set(accounts.map(a=>a.id));
+    return Object.entries(billsByCard()).filter(([id])=>!existing.has(id)).map(([id,bills])=>{
+      const open=bills.find(b=>billStatus(b)!=='Paid')||bills[0]||{};
+      return {id,name:open.cardName||'Credit Card',institution:'Statement record',type:'Credit Card',limit:0,outstanding:bills.filter(b=>billStatus(b)!=='Paid').reduce((s,b)=>s+Number(b.remaining||0),0),_virtual:true,_bills:bills};
+    });
+  }
+  function formatMaybeDate(v){
+    if(!v)return 'Add';
+    try{return displayDate(v)}catch(e){return String(v)}
+  }
+  function statementRows(card,bills){
+    const rows=(bills||[]).slice(0,3);
+    if(!rows.length)return '';
+    return `<div class="ccStatementList">${rows.map(b=>`<div class="ccStatementMini"><div><b>${htmlText(billPeriod(b))}</b><span class="sub">Due ${formatMaybeDate(b.dueDate)}</span></div><div style="text-align:right"><b>${peso(b.remaining||0)}</b><span class="statusPill ${statusClass(billStatus(b))}">${billStatus(b)}</span></div></div>`).join('')}</div>`;
+  }
+  function detectedCreditActivity(){
+    return (data.txns||[]).filter(t=>{
+      if(t.type!=='Expense')return false;
+      const acct=(data.accounts||[]).find(a=>a.id===t.from);
+      const hay=`${t.category||''} ${t.note||''} ${acct?.type||''} ${acct?.name||''} ${acct?.institution||''}`;
+      return /(^|\s)(cc|credit|card|visa|mastercard|amex|statement)(\s|$)/i.test(hay);
+    }).slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+  }
+  function detectedCreditActivityCard(){
+    const txns=detectedCreditActivity();
+    if(!txns.length)return '';
+    const total=txns.reduce((sum,t)=>sum+Number(t.amount||0),0);
+    return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft"><div class="bank otherbank">CC</div><div style="min-width:0"><div class="premiumCreditTitle">Credit Card Activity</div><div class="premiumCreditSub missing">Detected from transactions · needs card account link</div></div></div><span class="premiumDuePill">Review</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Detected activity</span><b>${peso(total)}</b><div class="premiumMetaRow" style="margin-top:9px"><span>${txns.length} transaction${txns.length===1?'':'s'}</span><span>Create card account</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>Add</b></div><div><span>Statement</span><b>Add</b></div><div><span>Due day</span><b>Add</b></div></div></div><div class="ccStatementList">${txns.slice(0,4).map(t=>`<div class="ccStatementMini"><div><b>${htmlText(t.category||'Card expense')}</b><span class="sub">${htmlText(txnDate(t))} · ${safeAccountLabel(t.from)}</span></div><div style="text-align:right"><b>${peso(t.amount||0)}</b><span class="sub">Unlinked</span></div></div>`).join('')}</div><div class="premiumCreditActions"><button onclick="openAddCreditCard()">Create Card Account</button><button class="primary" onclick="go('reports',document.querySelectorAll('.nav button')[4])">Review Transactions</button></div></div>`;
+  }
+  function isCreditAccount(a){
+    if(!a)return false;
+    const hay=`${a.type||''} ${a.name||''} ${a.institution||''}`;
+    return a.type==='Credit Card'||/credit|card|visa|mastercard|amex|hsbc/i.test(hay)||Number(a.limit||0)>0||Number(a.outstanding||0)>0||Number(a.statementDay||0)>0||Number(a.dueDay||0)>0;
+  }
+  function repairCreditCardStatements(){
+    let changed=false;
+    (data.txns||[]).forEach(t=>{
+      if(t.type!=='Expense')return;
+      const card=(data.accounts||[]).find(a=>a.id===t.from&&isCreditAccount(a));
+      if(!card)return;
+      const existing=t.billId&&(data.bills||[]).some(b=>b.id===t.billId);
+      if(existing)return;
+      try{
+        t.billId=generateBill(card,Number(t.amount||0),t.date);
+        changed=true;
+      }catch(e){}
+    });
+    (data.accounts||[]).filter(isCreditAccount).forEach(card=>{
+      const remaining=(data.bills||[]).filter(b=>b.cardId===card.id&&billStatus(b)!=='Paid').reduce((sum,b)=>sum+Number(b.remaining||0),0);
+      const expenseTotal=(data.txns||[]).filter(t=>t.type==='Expense'&&t.from===card.id).reduce((sum,t)=>sum+Number(t.amount||0),0);
+      const paidTotal=(data.txns||[]).filter(t=>t.type==='Card Payment'&&t.to===card.id).reduce((sum,t)=>sum+Number(t.amount||0),0);
+      const inferred=Math.max(0,remaining||expenseTotal-paidTotal);
+      if(inferred&&Math.abs(Number(card.outstanding||0)-inferred)>0.009){
+        card.outstanding=inferred;
+        changed=true;
+      }
+    });
+    if(changed){
+      try{ localStorage.setItem(KEY,JSON.stringify(data)); }catch(e){}
+    }
+  }
+  window.ensureCreditCenterVisible=function(){
+    const el=document.getElementById('creditCenter');
+    if(!el||el.textContent.trim()||el.children.length)return;
+    el.innerHTML=`<div class="billSetupCard"><b>Credit Card Center needs a card account</b><p>Add or finish setting up a credit card account so statement dates, due dates, and settlement details can appear here.</p><button type="button" onclick="openAddCreditCard()">Add Credit Card</button></div>`;
+  };
+  window.renderCreditCenter=function(){
+    const el=document.getElementById('creditCenter');
+    if(!el)return;
+    repairCreditCardStatements();
+    const accountCards=creditLikeAccounts();
+    const cards=accountCards.concat(virtualCardsFromBills(accountCards));
+    if(!cards.length){
+      el.innerHTML=`<div class="billSetupCard"><b>No credit cards set up yet</b><p>Add a credit card account with its statement day, due day, and limit. Then this center will show upcoming statement dates, due dates, utilization, and settlement actions.</p><button type="button" onclick="openAddCreditCard()">Add Credit Card</button></div>`;
+      return;
+    }
+    const billMap=billsByCard();
+    el.innerHTML=cards.map(card=>{
+      const bills=card._bills||billMap[card.id]||[];
+      const nearest=bills.find(b=>billStatus(b)!=='Paid')||null;
+      const statementDay=Number(card.statementDay||0),dueDay=Number(card.dueDay||0);
+      const hasSchedule=statementDay&&dueDay&&!card._virtual;
+      const st=hasSchedule?nextStatementDate(card):null;
+      const due=hasSchedule?dueFromStatement(card,st):null;
+      const out=Number(card.outstanding||0)||bills.filter(b=>billStatus(b)!=='Paid').reduce((s,b)=>s+Number(b.remaining||0),0);
+      const limit=Number(card.limit||0),util=limit?Math.min(100,(out/limit)*100):0,avail=Math.max(0,limit-out);
+      const dd=nearest?daysUntilDate(nearest.dueDate):(due?daysUntilDate(due):null);
+      const missing=!card._virtual&&(!statementDay||!dueDay||!limit);
+      const dueText=nearest?`Due ${formatMaybeDate(nearest.dueDate)}`:(due?`Next due ${formatMaybeDate(due)}`:(card._virtual?'From statement history':'Add statement and due days'));
+      const progClass=util>=80?'danger':util>=50?'warn':'';
+      const detailAction=card._virtual?'':`openAccountDetail('${jsString(card.id)}')`;
+      return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft">${card._virtual?'<div class="bank otherbank">CC</div>':logo(card)}<div style="min-width:0"><div class="premiumCreditTitle">${htmlText(card.name,'Credit Card')}</div><div class="premiumCreditSub ${missing?'missing':''}">${htmlText(card.institution||'Credit Card')} · ${htmlText(dueText)}</div></div></div><span class="premiumDuePill ${dd===null?'':premiumDueClass(dd)}">${nearest?(dd<0?'Overdue':dd===0?'Due today':`${dd}d left`):(due?'No bill':(card._virtual?'Statement':'Setup needed'))}</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>${peso(out)}</b><div class="premiumProgress ${progClass}" style="margin-top:12px"><i style="width:${util}%"></i></div><div class="premiumMetaRow" style="margin-top:9px"><span>${limit?util.toFixed(0)+'% used':'Limit missing'}</span><span>${limit?peso(avail)+' available':'Add limit'}</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>${limit?peso(limit):'Add'}</b></div><div><span>Statement</span><b>${st?formatMaybeDate(st):(nearest?formatMaybeDate(nearest.statementDate):'Add')}</b></div><div><span>Due day</span><b>${dueDay||'Add'}</b></div></div></div>${statementRows(card,bills)}<div class="premiumCreditActions">${card._virtual?`<button onclick="openAddCreditCard()">Create Account</button>`:`<button onclick="${detailAction}">${missing?'Finish Setup':'Details'}</button>`}${nearest?`<button class="primary" onclick="openSettle('${jsString(nearest.id)}')">Settle</button>`:`<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>`}</div></div>`;
+    }).join('');
+  };
+  try{ renderCreditCenter=window.renderCreditCenter; }catch(e){}
+  const polishedCreditCenter=window.renderCreditCenter;
+  window.renderCreditCenter=function(){
+    if(typeof polishedCreditCenter==='function')polishedCreditCenter();
+    const el=document.getElementById('creditCenter');
+    if(!el)return;
+    const detected=detectedCreditActivityCard();
+    const hasRealCard=(data.accounts||[]).some(isCreditAccount)||(data.bills||[]).length;
+    const isSetupOnly=/No credit cards set up yet|Credit Card Center needs a card account/i.test(el.textContent||'');
+    if(detected&&(!hasRealCard||isSetupOnly))el.innerHTML=detected;
+  };
+  try{ renderCreditCenter=window.renderCreditCenter; }catch(e){}
+  function refreshBillStatementLists(){
+    const el=document.getElementById('billList');
+    if(!el)return;
+    let bills=(data.bills||[]).slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+    bills.forEach(b=>b.status=billStatus(b));
+    let current=bills.filter(b=>b.status!=='Paid'),history=bills.filter(b=>b.status==='Paid');
+    el.innerHTML=`<div class="statementSection"><h3>Current Statements</h3>${current.length?current.map(b=>renderBillCard(b)).join(''):'<div class="row"><span class="sub">No unpaid credit card statements.</span></div>'}</div><div class="statementSection"><h3>Statement History</h3>${history.length?history.slice().reverse().map(b=>renderBillCard(b,true)).join(''):'<div class="row"><span class="sub">Paid statements will appear here.</span></div>'}</div>`;
+  }
+  const previousBills=window.renderBills;
+  window.renderBills=function(){
+    if(typeof previousBills==='function')previousBills();
+    window.renderCreditCenter();
+    refreshBillStatementLists();
+    if(!document.getElementById('creditCenter')?.textContent.trim()){
+      window.ensureCreditCenterVisible();
+    }
+  };
+  try{ renderBills=window.renderBills; }catch(e){}
+  const previousRender=window.render;
+  window.render=function(){
+    if(typeof previousRender==='function')previousRender();
+    requestAnimationFrame(()=>{try{removeCommandCenter(); if(screen==='bills'){window.renderCreditCenter();window.ensureCreditCenterVisible();}}catch(e){}});
+  };
+  window.addEventListener('load',()=>setTimeout(()=>{try{removeCommandCenter();renderCreditCenter();window.ensureCreditCenterVisible();}catch(e){}},520));
+  setInterval(()=>{try{if(document.getElementById('bills')?.classList.contains('active'))window.ensureCreditCenterVisible();}catch(e){}},700);
+})();
+
 /* Welcome and home header polish. */
 (function(){
   const css=document.createElement('style');
@@ -1826,16 +2256,8 @@ window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV4();}catch
   function navButton(index){ return document.querySelectorAll('.nav button')[index]||null; }
   function placePriorityCard(){
     const dash=document.getElementById('dashboard');
-    const hero=dash?.querySelector('.premiumHero');
-    if(!dash||!hero)return null;
-    let card=document.getElementById('pmPriorityCard');
-    if(!card){
-      card=document.createElement('section');
-      card.id='pmPriorityCard';
-      card.className='pmPriorityCard';
-      hero.parentNode.insertBefore(card,hero.nextSibling);
-    }
-    return card;
+    document.getElementById('pmPriorityCard')?.remove();
+    return null;
   }
   function priorityModel(){
     const unpaid=(data.bills||[]).filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
@@ -2077,6 +2499,228 @@ window.addEventListener('load',()=>setTimeout(()=>{try{focusDashboardV4();}catch
     ::placeholder{color:rgba(243,239,228,.45)!important}
   `;
   document.head.appendChild(css);
+})();
+
+/* Dark mode finishing pass for Bills, Calendar, and Forecast surfaces. */
+(function(){
+  const css=document.createElement('style');
+  css.textContent=`
+    #calendar .hero,
+    #calendar .iconbtn,
+    #calendar .calendarControls,
+    #calendar .calendarEvent,
+    #calendar .emptyCenter,
+    .forecastBox,
+    .forecastItem,
+    .premiumCreditCard,
+    .premiumCreditMain,
+    .premiumCreditSide>div,
+    .ccStatementMini,
+    .premiumCreditActions button:not(.primary){
+      background:var(--pt-dark-surface)!important;
+      color:var(--pt-dark-text)!important;
+      border-color:var(--pt-dark-border)!important;
+      box-shadow:0 14px 34px rgba(0,0,0,.22)!important;
+    }
+    #calendar .hero,
+    .forecastBox,
+    .premiumCreditCard{
+      background:linear-gradient(145deg,var(--pt-dark-surface),#123329)!important;
+    }
+    #calendar .hero .label,
+    #calendar .hero .sub,
+    #calendar .heroSub,
+    #calendar .calendarGroup h3,
+    .forecastItem .sub,
+    .forecastItem .running,
+    .forecastBox .label,
+    .forecastBox .sub,
+    .premiumCreditMain span,
+    .premiumCreditSide span,
+    .premiumCreditSub,
+    .premiumMetaRow,
+    .ccStatementMini .sub{
+      color:var(--pt-dark-muted)!important;
+    }
+    #calendar .amount,
+    #calendar .hero .amount,
+    #calendar .hero b,
+    .forecastValue,
+    .forecastItem b,
+    .premiumCreditMain b,
+    .premiumCreditSide b,
+    .ccStatementMini b,
+    .premiumCreditTitle{
+      color:var(--pt-dark-text)!important;
+    }
+    .forecastItem,
+    .ccStatementMini,
+    .premiumCreditMain,
+    .premiumCreditSide>div{
+      background:rgba(255,255,255,.07)!important;
+      box-shadow:none!important;
+    }
+    .premiumCreditActions button:not(.primary),
+    .premiumCreditActions button:not(.primary):empty{
+      background:rgba(255,255,255,.07)!important;
+      color:var(--pt-dark-text)!important;
+      border:1px solid var(--pt-dark-border)!important;
+      box-shadow:none!important;
+      min-height:42px;
+    }
+    .premiumCreditActions button.primary{
+      background:var(--accent)!important;
+      color:#fff!important;
+      border-color:transparent!important;
+    }
+    .calBtn{
+      background:rgba(255,255,255,.09)!important;
+      color:var(--pt-dark-text)!important;
+      border:1px solid var(--pt-dark-border)!important;
+      box-shadow:none!important;
+    }
+    .calBtn.active{
+      background:var(--accent)!important;
+      color:#fff!important;
+      border-color:transparent!important;
+    }
+    #calendar .iconbtn{
+      background:rgba(255,255,255,.08)!important;
+      color:var(--pt-dark-text)!important;
+      border:1px solid var(--pt-dark-border)!important;
+      box-shadow:none!important;
+    }
+    body.dark #calendar .hero,
+    body.dark #calendar .iconbtn,
+    body.dark #calendar .calendarControls,
+    body.dark #calendar .calendarEvent,
+    body.dark #calendar .emptyCenter,
+    body.dark .forecastBox,
+    body.dark .forecastItem,
+    body.dark .premiumCreditCard,
+    body.dark .premiumCreditMain,
+    body.dark .premiumCreditSide>div,
+    body.dark .ccStatementMini,
+    body.dark .premiumCreditActions button:not(.primary){
+      background:var(--pt-dark-surface)!important;
+      color:var(--pt-dark-text)!important;
+      border-color:var(--pt-dark-border)!important;
+      box-shadow:0 14px 34px rgba(0,0,0,.22)!important;
+    }
+    body.dark #calendar .hero,
+    body.dark .forecastBox,
+    body.dark .premiumCreditCard{
+      background:linear-gradient(145deg,var(--pt-dark-surface),#123329)!important;
+    }
+    body.dark #calendar .hero .label,
+    body.dark #calendar .hero .sub,
+    body.dark #calendar .heroSub,
+    body.dark #calendar .calendarGroup h3,
+    body.dark .forecastItem .sub,
+    body.dark .forecastItem .running,
+    body.dark .forecastBox .label,
+    body.dark .forecastBox .sub,
+    body.dark .premiumCreditMain span,
+    body.dark .premiumCreditSide span,
+    body.dark .premiumCreditSub,
+    body.dark .premiumMetaRow,
+    body.dark .ccStatementMini .sub{
+      color:var(--pt-dark-muted)!important;
+    }
+    body.dark #calendar .amount,
+    body.dark #calendar .hero .amount,
+    body.dark #calendar .hero b,
+    body.dark .forecastValue,
+    body.dark .forecastItem b,
+    body.dark .premiumCreditMain b,
+    body.dark .premiumCreditSide b,
+    body.dark .ccStatementMini b,
+    body.dark .premiumCreditTitle{
+      color:var(--pt-dark-text)!important;
+    }
+    body.dark .forecastItem,
+    body.dark .ccStatementMini,
+    body.dark .premiumCreditMain,
+    body.dark .premiumCreditSide>div{
+      background:rgba(255,255,255,.07)!important;
+      box-shadow:none!important;
+    }
+    body.dark .premiumCreditActions button:not(.primary),
+    body.dark .premiumCreditActions button:not(.primary):empty{
+      background:rgba(255,255,255,.07)!important;
+      color:var(--pt-dark-text)!important;
+      border:1px solid var(--pt-dark-border)!important;
+      box-shadow:none!important;
+      min-height:42px;
+    }
+    body.dark .premiumCreditActions button.primary{
+      background:var(--accent)!important;
+      color:#fff!important;
+      border-color:transparent!important;
+    }
+    body.dark .calBtn{
+      background:rgba(255,255,255,.09)!important;
+      color:var(--pt-dark-text)!important;
+      border:1px solid var(--pt-dark-border)!important;
+      box-shadow:none!important;
+    }
+    body.dark .calBtn.active{
+      background:var(--accent)!important;
+      color:#fff!important;
+      border-color:transparent!important;
+    }
+    body.dark #calendar .iconbtn{
+      background:rgba(255,255,255,.08)!important;
+      color:var(--pt-dark-text)!important;
+      border:1px solid var(--pt-dark-border)!important;
+      box-shadow:none!important;
+    }
+  `;
+  document.head.appendChild(css);
+})();
+
+(function(){
+  function esc(v){return String(v??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
+  function safePeso(v){try{return peso(v)}catch(e){return '₱'+Number(v||0).toLocaleString('en-PH')}}
+  function safeStatus(b){try{return billStatus(b)}catch(e){return Number(b.remaining||0)>0?'Unpaid':'Paid'}}
+  function safeStatusClass(s){try{return statusClass(s)}catch(e){return String(s||'unpaid').toLowerCase()}}
+  function safePeriod(b){try{return billPeriod(b)}catch(e){return [b.periodStart,b.periodEnd||b.statementDate].filter(Boolean).join(' - ')||'Statement'}}
+  function safeDate(v){try{return displayDate(v)}catch(e){return String(v||'Add')}}
+  function forceBillCreditCenter(){
+    var el=document.getElementById('creditCenter');
+    if(!el||typeof data==='undefined'||!Array.isArray(data.bills)||!data.bills.length)return;
+    var groups={};
+    data.bills.forEach(function(b){
+      var key=b.cardId||b.cardName||'Credit Card';
+      (groups[key]||(groups[key]=[])).push(b);
+    });
+    var cards=Object.keys(groups).map(function(key){
+      var rows=groups[key].slice().sort(function(a,b){return new Date(a.dueDate)-new Date(b.dueDate)});
+      var open=rows.find(function(b){return safeStatus(b)!=='Paid'})||rows[0]||{};
+      var remaining=rows.filter(function(b){return safeStatus(b)!=='Paid'}).reduce(function(s,b){return s+Number(b.remaining||0)},0);
+      var dd=open.dueDate?(function(){var today=new Date();today.setHours(0,0,0,0);var d=new Date(open.dueDate);d.setHours(0,0,0,0);return Math.ceil((d-today)/86400000)})():null;
+      var pill=dd===null?'Statement':(dd<0?'Overdue':dd===0?'Due today':dd+'d left');
+      var rowsHtml=rows.slice(0,4).map(function(b){
+        var st=safeStatus(b);
+        return '<div class="ccStatementMini"><div><b>'+esc(safePeriod(b))+'</b><span class="sub">Due '+esc(b.dueDate||'')+'</span></div><div style="text-align:right"><b>'+safePeso(b.remaining||0)+'</b><span class="statusPill '+safeStatusClass(st)+'">'+esc(st)+'</span></div></div>';
+      }).join('');
+      var settle=open.id&&safeStatus(open)!=='Paid'?"<button class=\"primary\" onclick=\"openSettle('"+String(open.id).replace(/'/g,"\\'")+"')\">Settle</button>":"<button class=\"primary\" onclick=\"closeSheets();openTxn()\">Add Purchase</button>";
+      return '<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft"><div class="bank otherbank">CC</div><div style="min-width:0"><div class="premiumCreditTitle">'+esc(open.cardName||key||'Credit Card')+'</div><div class="premiumCreditSub">Statement record - '+esc(open.dueDate?'Due '+safeDate(open.dueDate):'Statement history')+'</div></div></div><span class="premiumDuePill">'+esc(pill)+'</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>'+safePeso(remaining)+'</b><div class="premiumMetaRow" style="margin-top:9px"><span>'+rows.length+' statement'+(rows.length===1?'':'s')+'</span><span>From Bills</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>Add</b></div><div><span>Statement</span><b>'+esc(safeDate(open.statementDate||open.periodEnd||open.dueDate))+'</b></div><div><span>Due date</span><b>'+esc(open.dueDate||'Add')+'</b></div></div></div><div class="ccStatementList">'+rowsHtml+'</div><div class="premiumCreditActions"><button onclick="openAddCreditCard()">Create Account</button>'+settle+'</div></div>';
+    }).join('');
+    if(cards)el.innerHTML=cards;
+  }
+  window.forceBillCreditCenter=forceBillCreditCenter;
+  var oldRenderBills=window.renderBills;
+  window.renderBills=function(){if(typeof oldRenderBills==='function')oldRenderBills();forceBillCreditCenter();};
+  try{renderBills=window.renderBills}catch(e){}
+  var oldRender=window.render;
+  window.render=function(){if(typeof oldRender==='function')oldRender();setTimeout(forceBillCreditCenter,0);};
+  try{render=window.render}catch(e){}
+  var oldGo=window.go;
+  window.go=function(id,btn){if(typeof oldGo==='function')oldGo(id,btn);if(id==='bills')setTimeout(forceBillCreditCenter,0);};
+  try{go=window.go}catch(e){}
+  window.addEventListener('load',function(){setTimeout(forceBillCreditCenter,350);setTimeout(forceBillCreditCenter,900)});
+  setInterval(function(){try{if(document.getElementById('bills')?.classList.contains('active'))forceBillCreditCenter()}catch(e){}},800);
 })();
 
 (function(){try{var p=new URLSearchParams(location.search);var action=p.get("action");if(!action)return;window.addEventListener("load",function(){setTimeout(function(){try{if(action==="add"&&typeof openTxn==="function")openTxn();else if(action==="accounts"&&typeof go==="function")go("accounts",document.querySelectorAll(".nav button")[1]);else if(action==="reports"&&typeof go==="function")go("reports",document.querySelectorAll(".nav button")[4]);}catch(e){}},280)});}catch(e){}})();
