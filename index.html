@@ -1398,6 +1398,96 @@ window.renderReports=function(){
   renderTransactionsList();
 };
 
+/* Reports period navigation: previous/next day, week, month, year. */
+let reportOffset=0;
+function periodStartEnd(){
+  let now=new Date(),start,end;
+  if(reportPeriod==='Today'){
+    start=new Date(now.getFullYear(),now.getMonth(),now.getDate()+reportOffset);
+    end=new Date(start.getFullYear(),start.getMonth(),start.getDate()+1);
+  }else if(reportPeriod==='Week'){
+    let mondayOffset=(now.getDay()+6)%7;
+    start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-mondayOffset+(reportOffset*7));
+    end=new Date(start.getFullYear(),start.getMonth(),start.getDate()+7);
+  }else if(reportPeriod==='Year'){
+    start=new Date(now.getFullYear()+reportOffset,0,1);
+    end=new Date(start.getFullYear()+1,0,1);
+  }else{
+    start=new Date(now.getFullYear(),now.getMonth()+reportOffset,1);
+    end=new Date(start.getFullYear(),start.getMonth()+1,1);
+  }
+  return {start,end};
+}
+function reportPeriodTitle(){
+  const {start,end}=periodStartEnd();
+  if(reportPeriod==='Today')return start.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+  if(reportPeriod==='Week'){
+    const last=new Date(end);last.setDate(last.getDate()-1);
+    return `${start.toLocaleDateString('en-PH',{month:'short',day:'numeric'})} - ${last.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}`;
+  }
+  if(reportPeriod==='Year')return String(start.getFullYear());
+  return start.toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+}
+function ensureReportPeriodNav(){
+  const reports=document.getElementById('reports'),tabs=document.querySelector('#reports .reportTabs');
+  if(!reports||!tabs||document.getElementById('reportPeriodNav'))return;
+  const nav=document.createElement('div');
+  nav.id='reportPeriodNav';
+  nav.className='reportPeriodNav';
+  nav.innerHTML=`<button type="button" onclick="shiftReportPeriod(-1)" aria-label="Previous period">‹</button><b id="reportPeriodLabel"></b><button type="button" onclick="shiftReportPeriod(1)" aria-label="Next period">›</button>`;
+  tabs.parentNode.insertBefore(nav,tabs);
+}
+function updateReportPeriodLabel(){
+  const label=document.getElementById('reportPeriodLabel');
+  if(label)label.textContent=reportPeriodTitle();
+  const range=document.getElementById('gm3ReportRange');
+  if(range)range.textContent=reportPeriodTitle();
+}
+function shiftReportPeriod(delta){reportOffset+=delta;renderReports();}
+function setReportPeriod(p,el){
+  reportPeriod=p;
+  reportOffset=0;
+  document.querySelectorAll('.reportTabs button').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderReports();
+}
+function renderAccountFilter(){
+  const sel=document.getElementById('reportAccount');
+  if(sel){sel.value='All';sel.style.display='none';}
+}
+const reportNavCss=document.createElement('style');
+reportNavCss.textContent=`
+  #reportAccount{display:none!important}
+  .reportPeriodNav{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:8px;margin:8px 0 10px}
+  .reportPeriodNav button{height:40px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);font-size:22px;font-weight:950}
+  .reportPeriodNav b{display:block;text-align:center;color:var(--text);font-size:15px;font-weight:950}
+`;
+document.head.appendChild(reportNavCss);
+const reportNavPreviousRender=window.renderReports;
+window.renderReports=function(){
+  ensureReportPeriodNav();
+  if(typeof reportNavPreviousRender==='function')reportNavPreviousRender();
+  updateReportPeriodLabel();
+  renderTransactionsList();
+};
+
+/* Reports hierarchy: show transactions before analytics. */
+function moveTransactionsBeforeAnalytics(){
+  const report=document.getElementById('transactionReport');
+  if(!report)return;
+  const txnPanel=report.closest('.reportPanel');
+  const analytics=[...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()==='Analytics & Insights');
+  if(txnPanel&&analytics&&txnPanel.nextSibling!==analytics){
+    analytics.parentNode.insertBefore(txnPanel,analytics);
+  }
+}
+const reportHierarchyPreviousRender=window.renderReports;
+window.renderReports=function(){
+  if(typeof reportHierarchyPreviousRender==='function')reportHierarchyPreviousRender();
+  moveTransactionsBeforeAnalytics();
+};
+window.addEventListener('load',()=>setTimeout(()=>{try{moveTransactionsBeforeAnalytics();}catch(e){}},200));
+
 /* Dashboard focus pass: daily essentials first, deeper planning tucked away. */
 (function(){
   const dashFocusCss=document.createElement('style');
