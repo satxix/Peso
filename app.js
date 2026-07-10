@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'2.2',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'2.3',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -1509,35 +1509,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
   window.renderReports=function(){if(typeof oldReports==='function')oldReports();try{renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}};
   window.addEventListener('load',function(){setTimeout(function(){try{renderExpenseBreakdown()}catch(e){}},420)});
 })();
-(function compactTransactionRows(){
-  var css=document.createElement('style');
-  css.textContent=`
-    .txnRow{border-radius:16px!important;padding:10px 12px 10px 13px!important;gap:10px!important;align-items:flex-start!important;min-height:0!important;box-shadow:0 6px 18px rgba(18,24,40,.045)!important}
-    .txnRow:before{width:4px!important}
-    .txnMain{min-width:0!important}
-    .txnTitleLine{margin:0 0 4px!important;gap:5px!important}
-    .txnTypePill{padding:3px 7px!important;font-size:9px!important;line-height:1!important;border-radius:999px!important;letter-spacing:.01em!important}
-    .txnMeta{font-size:11px!important;line-height:1.28!important;margin-top:0!important;color:var(--muted)!important;font-weight:800!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
-    .txnNoteLine{font-size:11px!important;line-height:1.22!important;margin-top:3px!important;max-width:100%!important}
-    .txnAmount{font-size:14px!important;line-height:1.2!important;margin-top:2px!important;max-width:118px!important;text-align:right!important;overflow:hidden!important;text-overflow:ellipsis!important}
-    .txnActions{gap:5px!important;margin-top:7px!important;justify-content:flex-start!important}
-    .txnActions .tiny{height:30px!important;padding:0 9px!important;border-radius:999px!important;font-size:11px!important;line-height:1!important}
-    #transactionReport{display:grid!important;gap:8px!important}
-    #transactionReport .txnRow{padding-top:9px!important;padding-bottom:9px!important}
-    .premiumRecent .txnRow,.detailList .txnRow{padding:10px 12px!important}
-    .premiumRecent .txnTypePill,.detailList .txnTypePill{font-size:9px!important}
-    body.dark .txn-expense .txnAmount,.txn-expense .txnAmount{color:#ff7f6e!important;-webkit-text-fill-color:#ff7f6e!important}
-    body.dark .txn-expense .txnTypePill,.txn-expense .txnTypePill{color:#ff8d7d!important;-webkit-text-fill-color:#ff8d7d!important;background:rgba(255,127,110,.13)!important;border-color:rgba(255,127,110,.42)!important}
-    body.dark .txn-expense:before,.txn-expense:before{background:#ff7f6e!important}
-    body.dark .tiny.danger,.txnActions .tiny.danger{color:#ffd0c8!important;-webkit-text-fill-color:#ffd0c8!important;border-color:rgba(255,127,110,.42)!important;background:rgba(255,127,110,.10)!important}
-    .pulseGrid .red,#todayExpense{color:#ff7f6e!important;-webkit-text-fill-color:#ff7f6e!important}
-    .pulseGrid .green,#todayIncome{color:#1fcf86!important;-webkit-text-fill-color:#1fcf86!important}
-    .pulseGrid b{font-weight:950!important;text-shadow:none!important}
-    @media(max-width:370px){.txnRow{padding:9px 10px 9px 12px!important}.txnAmount{font-size:13px!important;max-width:98px!important}.txnActions .tiny{font-size:10px!important;padding:0 8px!important}}
-  `;
-  document.head.appendChild(css);
-})();
-
 (function mobileBackNavigation(){
   var internalNav=false;
   var initialized=false;
