@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'2.7',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'2.8',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -780,19 +780,6 @@ function moveTransactionsBeforeAnalytics(){
 /* Reports cleanup: focused views, fewer duplicate analytics panels. */
 (function(){
   let reportView=data?.settings?.reportView||'Overview';
-  const css=document.createElement('style');
-  css.textContent=`
-    #reports .reportHidden{display:none!important}
-    #reports .gm3-story{display:none!important}
-    .reportViewTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px;padding:4px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
-    .reportViewTabs button{border:0;border-radius:14px;background:transparent;color:var(--muted);font-weight:950;padding:10px 6px;font-size:12px;min-width:0}
-    .reportViewTabs button.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;box-shadow:0 8px 18px color-mix(in srgb,var(--accent) 26%,transparent)}
-    body.dark .reportViewTabs{background:var(--pt-dark-surface);border-color:var(--pt-dark-border)}
-    body.dark .reportViewTabs button{color:var(--pt-dark-muted)}
-    body.dark .reportViewTabs button.active{color:#fff}
-  `;
-  document.head.appendChild(css);
-
   function panelByTitle(title){
     return [...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()===title);
   }
@@ -863,14 +850,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
 
 /* Reports clarity pass: period controls drive every report view. */
 (function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    .reportScopeNote{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:18px;padding:11px 12px;margin:0 0 12px;font-size:12px;font-weight:800;line-height:1.35}
-    .reportScopeNote b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}
-    body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--pt-dark-border);color:var(--pt-dark-muted)}
-  `;
-  document.head.appendChild(css);
-
   function selectedReportTxns(){
     const {start,end}=periodStartEnd();
     return (data.txns||[]).filter(t=>txInPeriod(t,start,end));
@@ -956,15 +935,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
 
 /* Reports tap reliability: stable delegated view-tab clicks. */
 (function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    #reports .reportTabs,#reports .reportViewTabs,#reports .reportPeriodNav{position:relative;z-index:5;pointer-events:auto}
-    #reports .reportViewTabs{touch-action:manipulation;isolation:isolate}
-    #reports .reportViewTabs button{min-height:48px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;cursor:pointer;user-select:none;-webkit-user-select:none;position:relative;z-index:6}
-    #reports .reportScopeNote{position:relative;z-index:1;pointer-events:none}
-  `;
-  document.head.appendChild(css);
-
   const validViews=['Overview','Transactions','Categories','Budgets'];
   function normalizeReportView(view){
     return validViews.includes(view)?view:'Overview';

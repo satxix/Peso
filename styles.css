@@ -569,6 +569,24 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 .reportPeriodNav b{display:block;text-align:center;color:var(--text);font-size:15px;font-weight:950}
 
 
+/* Report View Controls */
+#reports .reportHidden{display:none!important}
+#reports .gm3-story{display:none!important}
+.reportViewTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px;padding:4px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.reportViewTabs button{border:0;border-radius:14px;background:transparent;color:var(--muted);font-weight:950;padding:10px 6px;font-size:12px;min-width:0}
+.reportViewTabs button.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:white;box-shadow:0 8px 18px color-mix(in srgb,var(--accent) 26%,transparent)}
+body.dark .reportViewTabs{background:var(--pt-dark-surface);border-color:var(--pt-dark-border)}
+body.dark .reportViewTabs button{color:var(--pt-dark-muted)}
+body.dark .reportViewTabs button.active{color:#fff}
+.reportScopeNote{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:18px;padding:11px 12px;margin:0 0 12px;font-size:12px;font-weight:800;line-height:1.35}
+.reportScopeNote b{display:block;color:var(--text);font-size:13px;margin-bottom:2px}
+body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--pt-dark-border);color:var(--pt-dark-muted)}
+#reports .reportTabs,#reports .reportViewTabs,#reports .reportPeriodNav{position:relative;z-index:5;pointer-events:auto}
+#reports .reportViewTabs{touch-action:manipulation;isolation:isolate}
+#reports .reportViewTabs button{min-height:48px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;cursor:pointer;user-select:none;-webkit-user-select:none;position:relative;z-index:6}
+#reports .reportScopeNote{position:relative;z-index:1;pointer-events:none}
+
+
 /* Reports Density Pass */
 #reports .reportTabs{margin:6px 0 8px!important;padding:4px!important;gap:5px!important;border-radius:16px!important}
     #reports .reportTabs button{min-height:36px!important;padding:7px 4px!important;border-radius:12px!important;font-size:12px!important}
