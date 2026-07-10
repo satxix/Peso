@@ -594,3 +594,11 @@ body.dark .tiny.danger,.txnActions .tiny.danger{color:#ffd0c8!important;-webkit-
 .txn-transfer .txnTypePill{background:rgba(56,189,248,.14)!important;color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important;border-color:rgba(56,189,248,.36)!important}
 .txn-transfer .txnAmount{color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important}
 #todayTransfer,.pulseGrid #todayTransfer{color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important}
+
+
+/* Income Color Separation */
+:root{--income:#34d399}
+.txn-income:before{background:var(--income)!important}
+.txn-income .txnTypePill{background:rgba(52,211,153,.14)!important;color:var(--income)!important;-webkit-text-fill-color:var(--income)!important;border-color:rgba(52,211,153,.36)!important}
+.txn-income .txnAmount{color:var(--income)!important;-webkit-text-fill-color:var(--income)!important}
+#todayIncome,.pulseGrid #todayIncome{color:var(--income)!important;-webkit-text-fill-color:var(--income)!important}
