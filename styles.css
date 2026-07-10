@@ -586,3 +586,11 @@ body.dark .tiny.danger,.txnActions .tiny.danger{color:#ffd0c8!important;-webkit-
       #reports .expenseStat b{font-size:12px!important}
       #reports #transactionReport .txnAmount{max-width:92px!important}
     }
+
+
+/* Transfer Color Separation */
+:root{--transfer:#38bdf8}
+.txn-transfer:before{background:var(--transfer)!important}
+.txn-transfer .txnTypePill{background:rgba(56,189,248,.14)!important;color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important;border-color:rgba(56,189,248,.36)!important}
+.txn-transfer .txnAmount{color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important}
+#todayTransfer,.pulseGrid #todayTransfer{color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important}
