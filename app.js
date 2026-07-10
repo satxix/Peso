@@ -140,7 +140,7 @@ function openAccountDetail(id){let a=data.accounts.find(x=>x.id===id);if(!a)retu
 function renderCalendarPreview(){let el=document.getElementById('calendarPreview');if(!el)return;let today=new Date();today.setHours(0,0,0,0);let max=new Date(today);max.setDate(max.getDate()+30);let events=[];data.bills.filter(b=>b.status!=='Paid').forEach(b=>{let d=new Date(b.dueDate);if(d>=today&&d<=max)events.push({date:d,title:b.cardName,sub:'Credit card due',amount:Number(b.remaining||0),kind:'bill'})});data.recurring.filter(r=>r.enabled!==false).forEach(r=>{let d=nextRecurringDate(r);if(d>=today&&d<=max)events.push({date:d,title:r.name,sub:'Recurring '+r.type,amount:Number(r.amount||0),kind:r.type==='Income'?'income':'bill'})});data.txns.filter(t=>t.type==='Income').forEach(t=>{let d=new Date(t.date);d.setHours(0,0,0,0);if(d>=today&&d<=max)events.push({date:d,title:t.category||'Income',sub:'Income recorded',amount:Number(t.amount||0),kind:'income'})});events.sort((a,b)=>a.date-b.date);el.innerHTML=events.length?events.slice(0,5).map(e=>`<div class="timelineItem"><div class="dateBadge">${e.date.getDate()}<span>${e.date.toLocaleDateString('en-PH',{month:'short'})}</span></div><div style="flex:1"><b>${e.title}</b><div class="sub">${e.sub}</div></div><b class="${e.kind==='income'?'green':'red'}">${e.kind==='income'?'+':''}${peso(e.amount)}</b></div>`).join(''):'<div class="emptyState">No bills or income events in the next 30 days.</div>'}
 
 let calendarRange=30,searchFilter='All';
-function eventIcon(kind){return kind==='income'?'??':kind==='bill'?'??':kind==='recurring'?'??':kind==='expense'?'-':'•'}
+function eventIcon(kind){return kind==='income'?'IN':kind==='bill'?'CC':kind==='recurring'?'RE':kind==='expense'?'EX':'EV'}
 function collectCalendarEvents(days=30){let today=new Date();today.setHours(0,0,0,0);let max=new Date(today);max.setDate(max.getDate()+days);let events=[];data.bills.filter(b=>b.status!=='Paid').forEach(b=>{let d=new Date(b.dueDate);d.setHours(0,0,0,0);if(d>=today&&d<=max)events.push({date:d,title:b.cardName,sub:'Credit card due',amount:Number(b.remaining||b.amount||0),kind:'bill',impact:-Number(b.remaining||b.amount||0)})});(data.recurring||[]).filter(r=>r.enabled!==false).forEach(r=>{let d=nextRecurringDate(r);d.setHours(0,0,0,0);if(d>=today&&d<=max){let amt=Number(r.amount||0),isInc=r.type==='Income';events.push({date:d,title:r.name,sub:'Recurring '+r.type,amount:amt,kind:isInc?'income':'recurring',impact:isInc?amt:-amt})}});data.txns.filter(t=>t.type==='Income').forEach(t=>{let d=new Date(t.date);d.setHours(0,0,0,0);if(d>=today&&d<=max){events.push({date:d,title:t.category||'Income',sub:'Income already recorded',amount:Number(t.amount||0),kind:'income',impact:Number(t.amount||0)})}});return events.sort((a,b)=>a.date-b.date)}
 function setCalendarRange(days,el){calendarRange=days;document.querySelectorAll('.calBtn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderFullCalendar()}
 function renderFullCalendar(){let wrap=document.getElementById('calendarFull');if(!wrap)return;let totals=accountTotals();let cash=totals.liquid;let events=collectCalendarEvents(calendarRange);let projected=cash+events.reduce((s,e)=>s+Number(e.impact||0),0);let projEl=document.getElementById('calendarProjected');if(projEl)projEl.textContent=peso(projected);let sub=document.getElementById('calendarProjectedSub');if(sub)sub.textContent=`After ${events.length} upcoming event${events.length===1?'':'s'} in the next ${calendarRange} days.`;if(!events.length){wrap.innerHTML='<div class="emptyCenter">No upcoming bills, salary, or recurring items in this range.</div>';return}let groups={};events.forEach(e=>{let key=e.date.toLocaleDateString('en-PH',{month:'long',year:'numeric'});(groups[key] ||= []).push(e)});wrap.innerHTML=Object.entries(groups).map(([month,items])=>`<div class="calendarGroup"><h3>${month}</h3>${items.map(e=>`<div class="calendarEvent"><div class="eventMain"><div class="eventIcon">${eventIcon(e.kind)}</div><div class="eventText"><b>${e.date.toLocaleDateString('en-PH',{month:'short',day:'numeric'})} · ${e.title}</b><div class="sub">${e.sub}</div></div></div><div class="eventAmt ${e.impact>=0?'green':'red'}">${e.impact>=0?'+':'-'}${peso(Math.abs(e.amount))}</div></div>`).join('')}</div>`).join('')}
@@ -826,6 +826,7 @@ function moveTransactionsBeforeAnalytics(){
     applyReportsCleanup();
   };
   function applyReportsCleanup(){
+    reportView=data.settings.reportView||reportView||'Overview';
     ensureReportViewTabs();
     setHidden(document.querySelector('#reports .gm3-story'),true);
     setHidden(document.getElementById('analyticsHealthHero'),true);
@@ -1010,6 +1011,17 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     hardenReportViewTabs();
   };
   window.addEventListener('load',()=>setTimeout(()=>{try{hardenReportViewTabs();}catch(e){}},420));
+})();
+
+/* Reports cleanup: keep the active tab setter direct after legacy wrappers load. */
+(function(){
+  const validViews=['Overview','Transactions','Categories','Budgets'];
+  window.setReportView=function(view){
+    const next=validViews.includes(view)?view:'Overview';
+    data.settings.reportView=next;
+    try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}
+    renderReports();
+  };
 })();
 
 /* Bills support: shared setup styling and card-account shortcut. */
@@ -1416,7 +1428,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
   window.go=function(id,btn){if(typeof oldGo==='function')oldGo(id,btn);if(id==='bills')setTimeout(forceBillCreditCenter,0);};
   try{go=window.go}catch(e){}
   window.addEventListener('load',function(){setTimeout(forceBillCreditCenter,350);setTimeout(forceBillCreditCenter,900)});
-  setInterval(function(){try{if(document.getElementById('bills')?.classList.contains('active'))forceBillCreditCenter()}catch(e){}},800);
 })();
 
 /* Category manager: Settings editor and typed transaction categories. */
@@ -1430,24 +1441,7 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
 })();
 
 (function(){try{var p=new URLSearchParams(location.search);var action=p.get("action");if(!action)return;window.addEventListener("load",function(){setTimeout(function(){try{if(action==="add"&&typeof openTxn==="function")openTxn();else if(action==="accounts"&&typeof go==="function")go("accounts",document.querySelectorAll(".nav button")[1]);else if(action==="reports"&&typeof go==="function")go("reports",document.querySelectorAll(".nav button")[4]);}catch(e){}},280)});}catch(e){}})();
-(function reportVisualPolish(){
-  var css=document.createElement('style');
-  css.textContent=`
-    #reports .reportCards{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
-    #reports .reportCards .reportCard{padding:11px 10px!important;border-radius:20px!important;min-width:0!important;overflow:hidden!important}
-    #reports .reportCards .reportCard .small{font-size:11px!important;line-height:1.2!important}
-    #reports .reportCards .reportCard .value{display:block!important;max-width:100%!important;font-size:17px!important;line-height:1.08!important;letter-spacing:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-family:Tenorite,Calibri,"Segoe UI",Arial,sans-serif!important}
-    #reports .reportCards .reportCard .value.blue{display:block!important}
-    #reports .txnTitleLine{margin-bottom:3px!important}
-    #reports .txnTitleLine b{display:none!important}
-    #insightReport .insightItem{color:var(--pt-dark-text,#f8f4ea)!important;background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:16px!important;font-weight:850!important;line-height:1.35!important}
-    #insightReport .insightItem.good{color:#d7f7e7!important;background:rgba(35,183,133,.12)!important;border-color:rgba(35,183,133,.24)!important}
-    #insightReport .insightItem.warn{color:#ffe2a8!important;background:rgba(216,184,103,.13)!important;border-color:rgba(216,184,103,.25)!important}
-    #insightReport .insightItem.danger{color:#ffd0c7!important;background:rgba(255,122,98,.12)!important;border-color:rgba(255,122,98,.25)!important}
-    @media(max-width:370px){#reports .reportCards{gap:6px!important}#reports .reportCards .reportCard{padding:10px 8px!important}#reports .reportCards .reportCard .value{font-size:15px!important}}
-  `;
-  document.head.appendChild(css);
-})();
+
 (function expenseBreakdownAtAGlance(){
   var css=document.createElement('style');
   css.textContent=`
@@ -1543,52 +1537,7 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
   `;
   document.head.appendChild(css);
 })();
-(function reportDensityPass(){
-  var css=document.createElement('style');
-  css.textContent=`
-    #reports .reportTabs{margin:6px 0 8px!important;padding:4px!important;gap:5px!important;border-radius:16px!important}
-    #reports .reportTabs button{min-height:36px!important;padding:7px 4px!important;border-radius:12px!important;font-size:12px!important}
-    #reports .reportPeriodNav{grid-template-columns:36px 1fr 36px!important;gap:6px!important;margin:6px 0 8px!important}
-    #reports .reportPeriodNav button{height:36px!important;border-radius:13px!important}
-    #reports #reportViewTabs{gap:6px!important;margin:6px 0 8px!important}
-    #reports #reportViewTabs button{min-height:38px!important;padding:7px 4px!important;border-radius:13px!important;font-size:12px!important}
-    #reports .reportScopeNote{padding:8px 10px!important;margin:0 0 9px!important;border-radius:14px!important;font-size:11px!important;line-height:1.25!important}
-    #reports .reportScopeNote b{font-size:12px!important;margin-bottom:1px!important}
-    #reports .gm3-reportHero{padding:11px!important;border-radius:20px!important;margin:0 0 10px!important;box-shadow:0 8px 22px rgba(0,0,0,.18)!important}
-    #reports .gm3-reportHero .section,#reports .gm3-reportHero .panelHead{margin:0 0 8px!important}
-    #reports .gm3-scorecard{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important}
-    #reports .gm3-score{padding:8px 7px!important;border-radius:14px!important;min-width:0!important}
-    #reports .gm3-score span{font-size:8px!important;line-height:1.05!important;letter-spacing:.02em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-    #reports .gm3-score b{font-size:13px!important;line-height:1.12!important;margin-top:4px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-    #reports .gm3-pillrow{gap:5px!important;margin-top:8px!important}
-    #reports .gm3-pill{padding:5px 7px!important;font-size:10px!important}
-    #reports .reportPanel{padding:12px!important;border-radius:20px!important;margin-bottom:10px!important}
-    #reports .reportPanel h3{font-size:16px!important;margin-bottom:9px!important}
-    #reports .txnSearch{padding:10px 12px!important;border-radius:14px!important;margin-bottom:8px!important;font-size:13px!important}
-    #reports #transactionReport{gap:6px!important}
-    #reports #transactionReport .txnRow{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;padding:8px 10px 8px 12px!important;border-radius:14px!important}
-    #reports #transactionReport .txnTypePill{font-size:8px!important;padding:3px 6px!important}
-    #reports #transactionReport .txnMeta{font-size:10.5px!important;-webkit-line-clamp:1!important;line-height:1.2!important}
-    #reports #transactionReport .txnAmount{font-size:13px!important;max-width:112px!important}
-    #reports .expenseBreakdownSummary{gap:6px!important;margin:0 0 8px!important}
-    #reports .expenseStat{padding:8px 7px!important;border-radius:14px!important}
-    #reports .expenseStat span{font-size:8px!important;letter-spacing:.02em!important}
-    #reports .expenseStat b{font-size:13px!important;margin-top:4px!important}
-    #reports .expenseBreakdownRows{gap:7px!important}
-    #reports .expenseBarRow{padding:9px!important;border-radius:14px!important;gap:6px!important}
-    #reports .expenseBarTop{gap:8px!important}
-    #reports .expenseBarTop b,#reports .expenseBarTop strong{font-size:12.5px!important}
-    #reports .expenseTrack{height:7px!important}
-    #reports .expenseBarMeta{font-size:10px!important;line-height:1.15!important}
-    @media(max-width:370px){
-      #reports .gm3-scorecard{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-      #reports .expenseBreakdownSummary{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-      #reports .expenseStat b{font-size:12px!important}
-      #reports #transactionReport .txnAmount{max-width:92px!important}
-    }
-  `;
-  document.head.appendChild(css);
-})();
+
 (function finishBootWithoutOldHomeFlash(){
   try{if(typeof render==='function')render();}catch(e){console.warn('Final boot render skipped',e)}
   var release=function(){try{document.body.classList.remove('booting')}catch(e){}};
