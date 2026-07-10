@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'2.0',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'2.2',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -1536,6 +1536,69 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     @media(max-width:370px){.txnRow{padding:9px 10px 9px 12px!important}.txnAmount{font-size:13px!important;max-width:98px!important}.txnActions .tiny{font-size:10px!important;padding:0 8px!important}}
   `;
   document.head.appendChild(css);
+})();
+
+(function mobileBackNavigation(){
+  var internalNav=false;
+  var initialized=false;
+  var screenIds=['dashboard','bills','accounts','reports','settings','calendar','search'];
+  function activeScreen(){
+    var active=document.querySelector('.screen.active');
+    return active&&active.id?active.id:(screen||'dashboard');
+  }
+  function navButtonFor(id){
+    var map={dashboard:0,bills:1,accounts:3,reports:4};
+    if(map[id]===undefined)return null;
+    return document.querySelectorAll('.nav button')[map[id]]||null;
+  }
+  function hasOpenSheet(){
+    return !!document.querySelector('.sheet.show');
+  }
+  function stateFor(id){
+    return {pesoTrack:true,screen:screenIds.includes(id)?id:'dashboard'};
+  }
+  function urlFor(id){
+    return '#'+(screenIds.includes(id)?id:'dashboard');
+  }
+  function pushScreen(id,replace){
+    if(!window.history||!history.pushState)return;
+    var next=screenIds.includes(id)?id:'dashboard';
+    try{
+      if(replace)history.replaceState(stateFor(next),'',urlFor(next));
+      else history.pushState(stateFor(next),'',urlFor(next));
+    }catch(e){}
+  }
+  var previousGo=window.go;
+  window.go=function(id,btn,skipHistory){
+    if(typeof previousGo==='function')previousGo(id,btn);
+    if(!skipHistory&&!internalNav)pushScreen(id,false);
+  };
+  try{go=window.go}catch(e){}
+
+  window.addEventListener('popstate',function(e){
+    if(hasOpenSheet()){
+      closeTopModal();
+      pushScreen(activeScreen(),false);
+      return;
+    }
+    var target=e.state&&e.state.pesoTrack?e.state.screen:'dashboard';
+    if(!screenIds.includes(target))target='dashboard';
+    if(target===activeScreen()){
+      pushScreen(target,false);
+      if(typeof toastMsg==='function')toastMsg('You are already on Home');
+      return;
+    }
+    internalNav=true;
+    try{window.go(target,navButtonFor(target),true)}finally{internalNav=false}
+  });
+
+  window.addEventListener('load',function(){
+    if(initialized)return;
+    initialized=true;
+    var start=activeScreen();
+    pushScreen(start,true);
+    pushScreen(start,false);
+  });
 })();
 
 (function finishBootWithoutOldHomeFlash(){
