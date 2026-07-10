@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'2.5',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'2.6',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -1443,25 +1443,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
 (function(){try{var p=new URLSearchParams(location.search);var action=p.get("action");if(!action)return;window.addEventListener("load",function(){setTimeout(function(){try{if(action==="add"&&typeof openTxn==="function")openTxn();else if(action==="accounts"&&typeof go==="function")go("accounts",document.querySelectorAll(".nav button")[1]);else if(action==="reports"&&typeof go==="function")go("reports",document.querySelectorAll(".nav button")[4]);}catch(e){}},280)});}catch(e){}})();
 
 (function expenseBreakdownAtAGlance(){
-  var css=document.createElement('style');
-  css.textContent=`
-    .expenseBreakdownSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:2px 0 12px}
-    .expenseStat{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:11px 10px;min-width:0}
-    .expenseStat span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .expenseStat b{display:block;color:var(--text);font-size:16px;font-weight:950;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
-    .expenseBreakdownRows{display:grid;gap:10px}
-    .expenseBarRow{border:1px solid var(--line);background:color-mix(in srgb,var(--card) 92%,var(--bg));border-radius:18px;padding:12px;display:grid;gap:8px}
-    .expenseBarTop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
-    .expenseBarTop b{font-size:14px;color:var(--text);font-weight:950;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .expenseBarTop strong{font-size:14px;color:var(--text);font-weight:950;font-variant-numeric:tabular-nums;white-space:nowrap}
-    .expenseBarMeta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;font-weight:850}
-    .expenseTrack{height:10px;border-radius:999px;background:rgba(148,163,184,.22);overflow:hidden}
-    .expenseTrack i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2,#8b5cf6));min-width:5%}
-    .expenseEmpty{border:1px dashed var(--line);border-radius:18px;padding:14px;color:var(--muted);font-weight:850;line-height:1.35;background:color-mix(in srgb,var(--card) 94%,var(--bg))}
-    body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{background:var(--pt-dark-surface,#111827);border-color:var(--pt-dark-border,var(--line))}
-    @media(max-width:370px){.expenseBreakdownSummary{grid-template-columns:1fr}.expenseStat b{font-size:15px}}
-  `;
-  document.head.appendChild(css);
   function esc(v){return typeof htmlText==='function'?htmlText(v):String(v==null?'':v).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]})}
   function selectedExpenseData(){
     var range=typeof periodStartEnd==='function'?periodStartEnd():(function(){var now=new Date();return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)}})();
