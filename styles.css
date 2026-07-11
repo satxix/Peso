@@ -655,3 +655,26 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
   radial-gradient(circle at top left,rgba(216,184,103,.18),transparent 18rem),
   radial-gradient(circle at bottom right,rgba(34,163,126,.14),transparent 22rem),
   linear-gradient(180deg,#3a4d43 0%,#31433a 48%,#2a3a32 100%)!important}
+
+
+/* Home Header Polish */
+.premiumTop{align-items:center;margin:4px 0 12px}
+.premiumKicker{font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted)}
+
+
+/* Home Brand Mark */
+#dashboard .premiumTop>div:first-child{position:relative;min-height:46px;padding-left:54px;display:flex;flex-direction:column;justify-content:center}
+#dashboard .premiumTop>div:first-child:before{content:"₱";position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#123b30,#0d2b23);border:1px solid rgba(216,184,103,.35);color:#f4d985;font-family:var(--font-display);font-size:28px;font-weight:650;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+#dashboard .homeVersionPill{margin-top:5px}
+
+
+/* Bills Setup Support */
+.billSetupCard{border:1px dashed color-mix(in srgb,var(--accent) 42%,var(--line));background:var(--card);color:var(--text);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:0 10px 26px rgba(18,24,40,.05)}
+.billSetupCard b{display:block;font-size:16px;margin-bottom:5px}
+.billSetupCard p{margin:0;color:var(--muted);font-size:13px;font-weight:750;line-height:1.38}
+.billSetupCard button{margin-top:12px;width:100%;border:0;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:950;padding:12px}
+.premiumCreditSub.missing{color:var(--orange)!important}
+.ccStatementList{margin-top:12px;display:grid;gap:8px}
+.ccStatementMini{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,var(--bg));border-radius:16px;padding:10px}
+.ccStatementMini b,.ccStatementMini span{display:block}
+.ccStatementMini .sub{font-size:12px}

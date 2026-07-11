@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.5',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.8',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -989,34 +989,11 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
 
 /* Bills support: shared setup styling and card-account shortcut. */
 (function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    .billSetupCard{border:1px dashed color-mix(in srgb,var(--accent) 42%,var(--line));background:var(--card);color:var(--text);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:0 10px 26px rgba(18,24,40,.05)}
-    .billSetupCard b{display:block;font-size:16px;margin-bottom:5px}
-    .billSetupCard p{margin:0;color:var(--muted);font-size:13px;font-weight:750;line-height:1.38}
-    .billSetupCard button{margin-top:12px;width:100%;border:0;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:950;padding:12px}
-    .premiumCreditSub.missing{color:var(--orange)!important}
-    .ccStatementList{margin-top:12px;display:grid;gap:8px}
-    .ccStatementMini{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,var(--bg));border-radius:16px;padding:10px}
-    .ccStatementMini b,.ccStatementMini span{display:block}
-    .ccStatementMini .sub{font-size:12px}
-  `;
-  document.head.appendChild(css);
   window.openAddCreditCard=function(){
     openAddAccount();
     setTimeout(()=>{try{if(document.getElementById('atype')){atype.value='Credit Card';renderAccountFields();}}catch(e){}},0);
   };
 })();
-/* Welcome and home header polish. */
-(function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    .premiumTop{align-items:center;margin:4px 0 12px}
-    .premiumKicker{font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted)}
-  `;
-  document.head.appendChild(css);
-})();
-
 /* PM Home pass: daily control room instead of mini report. */
 (function(){
   const css=document.createElement('style');
