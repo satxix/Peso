@@ -678,3 +678,59 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 .ccStatementMini{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 88%,var(--bg));border-radius:16px;padding:10px}
 .ccStatementMini b,.ccStatementMini span{display:block}
 .ccStatementMini .sub{font-size:12px}
+
+
+/* Accounts Density Pass */
+#accounts .gm4Group{margin-bottom:14px}
+#accounts .gm4GroupHead{margin-bottom:8px}
+#accounts .gm4GroupHead h3{font-size:14px}
+#accounts .gm4GroupHead span{font-size:11px}
+#accounts .gm4GroupGrid{gap:9px}
+#accounts .premiumAccountCard{min-height:132px!important;border-radius:20px!important;padding:12px!important;gap:7px!important;box-shadow:0 10px 24px rgba(0,0,0,.10)!important}
+#accounts .premiumAccountCard:before{width:82px!important;height:82px!important;right:-32px!important;top:-34px!important}
+#accounts .premiumAccountTop{margin-bottom:2px}
+#accounts .premiumAccountTop .bank,#accounts .premiumAccountCard .bank{width:34px;height:34px;border-radius:13px;font-size:11px;margin-bottom:0}
+#accounts .premiumBadge{font-size:10px;padding:5px 7px}
+#accounts .premiumAcctName{font-size:14px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#accounts .premiumAcctInst{font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#accounts .premiumValue{font-size:20px;line-height:1.05;margin-top:2px}
+#accounts .premiumMetaRow{font-size:10px;margin-top:3px}
+#accounts .premiumProgress{height:6px;margin-top:5px!important}
+#accounts .premiumAddCard{min-height:112px!important;border-radius:20px!important;padding:12px!important}
+#accounts .premiumAddIcon{width:36px;height:36px;border-radius:14px;font-size:18px}
+#dashboard .premiumTop>div:first-child:before{content:"P"!important}
+@media(max-width:370px){#accounts .gm4GroupGrid{grid-template-columns:1fr 1fr!important;gap:8px}#accounts .premiumValue{font-size:18px}#accounts .premiumAcctName{font-size:13px}}
+
+
+/* Dark Surface Finishing */
+#calendar .hero,#calendar .iconbtn,#calendar .calendarControls,#calendar .calendarEvent,#calendar .emptyCenter,
+.forecastBox,.forecastItem,.premiumCreditCard,.premiumCreditMain,.premiumCreditSide>div,.ccStatementMini,.statementMini,
+.premiumCreditActions button:not(.primary){background:var(--pt-dark-surface)!important;color:var(--pt-dark-text)!important;border-color:var(--pt-dark-border)!important;box-shadow:0 14px 34px rgba(0,0,0,.22)!important}
+#calendar .hero,.forecastBox,.premiumCreditCard{background:linear-gradient(145deg,var(--pt-dark-surface),#123329)!important}
+.forecastItem,.ccStatementMini,.statementMini,.premiumCreditMain,.premiumCreditSide>div,.premiumCreditActions button:not(.primary){background:rgba(255,255,255,.07)!important;box-shadow:none!important}
+#calendar .hero .label,#calendar .hero .sub,#calendar .heroSub,#calendar .calendarGroup h3,
+.forecastItem .sub,.forecastItem .running,.forecastBox .label,.forecastBox .sub,
+.premiumCreditMain span,.premiumCreditSide span,.premiumCreditSub,.premiumMetaRow,.ccStatementMini .sub,.statementMini .sub{color:var(--pt-dark-muted)!important}
+#calendar .amount,#calendar .hero .amount,#calendar .hero b,.forecastValue,.forecastItem b,
+.premiumCreditMain b,.premiumCreditSide b,.ccStatementMini b,.statementMini b,.premiumCreditTitle{color:var(--pt-dark-text)!important}
+.premiumCreditActions button:not(.primary){border:1px solid var(--pt-dark-border)!important;min-height:42px}
+.premiumCreditActions button.primary,.calBtn.active{background:var(--accent)!important;color:#fff!important;border-color:transparent!important}
+.calBtn,#calendar .iconbtn{background:rgba(255,255,255,.09)!important;color:var(--pt-dark-text)!important;border:1px solid var(--pt-dark-border)!important;box-shadow:none!important}
+.premiumCreditBody{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+.premiumCreditMain{min-height:auto!important;padding:14px!important}
+.premiumCreditSide{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important}
+.premiumCreditSide>div{padding:12px!important;min-height:0!important}
+.statementList{display:grid!important;gap:8px!important}
+.compactStatement{grid-template-columns:minmax(0,1fr) auto!important;padding:12px 14px!important;border-radius:18px!important;min-height:auto!important}
+.compactStatement .statementPeriod{font-size:16px!important;line-height:1.15!important}
+.compactStatement .statementAmt{text-align:right!important;display:grid!important;justify-items:end!important;gap:4px!important}
+.categoryManager{display:grid!important;gap:12px!important}
+.categoryAddRow{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important;align-items:center!important}
+.categoryChipGrid{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+.improvedCategory{display:inline-flex!important;align-items:center!important;gap:7px!important;padding:9px 10px!important;border-radius:999px!important}
+.improvedCategory .categoryIcon,.option .dot{color:var(--accent)!important;background:rgba(108,99,255,.14)!important;border:1px solid rgba(108,99,255,.28)!important}
+.catSvg{width:18px;height:18px;display:block;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.catLetters{font-family:Manrope,Arial,sans-serif!important;font-size:10px!important;font-weight:950!important;letter-spacing:.02em!important}
+.improvedCategory .categoryIcon{width:28px!important;height:28px!important;border-radius:999px!important;display:grid!important;place-items:center!important;flex:0 0 28px!important}
+.improvedCategory button{border:0;background:rgba(255,255,255,.12)!important;color:inherit!important;border-radius:999px;width:22px;height:22px;font-weight:900}
+.categoryHint{color:var(--pt-dark-muted)!important;font-size:12px;font-weight:800}
