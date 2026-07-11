@@ -734,3 +734,81 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 .improvedCategory .categoryIcon{width:28px!important;height:28px!important;border-radius:999px!important;display:grid!important;place-items:center!important;flex:0 0 28px!important}
 .improvedCategory button{border:0;background:rgba(255,255,255,.12)!important;color:inherit!important;border-radius:999px;width:22px;height:22px;font-weight:900}
 .categoryHint{color:var(--pt-dark-muted)!important;font-size:12px;font-weight:800}
+
+
+/* Final Dark Contrast Sweep */
+:root{
+  --pt-dark-surface:#173a30;
+  --pt-dark-surface-2:rgba(255,255,255,.07);
+  --pt-dark-border:rgba(255,255,255,.12);
+  --pt-dark-text:#f3efe4;
+  --pt-dark-muted:rgba(243,239,228,.66);
+}
+body,
+body.dark{
+  --card:var(--pt-dark-surface);
+  --card-inset:var(--pt-dark-surface-2);
+  --text:var(--pt-dark-text);
+  --muted:var(--pt-dark-muted);
+  --line:var(--pt-dark-border);
+  color:var(--text);
+}
+.reportPanel,.settingsCard,.settingRow,.backupBtn,.field,.search,.txnSearch,.searchInputBig,.accountFilter,
+.reportCard,.analyticsTile,.coachCard,.option,.emptyState,.empty,.row,.timelineItem,.calendarEvent,.resultCard,
+.acctRow,.acctAddRow,.gm4-empty,.categoryPill,
+.payMode,.paymentModes,.paySummary,.recNote,.budgetCard,.billCard,.recurringCard,.ccCard,.premiumCreditCard,
+.premiumPulse,.forecastBox,.premiumAddCard,.cashCategoryCard,.monthBox,.trendCard{
+  background:var(--card)!important;
+  color:var(--text)!important;
+  border-color:var(--line)!important;
+}
+.field,.search,.txnSearch,.searchInputBig,.accountFilter,select,input,textarea{
+  background:var(--card-inset)!important;
+  color:var(--text)!important;
+  border-color:var(--line)!important;
+}
+.seg,.reportTabs,.searchTabs,.calendarControls,.chips,.feeBox,.statBox,.metric,.dashMetric,.billMeta div,
+.analyticsTrack,.reportBar,.budgetBar,.bar,.catTrack,.trendBar,.gm3-score,.acctUtil,.sheetActions button,
+.tiny,.recActions button,.budgetActions button,.panelHead .tiny,.reportPanel .tiny{
+  background:var(--card-inset)!important;
+  border-color:var(--line)!important;
+}
+.sheetActions button{
+  color:var(--text)!important;
+  border:1px solid var(--line)!important;
+}
+.sheetActions button.primary{
+  background:var(--accent)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+}
+.seg button,.reportTabs button,.searchTabs button,.calBtn,.chip,.tiny,.ghost,.dangerBtn,
+.recActions button,.budgetActions button,.panelHead .tiny,.reportPanel .tiny{
+  color:var(--text)!important;
+  border-color:var(--line)!important;
+}
+.seg button.active,.reportTabs button.active,.searchTabs button.active,.calBtn.active,.chip.active,.payMode.active{
+  background:var(--accent)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+}
+.sub,.small,.mutedNote,.acctInst,.acctHint,.acctGroupHead span,
+.settingsCard p,.settingRow .sub,.txnMeta,.miniChartLabel,.heroSub{
+  color:var(--muted)!important;
+}
+.name,.title,.premiumAcctName,.acctName,.acctAmount,.reportLine b,.settingsCard h3,
+.settingRow label,.gm4-empty b,.forecastValue,.amount,.value,.mValue{
+  color:var(--text)!important;
+}
+.statusPill,.insightItem.warn,.insightItem.good,.insightItem.danger,.insightTone.warn,.insightTone.good,.insightTone.danger{
+  color:#102018!important;
+}
+.dangerBtn,.tiny.danger{
+  background:rgba(239,68,68,.12)!important;
+  color:#fecaca!important;
+  border-color:rgba(248,113,113,.32)!important;
+}
+.backupBtn.primary,.save,.fab{
+  color:#fff!important;
+}
+::placeholder{color:rgba(243,239,228,.45)!important}

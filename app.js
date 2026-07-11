@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.10',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.11',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -1161,89 +1161,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     renderAccountRows();
   };
   window.renderAccounts=renderAccountRows;
-})();
-
-/* Final dark contrast sweep: catch older hardcoded light surfaces. */
-(function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    :root{
-      --pt-dark-surface:#173a30;
-      --pt-dark-surface-2:rgba(255,255,255,.07);
-      --pt-dark-border:rgba(255,255,255,.12);
-      --pt-dark-text:#f3efe4;
-      --pt-dark-muted:rgba(243,239,228,.66);
-    }
-    body,
-    body.dark{
-      --card:var(--pt-dark-surface);
-      --card-inset:var(--pt-dark-surface-2);
-      --text:var(--pt-dark-text);
-      --muted:var(--pt-dark-muted);
-      --line:var(--pt-dark-border);
-      color:var(--text);
-    }
-    .reportPanel,.settingsCard,.settingRow,.backupBtn,.field,.search,.txnSearch,.searchInputBig,.accountFilter,
-    .reportCard,.analyticsTile,.coachCard,.option,.emptyState,.empty,.row,.timelineItem,.calendarEvent,.resultCard,
-    .acctRow,.acctAddRow,.gm4-empty,.categoryPill,
-    .payMode,.paymentModes,.paySummary,.recNote,.budgetCard,.billCard,.recurringCard,.ccCard,.premiumCreditCard,
-    .premiumPulse,.forecastBox,.premiumAddCard,.cashCategoryCard,.monthBox,.trendCard{
-      background:var(--card)!important;
-      color:var(--text)!important;
-      border-color:var(--line)!important;
-    }
-    .field,.search,.txnSearch,.searchInputBig,.accountFilter,select,input,textarea{
-      background:var(--card-inset)!important;
-      color:var(--text)!important;
-      border-color:var(--line)!important;
-    }
-    .seg,.reportTabs,.searchTabs,.calendarControls,.chips,.feeBox,.statBox,.metric,.dashMetric,.billMeta div,
-    .analyticsTrack,.reportBar,.budgetBar,.bar,.catTrack,.trendBar,.gm3-score,.acctUtil,.sheetActions button,
-    .tiny,.recActions button,.budgetActions button,.panelHead .tiny,.reportPanel .tiny{
-      background:var(--card-inset)!important;
-      border-color:var(--line)!important;
-    }
-    .sheetActions button{
-      color:var(--text)!important;
-      border:1px solid var(--line)!important;
-    }
-    .sheetActions button.primary{
-      background:var(--accent)!important;
-      color:#fff!important;
-      border-color:transparent!important;
-    }
-    .seg button,.reportTabs button,.searchTabs button,.calBtn,.chip,.tiny,.ghost,.dangerBtn,
-    .recActions button,.budgetActions button,.panelHead .tiny,.reportPanel .tiny{
-      color:var(--text)!important;
-      border-color:var(--line)!important;
-    }
-    .seg button.active,.reportTabs button.active,.searchTabs button.active,.calBtn.active,.chip.active,.payMode.active{
-      background:var(--accent)!important;
-      color:#fff!important;
-      border-color:transparent!important;
-    }
-    .sub,.small,.mutedNote,.acctInst,.acctHint,.acctGroupHead span,
-    .settingsCard p,.settingRow .sub,.txnMeta,.miniChartLabel,.heroSub{
-      color:var(--muted)!important;
-    }
-    .name,.title,.premiumAcctName,.acctName,.acctAmount,.reportLine b,.settingsCard h3,
-    .settingRow label,.gm4-empty b,.forecastValue,.amount,.value,.mValue{
-      color:var(--text)!important;
-    }
-    .statusPill,.insightItem.warn,.insightItem.good,.insightItem.danger,.insightTone.warn,.insightTone.good,.insightTone.danger{
-      color:#102018!important;
-    }
-    .dangerBtn,.tiny.danger{
-      background:rgba(239,68,68,.12)!important;
-      color:#fecaca!important;
-      border-color:rgba(248,113,113,.32)!important;
-    }
-    .backupBtn.primary,.save,.fab{
-      color:#fff!important;
-    }
-    ::placeholder{color:rgba(243,239,228,.45)!important}
-  `;
-  document.head.appendChild(css);
 })();
 
 (function(){
