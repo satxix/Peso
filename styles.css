@@ -647,3 +647,11 @@ body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--
 #txnSheet .pad button:active{background:rgba(216,184,103,.18)!important}
 #txnSheet .pad button.backspace{background:rgba(216,184,103,.14)!important;color:#f7d98a!important;border-color:rgba(216,184,103,.30)!important}
 #txnSheet .pad button[aria-label="Decimal point"]{color:var(--pt-dark-muted,rgba(243,239,228,.66))!important}
+
+
+/* Soft App Background */
+:root{--app-bg-soft:#31433a}
+body,body.dark{--bg:var(--app-bg-soft)!important;background:
+  radial-gradient(circle at top left,rgba(216,184,103,.18),transparent 18rem),
+  radial-gradient(circle at bottom right,rgba(34,163,126,.14),transparent 22rem),
+  linear-gradient(180deg,#3a4d43 0%,#31433a 48%,#2a3a32 100%)!important}
