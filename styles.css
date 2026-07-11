@@ -812,3 +812,10 @@ body.dark{
   color:#fff!important;
 }
 ::placeholder{color:rgba(243,239,228,.45)!important}
+
+
+/* PWA Gesture Guard */
+html,
+body{
+  overscroll-behavior-y:contain;
+}
