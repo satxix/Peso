@@ -376,7 +376,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.11',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.12',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -766,14 +766,14 @@ window.renderReports=function(){
   renderTransactionsList();
 };
 
-/* Reports hierarchy: show transactions before analytics. */
-function moveTransactionsBeforeAnalytics(){
+/* Reports hierarchy: keep transactions as the final report section. */
+function moveTransactionsToReportEnd(){
   const report=document.getElementById('transactionReport');
   if(!report)return;
   const txnPanel=report.closest('.reportPanel');
-  const analytics=[...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()==='Analytics & Insights');
-  if(txnPanel&&analytics&&txnPanel.nextSibling!==analytics){
-    analytics.parentNode.insertBefore(txnPanel,analytics);
+  const reports=document.getElementById('reports');
+  if(txnPanel&&reports&&txnPanel.parentNode===reports&&reports.lastElementChild!==txnPanel){
+    reports.appendChild(txnPanel);
   }
 }
 
@@ -839,6 +839,7 @@ function moveTransactionsBeforeAnalytics(){
       setHidden(panels.budgets,false);
       setHidden(panels.insights,false);
     }
+    moveTransactionsToReportEnd();
   }
   const previous=window.renderReports;
   window.renderReports=function(){
@@ -910,7 +911,7 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
   function updateReportsScope(){
     syncReportPeriodButtons();
     reorderReportControls();
-    try{moveTransactionsBeforeAnalytics();}catch(e){}
+    try{moveTransactionsToReportEnd();}catch(e){}
     const note=ensureReportScopeNote();
     const view=data.settings.reportView||'Overview';
     const count=selectedReportTxns().length;
