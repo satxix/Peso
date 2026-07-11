@@ -176,18 +176,7 @@ body.dark .gmTypeBadge{background:#1f2937}body.dark .gmProgress{background:#1f29
 
 
 
-/* Gold Master Phase 2: transaction + reports premium polish */
-#txnSheet{background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card) 92%,var(--bg)));}
-#txnSheet .seg{background:color-mix(in srgb,var(--accent) 7%,#eef1f7);border:1px solid color-mix(in srgb,var(--accent) 10%,var(--line));}
-#txnSheet .seg button.active{background:var(--card);color:var(--accent);box-shadow:0 10px 24px rgba(18,24,40,.08);}
-#txnSheet .pick{margin-top:16px;}
-#txnSheet .txnPickBtn{border-radius:22px!important;border:1px solid color-mix(in srgb,var(--accent) 10%,var(--line));background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card) 86%,var(--bg)))!important;box-shadow:0 8px 18px rgba(18,24,40,.04);}
-#txnSheet .txnPickBtn:active{transform:scale(.985);}
-#txnSheet #txnNote{border-style:dashed;background:color-mix(in srgb,var(--card) 90%,var(--bg));font-size:14px;}
-#txnSheet .display{font-size:36px;min-height:74px;display:grid;place-items:center;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 6%,var(--card)),var(--card));}
-#txnSheet .pad button{height:50px;font-size:21px;border:1px solid rgba(232,235,242,.88);box-shadow:0 6px 16px rgba(18,24,40,.035);}
-#txnSheet .pad button:active{background:color-mix(in srgb,var(--accent) 12%,#f5f6fa);}
-#txnSheet .save{height:54px;border-radius:22px;font-size:15px;letter-spacing:.01em;}
+/* Gold Master Phase 2: reports premium polish */
 .reportCards{gap:12px}.reportCard{position:relative;overflow:hidden;border-radius:24px;padding:15px;background:linear-gradient(145deg,#fff,#fbfcff);}
 .reportCard:after{content:"";position:absolute;right:-28px;top:-28px;width:76px;height:76px;border-radius:50%;background:color-mix(in srgb,var(--accent) 7%,transparent);}
 .reportCard .value{position:relative;z-index:1;letter-spacing:-.035em;font-size:20px;}
@@ -204,8 +193,8 @@ body.dark .gmTypeBadge{background:#1f2937}body.dark .gmProgress{background:#1f29
 .gm2-empty-tip{background:linear-gradient(145deg,#fff,#fbfcff);border:1px dashed var(--line);border-radius:24px;padding:20px;text-align:center;color:var(--muted);font-weight:800;line-height:1.45;}
 .gm2-empty-tip b{display:block;color:var(--text);font-size:16px;margin-bottom:4px;}
 body.dark .reportCard{background:linear-gradient(145deg,#111827,#0f172a)}
-body.dark #txnSheet .txnPickBtn,body.dark #txnSheet .display,body.dark .gm2-empty-tip{background:#111827;border-color:var(--line);}
-@media(max-width:370px){#txnSheet .display{font-size:30px;min-height:62px}.reportCards{grid-template-columns:1fr}.reportPanel{padding:15px 14px}}
+body.dark .gm2-empty-tip{background:#111827;border-color:var(--line);}
+@media(max-width:370px){.reportCards{grid-template-columns:1fr}.reportPanel{padding:15px 14px}}
 
 
 /* Gold Master Phase 3: Premium Reports & Financial Story */
@@ -451,30 +440,6 @@ body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--acce
 .feeBox input{background:rgba(255,255,255,.08)!important;color:var(--text)!important}
 
 
-/* ============================================================
-   Compact Add Transaction sheet — fit everything (including
-   Transfer's fee box) on one screen without scrolling.
-   ============================================================ */
-#txnSheet{padding:14px 14px calc(14px + env(safe-area-inset-bottom))!important}
-#txnSheet .top{padding-bottom:6px!important}
-#txnSheet .seg{margin:6px 0!important}
-#txnSheet .seg button{padding:9px 6px!important}
-#txnSheet .pick{margin:8px 0!important}
-#txnSheet .txnPickBtn{min-height:56px!important;padding:9px 10px!important}
-#txnSheet .txnPickText em{display:none!important}
-#txnSheet .txnPickText b{font-size:10px!important;margin-bottom:1px!important}
-#txnSheet .txnPickText span{font-size:13px!important}
-#txnSheet .catCircle{width:32px!important;height:32px!important;flex:0 0 32px!important;font-size:15px!important;border-radius:11px!important}
-#txnSheet .feeBox{padding:9px 10px!important;grid-template-columns:1fr 92px!important;gap:8px!important;margin:0!important}
-#txnSheet .feeBox b{font-size:10px!important}
-#txnSheet .feeBox span{font-size:10px!important;line-height:1.25!important}
-#txnSheet .feeBox input{padding:7px 8px!important;font-size:14px!important}
-#txnSheet #txnNote{padding:10px!important;margin:8px 0!important}
-#txnSheet .display{font-size:24px!important;min-height:44px!important;padding:8px 4px!important;margin:8px 0!important}
-#txnSheet .pad{gap:6px!important}
-#txnSheet .pad button{height:38px!important;font-size:17px!important}
-#txnSheet .save{height:44px!important;margin-top:8px!important;font-size:14px!important}
-
 .settingsGearBtn,.settingsHomeBtn{display:grid!important;place-items:center!important}
 .settingsGearBtn svg,.settingsHomeBtn svg{width:22px;height:22px;display:block}.settingsHomeBtn{color:var(--accent)!important;background:rgba(255,255,255,.92)!important}.settingsHomeBtn svg{color:currentColor!important}body.dark .settingsHomeBtn{background:rgba(255,255,255,.92)!important;color:var(--accent)!important}body.dark #dashboard .forecastBox,
 body.dark #dashboard .forecastItem,
@@ -644,3 +609,41 @@ body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--
 .txn-income .txnTypePill{background:rgba(52,211,153,.14)!important;color:var(--income)!important;-webkit-text-fill-color:var(--income)!important;border-color:rgba(52,211,153,.36)!important}
 .txn-income .txnAmount{color:var(--income)!important;-webkit-text-fill-color:var(--income)!important}
 #todayIncome,.pulseGrid #todayIncome{color:var(--income)!important;-webkit-text-fill-color:var(--income)!important}
+
+
+/* Add Transaction Sheet Layout Cleanup */
+#txnSheet{display:flex!important;flex-direction:column!important;gap:8px!important;padding:14px 14px calc(14px + env(safe-area-inset-bottom))!important}
+#txnSheet .top{margin:0!important;padding:0 0 4px!important}
+#txnSheet .seg{margin:0!important}
+#txnSheet .pick{margin:2px 0 0!important;gap:8px!important}
+#txnSheet .txnPickBtn{min-height:54px!important;padding:9px 10px!important}
+#txnSheet .txnPickText em{display:none!important}
+#txnSheet .txnPickText b{font-size:10px!important;margin-bottom:1px!important}
+#txnSheet .txnPickText span{font-size:13px!important}
+#txnSheet .catCircle{width:32px!important;height:32px!important;flex:0 0 32px!important;font-size:15px!important;border-radius:11px!important}
+#txnSheet .feeBox{padding:9px 10px!important;grid-template-columns:1fr 92px!important;gap:8px!important;margin:0!important}
+#txnSheet .feeBox b{font-size:10px!important}
+#txnSheet .feeBox span{font-size:10px!important;line-height:1.25!important}
+#txnSheet .feeBox input{padding:7px 8px!important;font-size:14px!important}
+#txnSheet .txnUtilityRow{margin:0!important}
+#txnSheet #txnNote{padding:10px!important;margin:0!important}
+#txnSheet .display{font-size:28px!important;min-height:52px!important;margin:0!important;padding:8px 10px!important;border-radius:18px!important}
+#txnSheet .quickAmounts{margin:0!important;gap:6px!important}
+#txnSheet .quickAmounts button{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#txnSheet .quickAmounts button.clear{border-style:dashed}
+#txnSheet .pad{gap:7px!important;margin:0!important}
+#txnSheet .pad button{height:44px!important;border-radius:16px!important;font-size:18px!important;font-variant-numeric:tabular-nums;box-shadow:none!important}
+#txnSheet .pad button.backspace{font-size:13px!important;text-transform:uppercase;letter-spacing:.04em;background:color-mix(in srgb,var(--accent) 12%,var(--card-inset))!important}
+#txnSheet .save{height:46px!important;margin-top:0!important}
+@media(max-height:740px){#txnSheet{gap:6px!important}#txnSheet .display{min-height:46px!important;font-size:25px!important}#txnSheet .pad button{height:39px!important}#txnSheet .quickAmounts button{height:31px!important}}
+
+
+/* Add Transaction Color Tuning */
+#txnSheet .seg button.active{background:linear-gradient(135deg,var(--accent),#d8b867)!important;color:#fff!important;border-color:transparent!important}
+#txnSheet .display{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035))!important;border:1px solid rgba(216,184,103,.22)!important;color:var(--pt-dark-text,#f3efe4)!important}
+#txnSheet .quickAmounts button{background:rgba(216,184,103,.10)!important;border-color:rgba(216,184,103,.22)!important;color:#f3efe4!important}
+#txnSheet .quickAmounts button.clear{background:rgba(255,255,255,.045)!important;color:var(--pt-dark-muted,rgba(243,239,228,.66))!important;border-color:rgba(255,255,255,.14)!important}
+#txnSheet .pad button{background:rgba(255,255,255,.065)!important;color:#f3efe4!important;border:1px solid rgba(255,255,255,.12)!important}
+#txnSheet .pad button:active{background:rgba(216,184,103,.18)!important}
+#txnSheet .pad button.backspace{background:rgba(216,184,103,.14)!important;color:#f7d98a!important;border-color:rgba(216,184,103,.30)!important}
+#txnSheet .pad button[aria-label="Decimal point"]{color:var(--pt-dark-muted,rgba(243,239,228,.66))!important}
