@@ -829,3 +829,7 @@ body{
 .upcomingKind.dueSoon{color:#ffd89a;background:rgba(245,158,11,.13)}
 .upcomingKind.overdue{color:#fecaca;background:rgba(239,68,68,.14)}
 .upcomingKind.income{color:#8cf5c9;background:rgba(16,185,129,.13)}
+.upcomingDateBadge{width:48px;min-width:48px;height:52px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid var(--pt-dark-border);color:var(--pt-dark-text);font-weight:950;line-height:1}
+.upcomingDateBadge b{display:block;font-size:20px;letter-spacing:-.03em}
+.upcomingDateBadge span{display:block;margin-top:3px;font-size:10px;color:var(--pt-dark-muted);text-transform:uppercase;letter-spacing:.06em}
+#dashboard .premiumTimelineItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
