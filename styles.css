@@ -241,11 +241,11 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .nav .fab svg{width:23px;height:23px}
 
 /* ---- Hero card: treated like a physical premium card, dark in both themes ---- */
-.premiumHero,body.dark .premiumHero{background:linear-gradient(160deg,#123b30 0%,#0e2f27 48%,#0a221c 100%);border-color:rgba(255,255,255,.08);box-shadow:0 26px 60px rgba(10,26,20,.35)}
+.premiumHero,body.dark .premiumHero{background:linear-gradient(160deg,#1c4d62 0%,#173f52 48%,#102d3c 100%);border-color:rgba(255,255,255,.08);box-shadow:0 26px 60px rgba(12,32,44,.36)}
 .premiumHero .premiumHeroGlow{background:radial-gradient(circle,rgba(215,172,82,.28),rgba(215,172,82,0) 70%)}
 .premiumHero .label,.premiumHero .heroSub{color:rgba(243,239,228,.62)}
 .premiumHero .premiumHeroTitle,.premiumHero .premiumCash{color:#f7f4ea}
-.premiumHero .healthRing:after{background:#0e2f27;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.premiumHero .healthRing:after{background:#173f52;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 .premiumHero .healthRing b{color:#f7f4ea}
 .premiumHero .dashPill{background:rgba(215,172,82,.16);color:#e9cf8f;box-shadow:none}
 .premiumHero .dashMetric{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09)}
@@ -287,12 +287,12 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 
 /* ============================================================
    Unified card system — every card/section/sheet now shares the
-   same rich dark-emerald surface (the tone from the dashboard
+   same rich deep-blue surface (the tone from the dashboard
    hero), floating on the light page background, with text tokens
    redefined locally so all nested content stays readable.
    ============================================================ */
-:root{--card:#123a2f;--card-inset:rgba(255,255,255,.07)}
-body.dark{--card:#173a30;--card-inset:rgba(255,255,255,.07)}
+:root{--card:#173f52;--card-inset:rgba(255,255,255,.07)}
+body.dark{--card:#173f52;--card-inset:rgba(255,255,255,.07)}
 
 .card,.row,.sheet,.reportPanel,.reportCard,.settingsCard,.forecastBox,.budgetCard,
 .billCard,.ccCard,.recurringCard,.dashHero,.detailHero,.miniAcct,.analyticsTile,
@@ -303,7 +303,7 @@ body.dark{--card:#173a30;--card-inset:rgba(255,255,255,.07)}
   background:var(--card);
   --text:#f3efe4;--muted:rgba(243,239,228,.62);--line:rgba(255,255,255,.12);
   color:var(--text);border-color:var(--line);
-  box-shadow:0 18px 40px rgba(10,26,20,.16)
+  box-shadow:0 18px 40px rgba(12,32,44,.18)
 }
 body.dark .card,body.dark .row,body.dark .sheet,body.dark .reportPanel,body.dark .reportCard,
 body.dark .settingsCard,body.dark .forecastBox,body.dark .budgetCard,body.dark .billCard,
@@ -335,7 +335,7 @@ body.dark .healthFact,body.dark .gm3-score{
   background:var(--card-inset)!important;color:var(--text)!important;border-color:rgba(255,255,255,.14)!important
 }
 .field::placeholder{color:rgba(243,239,228,.45)}
-select.field option{background:#123a2f;color:#f3efe4}
+select.field option{background:#173f52;color:#f3efe4}
 .chip.active,.seg button.active,.searchTabs button.active,.calBtn.active{
   background:var(--accent)!important;color:#fff!important;border-color:transparent!important
 }
@@ -371,9 +371,9 @@ body.dark .timelineItem,body.dark .softEmpty,body.dark .premiumTimelineItem,body
    now uses the dark palette out of the box.
    ============================================================ */
 :root{
-  --bg:#0b0f0d;--text:#f3efe4;--muted:#9aa39a;--line:#212a24;
+  --bg:#2f5368;--text:#f3efe4;--muted:#aab7b8;--line:#254f63;
   --shadow:0 20px 50px rgba(0,0,0,.5);
-  --card:#173a30;--card-inset:rgba(255,255,255,.07);
+  --card:#173f52;--card-inset:rgba(255,255,255,.07);
   --accent:#22a37e;--accent-2:#d7ac52;
 }
 body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--accent-2) 8%,transparent),transparent 22rem),var(--bg)}
@@ -418,8 +418,8 @@ body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--acce
 .insightItem.good,.insightTone.good{color:#0d5c3f!important}
 .insightItem.warn,.insightTone.warn{color:#9a5b12!important}
 .insightItem.danger,.insightTone.danger{color:#a4291f!important}
-.gm3-pill{color:#123a2f}
-.gm3-story{background:linear-gradient(150deg,#173a30,#0e2a22)!important}
+.gm3-pill{color:#173f52}
+.gm3-story{background:linear-gradient(150deg,#173f52,#102d3c)!important}
 .reportBar{background:rgba(255,255,255,.1)!important}
 
 
@@ -664,7 +664,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 
 /* Home Brand Mark */
 #dashboard .premiumTop>div:first-child{position:relative;min-height:46px;padding-left:54px;display:flex;flex-direction:column;justify-content:center}
-#dashboard .premiumTop>div:first-child:before{content:"₱";position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#123b30,#0d2b23);border:1px solid rgba(216,184,103,.35);color:#f4d985;font-family:var(--font-display);font-size:28px;font-weight:650;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+#dashboard .premiumTop>div:first-child:before{content:"₱";position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#1c4d62,#102d3c);border:1px solid rgba(216,184,103,.35);color:#f4d985;font-family:var(--font-display);font-size:28px;font-weight:650;box-shadow:0 12px 28px rgba(0,0,0,.18)}
 #dashboard .homeVersionPill{margin-top:5px}
 
 
@@ -738,7 +738,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 
 /* Final Dark Contrast Sweep */
 :root{
-  --pt-dark-surface:#173a30;
+  --pt-dark-surface:#173f52;
   --pt-dark-surface-2:rgba(255,255,255,.07);
   --pt-dark-border:rgba(255,255,255,.12);
   --pt-dark-text:#f3efe4;
