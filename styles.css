@@ -546,7 +546,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 .trendLegend{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin:-2px 0 8px;color:var(--muted);font-size:11px;font-weight:900}
 .trendLegend span{display:inline-flex;gap:5px;align-items:center}.trendLegend i{width:9px;height:9px;border-radius:99px;display:inline-block}
 .trendLegend .income,.periodTrendPair .income{background:var(--green)}.trendLegend .expense,.periodTrendPair .expense{background:var(--red)}
-.periodTrendBars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end;min-height:138px}
+.periodTrendBars{display:grid;grid-template-columns:repeat(auto-fit,minmax(34px,1fr));gap:6px;align-items:end;min-height:138px}
 .periodTrendBucket{display:grid;grid-template-rows:98px auto;gap:7px;min-width:0}
 .periodTrendPair{height:98px;display:flex;align-items:end;justify-content:center;gap:4px;background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:14px;padding:7px 5px}
 .periodTrendPair i{width:11px;min-height:4px;border-radius:999px 999px 4px 4px;opacity:.96}
