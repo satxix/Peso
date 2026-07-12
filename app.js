@@ -371,7 +371,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.22',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.24',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -777,19 +777,8 @@ function moveTransactionsToReportEnd(){
   }
   function setHidden(el,hidden){ if(el)el.classList.toggle('reportHidden',!!hidden); }
   function ensureReportViewTabs(){
-    const reports=document.getElementById('reports');
-    if(!reports)return;
     let tabs=document.getElementById('reportViewTabs');
-    if(!tabs){
-      tabs=document.createElement('div');
-      tabs.id='reportViewTabs';
-      tabs.className='reportViewTabs';
-      tabs.innerHTML=['Overview','Transactions','Categories','Budgets'].map(v=>`<button type="button" onclick="setReportView('${v}')">${v}</button>`).join('');
-      const nav=document.querySelector('#reports .reportPeriodNav');
-      const fallback=document.querySelector('#reports .gm3-reportHero');
-      (nav||fallback||reports.firstChild).parentNode.insertBefore(tabs,(nav?nav.nextSibling:fallback));
-    }
-    tabs.querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.textContent.trim()===reportView));
+    if(tabs)tabs.remove();
   }
   window.setReportView=function(view){
     reportView=view;
@@ -818,19 +807,11 @@ function moveTransactionsToReportEnd(){
       insights:panelByTitle('Smart Insights')
     };
     Object.values(panels).forEach(p=>setHidden(p,true));
-    if(reportView==='Overview'){
-      setHidden(panels.txns,false);
-      setHidden(panels.cash,false);
-      setHidden(panels.insights,false);
-    }else if(reportView==='Transactions'){
-      setHidden(panels.txns,false);
-    }else if(reportView==='Categories'){
-      setHidden(panels.cats,false);
-      setHidden(panels.cash,false);
-    }else if(reportView==='Budgets'){
-      setHidden(panels.budgets,false);
-      setHidden(panels.insights,false);
-    }
+    setHidden(panels.cash,false);
+    setHidden(panels.cats,false);
+    setHidden(panels.insights,false);
+    setHidden(panels.budgets,false);
+    setHidden(panels.txns,false);
     moveTransactionsToReportEnd();
   }
   const previous=window.renderReports;
@@ -858,23 +839,22 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     const reports=document.getElementById('reports');
     const periodTabs=document.querySelector('#reports .reportTabs');
     const nav=document.getElementById('reportPeriodNav');
-    const views=document.getElementById('reportViewTabs');
     const hero=document.querySelector('#reports .gm3-reportHero');
     if(!reports||!periodTabs)return;
     const anchor=reports.querySelector('.accountFilter')||hero;
     reports.insertBefore(periodTabs,anchor);
     if(nav)reports.insertBefore(nav,periodTabs.nextSibling);
-    if(views)reports.insertBefore(views,(nav||periodTabs).nextSibling);
   }
   function ensureReportScopeNote(){
-    const views=document.getElementById('reportViewTabs');
-    if(!views)return null;
+    const reports=document.getElementById('reports');
+    const hero=document.querySelector('#reports .gm3-reportHero');
+    if(!reports||!hero)return null;
     let note=document.getElementById('reportScopeNote');
     if(!note){
       note=document.createElement('div');
       note.id='reportScopeNote';
       note.className='reportScopeNote';
-      views.parentNode.insertBefore(note,views.nextSibling);
+      hero.parentNode.insertBefore(note,hero.nextSibling);
     }
     return note;
   }
@@ -885,6 +865,24 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
   function renderBudgetReportForSelectedMonth(){
     const el=document.getElementById('budgetReport');
     if(!el)return;
+    const panel=el.closest('.reportPanel');
+    if(panel){
+      panel.classList.add('budgetCollapsed');
+      const h=panel.querySelector('h3');
+      if(h)h.textContent='Monthly Budgets';
+      let head=panel.querySelector('.panelHead');
+      if(head&&!head.querySelector('.budgetToggleBtn')){
+        const toggle=document.createElement('button');
+        toggle.type='button';
+        toggle.className='tiny budgetToggleBtn';
+        toggle.textContent='Show';
+        toggle.onclick=function(){
+          panel.classList.toggle('budgetOpen');
+          toggle.textContent=panel.classList.contains('budgetOpen')?'Hide':'Show';
+        };
+        head.insertBefore(toggle,head.querySelector('button'));
+      }
+    }
     const {start}=periodStartEnd();
     const mStart=new Date(start.getFullYear(),start.getMonth(),1);
     const mEnd=new Date(start.getFullYear(),start.getMonth()+1,1);
@@ -904,12 +902,15 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     syncReportPeriodButtons();
     reorderReportControls();
     try{moveTransactionsToReportEnd();}catch(e){}
+    const cashPanel=[...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()==='Cash Flow');
+    if(cashPanel){
+      const h=cashPanel.querySelector('h3');
+      if(h)h.textContent='Income vs Expense';
+    }
     const note=ensureReportScopeNote();
-    const view=data.settings.reportView||'Overview';
     const count=selectedReportTxns().length;
     if(note){
-      const budgetText=view==='Budgets'?'Budgets are monthly and use '+monthLabelForSelectedPeriod()+'.':'This view uses the selected '+(reportPeriod==='Today'?'day':reportPeriod.toLowerCase())+' range.';
-      note.innerHTML=`<b>${htmlText(view)} for ${htmlText(reportPeriodTitle())}</b>${count} transaction${count===1?'':'s'} in this period. ${htmlText(budgetText)}`;
+      note.innerHTML=`<b>${htmlText(reportPeriodTitle())}</b>${count} transaction${count===1?'':'s'} in this period. Spending, insights, and transactions use this selected range.`;
     }
     renderBudgetReportForSelectedMonth();
   }

@@ -536,6 +536,9 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 
 /* Report View Controls */
 #reports .reportHidden{display:none!important}
+#reports .budgetCollapsed #budgetReport{display:none}
+#reports .budgetCollapsed.budgetOpen #budgetReport{display:grid}
+#reports .budgetToggleBtn{margin-right:8px}
 #reports .gm3-story{display:none!important}
 .reportViewTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px;padding:4px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
 .reportViewTabs button{border:0;border-radius:14px;background:transparent;color:var(--muted);font-weight:950;padding:10px 6px;font-size:12px;min-width:0}
