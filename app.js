@@ -11,7 +11,7 @@ let data=safeLoadData(),screen='dashboard',acctFilter='All',txnType='Expense',am
   const steps=[
     ['Accounts',renderAccounts],['Dashboard',renderDash],['Bills',renderBills],['Recurring',renderRecurring],
     ['Reports',renderReports],['Analytics',renderAnalytics],['Transactions',renderTransactionsList],
-    ['PremiumAnalytics',renderPremiumAnalytics],['CalendarPreview',renderCalendarPreview],['CashForecast',renderCashForecast],
+    ['PremiumAnalytics',renderPremiumAnalytics],['CalendarPreview',renderCalendarPreview],
     ['FullCalendar',renderFullCalendar],['GlobalSearch',renderGlobalSearch],['Budgets',renderBudgets],
     ['Insights',renderInsights],['Settings',renderSettings]
   ];
@@ -376,13 +376,10 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.13',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.16',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
-function cashLikeAccounts(){return data.accounts.filter(a=>['Savings','Wallet','Cash'].includes(a.type))}
-function forecastEvents(){let today=new Date();today.setHours(0,0,0,0);let max=new Date(today);max.setDate(max.getDate()+30);let events=[];data.bills.filter(b=>b.status!=='Paid').forEach(b=>{let d=new Date(b.dueDate);d.setHours(0,0,0,0);if(d>=today&&d<=max)events.push({date:d,title:b.cardName||'Card Bill',sub:'Credit card bill',amount:-Number(b.remaining||b.amount||0),kind:'bill'});});data.recurring.filter(r=>r.enabled!==false).forEach(r=>{let d=nextRecurringDate(r);if(d>=today&&d<=max)events.push({date:d,title:r.name||r.type,sub:'Recurring '+r.type,amount:(r.type==='Income'?1:-1)*Number(r.amount||0),kind:r.type==='Income'?'income':'expense'});});return events.sort((a,b)=>a.date-b.date)}
-function renderCashForecast(){let el=document.getElementById('cashForecast');if(!el)return;let starting=cashLikeAccounts().reduce((s,a)=>s+Number(a.balance||0),0);let events=forecastEvents();let running=starting;let rows=events.slice(0,8).map(e=>{running+=e.amount;let cls=e.amount>=0?'green':'red';return `<div class="forecastItem"><div class="day"><b>${e.date.getDate()}</b>${e.date.toLocaleDateString('en-PH',{month:'short'})}</div><div><b>${e.title}</b><div class="sub">${e.sub}</div></div><div><b class="${cls}">${e.amount>=0?'+':''}${peso(Math.abs(e.amount))}</b><div class="running">Bal ${peso(running)}</div></div></div>`}).join('');let projected=events.reduce((s,e)=>s+e.amount,starting);let diff=projected-starting;el.innerHTML=`<div class="forecastHead"><div><div class="label">Projected Cash</div><div class="forecastValue">${peso(projected)}</div><div class="sub">Starting cash ${peso(starting)}</div></div><div class="forecastDelta ${diff>=0?'green':'red'}">${diff>=0?'+':''}${peso(diff)}</div></div><div class="forecastFlow">${rows||'<div class="emptyState">No recurring cash flow or bills in the next 30 days.</div>'}</div>`}
 function csvEscape(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function downloadText(name,text,type='text/plain'){let blob=new Blob([text],{type});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function exportTransactionsCSV(){let rows=[['Date','Type','Account From','Account To','Category','Amount','Fee']];data.txns.forEach(t=>rows.push([new Date(t.date).toLocaleString('en-PH'),t.type,accountLabel(t.from),accountLabel(t.to),t.category||'',Number(t.amount||0),Number(t.fee||0)]));downloadText('pesotrack-transactions.csv',rows.map(r=>r.map(csvEscape).join(',')).join('\n'),'text/csv')}
@@ -1350,6 +1347,55 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     pushScreen(start,true);
     pushScreen(start,false);
   });
+})();
+
+(function homeUpcomingFocus(){
+  function monthKeyForDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+  function recurringPaidForOccurrence(r,d){
+    var key=monthKeyForDate(d);
+    return (data.txns||[]).some(function(t){
+      return t.recurringId===r.id&&(t.occurrenceMonth===key||String(t.occurrenceKey||'').slice(0,7)===key);
+    });
+  }
+  function homeUpcomingItems(){
+    var today=new Date();today.setHours(0,0,0,0);
+    var max=new Date(today);max.setDate(max.getDate()+45);
+    var items=[];
+    (data.bills||[]).filter(function(b){return b.status!=='Paid'}).forEach(function(b){
+      var d=new Date(b.dueDate);d.setHours(0,0,0,0);
+      if(d<=max)items.push({date:d,title:b.cardName||'Card bill',sub:'Credit card due',amount:Number(b.remaining||b.amount||0),type:'Bill',kind:'bill'});
+    });
+    (data.recurring||[]).filter(function(r){return r.enabled!==false}).forEach(function(r){
+      var d=nextRecurringDate(r);d.setHours(0,0,0,0);
+      if(d<=max&&!recurringPaidForOccurrence(r,d)){
+        items.push({date:d,title:r.name||r.category||r.type,sub:'Recurring '+(r.type||'item'),amount:Number(r.amount||0),type:r.type==='Income'?'Income':'Recurring',kind:r.type==='Income'?'income':'recurring'});
+      }
+    });
+    return items.sort(function(a,b){return a.date-b.date}).slice(0,5);
+  }
+  function renderHomeUpcomingFocus(){
+    var el=document.getElementById('upcoming');
+    if(!el)return;
+    var items=homeUpcomingItems();
+    if(!items.length){
+      el.innerHTML='<div class="softEmpty">No upcoming unpaid bills or recurring items.</div>';
+      return;
+    }
+    el.innerHTML=items.map(function(item){
+      var dd=daysUntil(item.date.toISOString().slice(0,10));
+      var dueText=dd<0?'Overdue':dd===0?'Due today':dd===1?'Due tomorrow':'Due in '+dd+' days';
+      var badgeClass=dd<0?'overdue':dd<=3?'dueSoon':item.kind==='income'?'income':'';
+      var amt=(item.kind==='income'?'+':'')+peso(item.amount);
+      return '<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>'+htmlText(item.title)+'</b><span>'+htmlText(item.sub)+' · '+htmlText(item.date.toISOString().slice(0,10))+' · '+htmlText(dueText)+'</span></div><div class="premiumTimelineAmt"><b>'+amt+'</b><span class="upcomingKind '+badgeClass+'">'+htmlText(item.type)+'</span></div></div>';
+    }).join('');
+  }
+  var previousRenderDash=window.renderDash||renderDash;
+  window.renderDash=function(){
+    if(typeof previousRenderDash==='function')previousRenderDash();
+    renderHomeUpcomingFocus();
+  };
+  try{renderDash=window.renderDash}catch(e){}
+  window.addEventListener('load',function(){setTimeout(function(){try{renderHomeUpcomingFocus()}catch(e){}},260)});
 })();
 
 (function finishBootWithoutOldHomeFlash(){
