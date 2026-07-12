@@ -682,7 +682,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 
 /* Home Brand Mark */
 #dashboard .premiumTop>div:first-child{position:relative;min-height:46px;padding-left:54px;display:flex;flex-direction:column;justify-content:center}
-#dashboard .premiumTop>div:first-child:before{content:"₱";position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#1c4d62,#102d3c);border:1px solid rgba(216,184,103,.35);color:#f4d985;font-family:var(--font-display);font-size:28px;font-weight:650;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+#dashboard .premiumTop>div:first-child:before{content:"\20B1";position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#1c4d62,#102d3c);border:1px solid rgba(216,184,103,.35);color:#f4d985;font-family:Arial,"Segoe UI Symbol","Noto Sans",sans-serif;font-size:26px;font-weight:900;box-shadow:0 12px 28px rgba(0,0,0,.18)}
 #dashboard .homeVersionPill{margin-top:5px}
 
 
@@ -716,7 +716,6 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 #accounts .premiumProgress{height:6px;margin-top:5px!important}
 #accounts .premiumAddCard{min-height:112px!important;border-radius:20px!important;padding:12px!important}
 #accounts .premiumAddIcon{width:36px;height:36px;border-radius:14px;font-size:18px}
-#dashboard .premiumTop>div:first-child:before{content:"P"!important}
 @media(max-width:370px){#accounts .gm4GroupGrid{grid-template-columns:1fr 1fr!important;gap:8px}#accounts .premiumValue{font-size:18px}#accounts .premiumAcctName{font-size:13px}}
 
 
