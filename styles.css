@@ -743,7 +743,6 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 .compactStatement .statementAmt{text-align:right!important;display:grid!important;justify-items:end!important;gap:4px!important}
 .categoryManager{display:grid!important;gap:12px!important}
 .categoryAddRow{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important;align-items:center!important}
-.categoryChipGrid{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
 .improvedCategory{display:inline-flex!important;align-items:center!important;gap:7px!important;padding:9px 10px!important;border-radius:999px!important}
 .improvedCategory .categoryIcon,.option .dot{color:var(--accent)!important;background:rgba(108,99,255,.14)!important;border:1px solid rgba(108,99,255,.28)!important}
 .catSvg{width:18px;height:18px;display:block;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -850,3 +849,20 @@ body{
 .upcomingDateBadge b{display:block;font-size:20px;letter-spacing:-.03em}
 .upcomingDateBadge span{display:block;margin-top:3px;font-size:10px;color:var(--pt-dark-muted);text-transform:uppercase;letter-spacing:.06em}
 #dashboard .premiumTimelineItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+
+
+/* Category Manager */
+.compactCategoryAdd{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+.categoryIconPicker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:8px 0 12px;max-height:154px;overflow-y:auto;padding-right:2px;overscroll-behavior:contain}
+.categoryIconChoice{border:1px solid var(--line);background:var(--card-inset,var(--card));color:var(--text);border-radius:15px;padding:7px;display:grid;place-items:center;font-weight:900;min-width:0;min-height:44px}
+.categoryIconChoice span{width:30px;height:30px;border-radius:12px;display:grid;place-items:center;background:rgba(37,184,141,.14);color:var(--accent)}
+.categoryIconChoice svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.categoryIconChoice.active{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 28%,transparent);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+@media(max-width:370px){.categoryIconPicker{grid-template-columns:repeat(5,minmax(0,1fr));max-height:146px}}
+
+
+/* Category tray organization */
+.categoryChipGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;max-height:238px;overflow-y:auto;padding-right:2px;overscroll-behavior:contain}
+.categoryChipGrid .improvedCategory{width:100%;justify-content:flex-start;min-width:0}
+.categoryChipGrid .improvedCategory>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:370px){.categoryChipGrid{grid-template-columns:1fr!important;max-height:230px}}
