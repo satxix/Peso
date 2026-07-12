@@ -650,11 +650,11 @@ body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--
 
 
 /* Soft App Background */
-:root{--app-bg-soft:#31433a}
+:root{--app-bg-soft:#2f5368}
 body,body.dark{--bg:var(--app-bg-soft)!important;background:
-  radial-gradient(circle at top left,rgba(216,184,103,.18),transparent 18rem),
-  radial-gradient(circle at bottom right,rgba(34,163,126,.14),transparent 22rem),
-  linear-gradient(180deg,#3a4d43 0%,#31433a 48%,#2a3a32 100%)!important}
+  radial-gradient(circle at top left,rgba(216,184,103,.16),transparent 18rem),
+  radial-gradient(circle at bottom right,rgba(40,152,237,.15),transparent 22rem),
+  linear-gradient(180deg,#3a6479 0%,#2f5368 48%,#284655 100%)!important}
 
 
 /* Home Header Polish */
