@@ -539,6 +539,21 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #reports .budgetCollapsed #budgetReport{display:none}
 #reports .budgetCollapsed.budgetOpen #budgetReport{display:grid}
 #reports .budgetToggleBtn{margin-right:8px}
+.trendSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.trendSummary div{background:var(--card-inset);border:1px solid var(--line);border-radius:16px;padding:10px;min-width:0}
+.trendSummary span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}
+.trendSummary b{display:block;margin-top:4px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trendLegend{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin:-2px 0 8px;color:var(--muted);font-size:11px;font-weight:900}
+.trendLegend span{display:inline-flex;gap:5px;align-items:center}.trendLegend i{width:9px;height:9px;border-radius:99px;display:inline-block}
+.trendLegend .income,.periodTrendPair .income{background:var(--green)}.trendLegend .expense,.periodTrendPair .expense{background:var(--red)}
+.periodTrendBars{display:grid;grid-template-columns:repeat(auto-fit,minmax(34px,1fr));gap:8px;align-items:end;min-height:138px}
+.periodTrendBucket{display:grid;grid-template-rows:98px auto;gap:7px;min-width:0}
+.periodTrendPair{height:98px;display:flex;align-items:end;justify-content:center;gap:4px;background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:14px;padding:7px 5px}
+.periodTrendPair i{width:11px;min-height:4px;border-radius:999px 999px 4px 4px;opacity:.96}
+.periodTrendBucket span{font-size:10px;color:var(--muted);font-weight:900;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trendNotes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.trendNotes div{border:1px solid var(--line);border-radius:16px;padding:10px;background:rgba(255,255,255,.045);min-width:0}
+.trendNotes b{display:block;font-size:11px}.trendNotes span{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #reports .gm3-story{display:none!important}
 .reportViewTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px;padding:4px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
 .reportViewTabs button{border:0;border-radius:14px;background:transparent;color:var(--muted);font-weight:950;padding:10px 6px;font-size:12px;min-width:0}
