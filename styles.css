@@ -598,9 +598,10 @@ body.dark .reportScopeNote{background:var(--pt-dark-surface);border-color:var(--
     #reports .expenseBarTop b,#reports .expenseBarTop strong{font-size:12.5px!important}
     #reports .expenseTrack{height:7px!important}
     #reports .expenseBarMeta{font-size:10px!important;line-height:1.15!important}
-    #reports .expenseBarMeta{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto!important;gap:6px!important;align-items:center!important}
+    #reports .expenseBarMeta{display:grid!important;grid-template-columns:auto max-content auto!important;gap:8px!important;align-items:center!important}
     #reports .expenseBarMeta span{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
-    #reports .expenseCompare{font-size:10px!important;font-weight:900!important;line-height:1.15!important;color:var(--muted)!important;text-align:center!important}
+    #reports .expenseCompare{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:3px!important;font-size:10px!important;font-weight:950!important;line-height:1!important;color:var(--muted)!important;text-align:center!important;white-space:nowrap!important}
+    #reports .expenseCompare i{font-style:normal!important;font-size:11px!important;line-height:1!important}
     #reports .expenseCompare.up{color:#ff8d7d!important;-webkit-text-fill-color:#ff8d7d!important}
     #reports .expenseCompare.down{color:var(--income)!important}
     #reports .expenseCompare.same{color:var(--muted)!important}

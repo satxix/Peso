@@ -390,7 +390,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.51',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.52',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -1128,10 +1128,10 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
   function compareLabel(current,previous){
     current=Number(current||0);previous=Number(previous||0);
     var diff=current-previous;
-    if(!previous&&current)return {text:'New this period',tone:'up'};
-    if(previous&&!current)return {text:'No spend vs '+peso(previous)+' before',tone:'down'};
-    if(Math.abs(diff)<0.01)return {text:'Same as previous period',tone:'same'};
-    return {text:(diff>0?'Up ':'Down ')+peso(Math.abs(diff))+' vs previous period',tone:diff>0?'up':'down'};
+    if(!previous&&current)return {text:'New',tone:'up',icon:'+'};
+    if(previous&&!current)return {text:peso(previous),tone:'down',icon:'↓'};
+    if(Math.abs(diff)<0.01)return {text:'Same',tone:'same',icon:'='};
+    return {text:peso(Math.abs(diff)),tone:diff>0?'up':'down',icon:diff>0?'↑':'↓'};
   }
   function selectedExpenseData(){
     var range=typeof periodStartEnd==='function'?periodStartEnd():(function(){var now=new Date();return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)}})();
@@ -1159,7 +1159,7 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
       var cat=pair[0],val=pair[1],pct=Math.round((val/Math.max(1,d.total))*100),width=Math.max(5,Math.round((val/max)*100));
       var icon=typeof catIcon==='function'?catIcon(cat):'';
       var comparison=compareLabel(val,(d.previousCats||{})[cat]);
-      return '<div class="expenseBarRow"><div class="expenseBarTop"><b>'+icon+' '+esc(cat)+'</b><strong>'+peso(val)+'</strong></div><div class="expenseTrack"><i style="width:'+width+'%"></i></div><div class="expenseBarMeta"><span>'+pct+'% of expenses</span><span class="expenseCompare '+comparison.tone+'">'+esc(comparison.text)+'</span><span>'+esc(label)+'</span></div></div>';
+      return '<div class="expenseBarRow"><div class="expenseBarTop"><b>'+icon+' '+esc(cat)+'</b><strong>'+peso(val)+'</strong></div><div class="expenseTrack"><i style="width:'+width+'%"></i></div><div class="expenseBarMeta"><span>'+pct+'% of expenses</span><span class="expenseCompare '+comparison.tone+'"><i>'+esc(comparison.icon)+'</i>'+esc(comparison.text)+'</span><span>'+esc(label)+'</span></div></div>';
     }).join('');
     el.innerHTML='<div class="expenseBreakdownSummary"><div class="expenseStat"><span>Total spent</span><b>'+peso(d.total)+'</b></div><div class="expenseStat"><span>Categories</span><b>'+d.entries.length+'</b></div><div class="expenseStat"><span>Biggest</span><b>'+esc(top[0])+'</b></div></div><div class="expenseBreakdownRows">'+rows+'</div>';
   };
