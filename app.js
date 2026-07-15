@@ -19,7 +19,7 @@ let data=safeLoadData(),screen='dashboard',acctFilter='All',txnType='Expense',am
     try{ if(typeof fn==='function') fn(); }
     catch(err){ console.error('Render step failed:',name,err); }
   }
-}function daysUntil(dateStr){let today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());let d=new Date(dateStr);d=new Date(d.getFullYear(),d.getMonth(),d.getDate());return Math.ceil((d-today)/86400000)}function premiumGreetingText(){let h=new Date().getHours();return h<12?'Good morning, Arv':h<18?'Good afternoon, Arv':'Good evening, Arv'}
+}function daysUntil(dateStr){let today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());let d=new Date(dateStr);d=new Date(d.getFullYear(),d.getMonth(),d.getDate());return Math.ceil((d-today)/86400000)}
 function todaysRange(){let start=new Date();start.setHours(0,0,0,0);let end=new Date(start);end.setDate(end.getDate()+1);return {start,end}}
 function setQuickTransfer(){openTxn();setTxnType('Transfer',document.querySelector('#txnSheet .seg button:nth-child(3)'))}
 function accountTotals(){
@@ -34,9 +34,7 @@ function accountTotals(){
   return {bank,cashHand,wallets,investments,cards,liquid,gross,netWorth};
 }
 function cashCategoryIcon(type){return {Savings:'BA',Cash:'CA',Wallet:'EW',Investment:'IN','Credit Card':'CC'}[type]||'AC'}
-function moneyTypeCard(label,type,amount,detail,cls){return `<div class="cashCategoryCard"><div class="bank ${cls}">${cashCategoryIcon(type)}</div><b>${label}</b><span>${detail}</span><strong>${peso(amount)}</strong></div>`}
-function renderMoneyTypeGrid(totals,due){let el=document.getElementById('moneyTypeGrid');if(!el)return;let bankCount=data.accounts.filter(a=>a.type==='Savings').length,cashCount=data.accounts.filter(a=>a.type==='Cash').length,walletCount=data.accounts.filter(a=>a.type==='Wallet').length,invCount=data.accounts.filter(a=>a.type==='Investment').length;el.innerHTML=[moneyTypeCard('Bank Accounts','Savings',totals.bank,`${bankCount} account${bankCount===1?'':'s'}`,'categorySavings'),moneyTypeCard('Cash on Hand','Cash',totals.cashHand,`${cashCount||0} cash wallet${cashCount===1?'':'s'}`,'cashIcon'),moneyTypeCard('E-Wallets','Wallet',totals.wallets,`${walletCount} wallet${walletCount===1?'':'s'}`,'categoryWallet'),moneyTypeCard('Investments','Investment',totals.investments,`${invCount} investment${invCount===1?'':'s'}`,'categoryInvestment')].join('')}
-function renderDash(){let totals=accountTotals();let cash=totals.liquid;let cards=totals.cards;let unpaid=data.bills.filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));let due=unpaid.reduce((s,b)=>s+Number(b.remaining||b.amount||0),0);let safe=Math.max(0,cash-due);let nw=totals.netWorth;let netWorthEl=document.getElementById('netWorth');if(netWorthEl)netWorthEl.textContent=peso(nw);let bankEl=document.getElementById('bankTotal');if(bankEl)bankEl.textContent=peso(totals.bank);let cashHandEl=document.getElementById('cashHandTotal');if(cashHandEl)cashHandEl.textContent=peso(totals.cashHand);let walletEl=document.getElementById('walletTotal');if(walletEl)walletEl.textContent=peso(totals.wallets);if(typeof cashTotal!=='undefined')cashTotal.textContent=peso(cash);cardTotal.textContent=peso(cards);billsDue.textContent=peso(due);safeSpend.textContent=peso(safe);safeSpendHero.textContent=peso(safe);let moneyGrid=document.getElementById('moneyTypeGrid');if(moneyGrid)renderMoneyTypeGrid(totals,due);let greeting=document.getElementById('premiumGreeting');if(greeting)greeting.textContent=premiumGreetingText();dashDate.textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',month:'short',day:'numeric'});let tr=todaysRange(),todaySummary=summarizeTxns(txnsInRange(tr.start,tr.end));let todayTransfers=data.txns.filter(t=>{let d=new Date(t.date);return d>=tr.start&&d<tr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);let ti=document.getElementById('todayIncome'),te=document.getElementById('todayExpense'),tt=document.getElementById('todayTransfer'),tn=document.getElementById('todayNet');if(ti)ti.textContent=peso(todaySummary.income);if(te)te.textContent=peso(todaySummary.expense);if(tt)tt.textContent=peso(todayTransfers);if(tn)tn.textContent=peso(todaySummary.net);let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}let next=unpaid[0],d=next?daysUntil(next.dueDate):null;let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;let tb=document.getElementById('todayBills');if(tb)tb.textContent=dueToday?`${dueToday} due today`:`${unpaid.length} due`;dashHealth.textContent=next?(d<0?'Overdue':d===0?'Due today':`Due in ${d}d`):'All clear';dashHealth.style.background=next?(d<=3?'#fff3e6':'#f0eeff'):'#ecfdf5';dashHealth.style.color=next?(d<=3?'var(--orange)':'var(--accent)'):'var(--green)';let nextChip=document.getElementById('nextEventChip');if(nextChip)nextChip.textContent=next?(d===0?'Due today':d>0?`Due in ${d}d`:'Overdue'):'All clear';let h=typeof calculateHealth==='function'?calculateHealth():{score:0,label:'Ready',cur:{savingsRate:0},util:0};let hsd=document.getElementById('healthScoreDash');if(hsd)hsd.textContent=h.score||'--';let hld=document.getElementById('healthLabelDash');if(hld)hld.textContent=h.label||'Ready';let hsum=document.getElementById('healthSummaryDash');if(hsum)hsum.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}% savings rate this month.`:'Add income and expenses to unlock a better score.';let hs=document.getElementById('healthSavingsDash');if(hs)hs.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}%`:'--';let hu=document.getElementById('healthUtilDash');if(hu)hu.textContent=data.accounts.some(a=>a.type==='Credit Card')?`${h.util}%`:'--';if(typeof setHealthRing==='function')setHealthRing('healthRing',h.score||0);let insightTitleEl=document.getElementById('insightTitle'),insightTextEl=document.getElementById('insightText');if(insightTitleEl&&insightTextEl){if(next){insightTitleEl.textContent=d<0?`${next.cardName} is overdue`:`${next.cardName} is coming up`;insightTextEl.textContent=`${peso(next.remaining)} due ${next.dueDate}${d>=0?` (${d} day${d===1?'':'s'} left)`: ' (overdue)'}.`;}else if(todaySummary.net>0){insightTitleEl.textContent='You are in a strong position today';insightTextEl.textContent=`Today’s net cash flow is ${peso(todaySummary.net)}. Cash on hand is tracked separately from bank savings.`;}else if(data.txns.length){insightTitleEl.textContent='Your money is clearly organized';insightTextEl.textContent='Bank accounts, cash on hand, e-wallets, and investments are now separated.';}else{insightTitleEl.textContent='Start by adding your accounts';insightTextEl.textContent='Add BPI, BDO, GCash, Maya, MariBank, UnoBank, cash, and your cards to unlock the dashboard.';}}upcoming.innerHTML=unpaid.length?unpaid.slice(0,4).map(b=>{let dd=daysUntil(b.dueDate);let badge=dd<0?'Overdue':dd===0?'Today':`${dd} day${dd===1?'':'s'}`;return `<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>${b.cardName}</b><span>Due ${b.dueDate} - ${badge}</span></div><div class="premiumTimelineAmt">${peso(b.remaining)}</div></div>`}).join(''):'<div class="softEmpty">No unpaid bills. Credit card bills appear after card purchases.</div>';let dashAccountsEl=document.getElementById('dashAccounts');if(dashAccountsEl)dashAccountsEl.innerHTML=data.accounts.length?data.accounts.slice(0,8).map(a=>premiumMiniAccount(a)).join(''):'<div class="softEmpty" style="min-width:100%">No accounts yet. Tap + to add one.</div>';recent.innerHTML=recentTxns(data.txns).slice(0,5).map(t=>txnRow(t,true)).join('')||'<div class="row"><span class="sub">No transactions yet.</span></div>'}
+function renderDash(){let totals=accountTotals();let cash=totals.liquid;let cards=totals.cards;let unpaid=data.bills.filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));let due=unpaid.reduce((s,b)=>s+Number(b.remaining||b.amount||0),0);let safe=Math.max(0,cash-due);let nw=totals.netWorth;let netWorthEl=document.getElementById('netWorth');if(netWorthEl)netWorthEl.textContent=peso(nw);let bankEl=document.getElementById('bankTotal');if(bankEl)bankEl.textContent=peso(totals.bank);let cashHandEl=document.getElementById('cashHandTotal');if(cashHandEl)cashHandEl.textContent=peso(totals.cashHand);let walletEl=document.getElementById('walletTotal');if(walletEl)walletEl.textContent=peso(totals.wallets);if(typeof cashTotal!=='undefined')cashTotal.textContent=peso(cash);cardTotal.textContent=peso(cards);billsDue.textContent=peso(due);safeSpend.textContent=peso(safe);safeSpendHero.textContent=peso(safe);dashDate.textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',month:'short',day:'numeric'});let tr=todaysRange(),todaySummary=summarizeTxns(txnsInRange(tr.start,tr.end));let todayTransfers=data.txns.filter(t=>{let d=new Date(t.date);return d>=tr.start&&d<tr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);let ti=document.getElementById('todayIncome'),te=document.getElementById('todayExpense'),tt=document.getElementById('todayTransfer'),tn=document.getElementById('todayNet');if(ti)ti.textContent=peso(todaySummary.income);if(te)te.textContent=peso(todaySummary.expense);if(tt)tt.textContent=peso(todayTransfers);if(tn)tn.textContent=peso(todaySummary.net);let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}let next=unpaid[0],d=next?daysUntil(next.dueDate):null;let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;let tb=document.getElementById('todayBills');if(tb)tb.textContent=dueToday?`${dueToday} due today`:`${unpaid.length} due`;dashHealth.textContent=next?(d<0?'Overdue':d===0?'Due today':`Due in ${d}d`):'All clear';dashHealth.style.background=next?(d<=3?'#fff3e6':'#f0eeff'):'#ecfdf5';dashHealth.style.color=next?(d<=3?'var(--orange)':'var(--accent)'):'var(--green)';let h=typeof calculateHealth==='function'?calculateHealth():{score:0,label:'Ready',cur:{savingsRate:0},util:0};let hsd=document.getElementById('healthScoreDash');if(hsd)hsd.textContent=h.score||'--';let hld=document.getElementById('healthLabelDash');if(hld)hld.textContent=h.label||'Ready';let hsum=document.getElementById('healthSummaryDash');if(hsum)hsum.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}% savings rate this month.`:'Add income and expenses to unlock a better score.';let hs=document.getElementById('healthSavingsDash');if(hs)hs.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}%`:'--';let hu=document.getElementById('healthUtilDash');if(hu)hu.textContent=data.accounts.some(a=>a.type==='Credit Card')?`${h.util}%`:'--';if(typeof setHealthRing==='function')setHealthRing('healthRing',h.score||0);upcoming.innerHTML=unpaid.length?unpaid.slice(0,4).map(b=>{let dd=daysUntil(b.dueDate);let badge=dd<0?'Overdue':dd===0?'Today':`${dd} day${dd===1?'':'s'}`;return `<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>${b.cardName}</b><span>Due ${b.dueDate} - ${badge}</span></div><div class="premiumTimelineAmt">${peso(b.remaining)}</div></div>`}).join(''):'<div class="softEmpty">No unpaid bills. Credit card bills appear after card purchases.</div>';recent.innerHTML=recentTxns(data.txns).slice(0,5).map(t=>txnRow(t,true)).join('')||'<div class="row"><span class="sub">No transactions yet.</span></div>'}
 function accountAmount(a){return Number(a&&a.type==='Credit Card'?a.outstanding:a.balance)||0}
 function heroAccountList(){let accounts=(data.accounts||[]).filter(a=>a.type!=='Credit Card');return accounts.length?accounts:(data.accounts||[])}
 function currentHeroAccount(){let list=heroAccountList();if(!list.length)return null;let saved=localStorage.getItem(HERO_ACCOUNT_KEY);return list.find(a=>a.id===saved)||list[0]}
@@ -135,7 +133,6 @@ function renderBills(){
 }
 function txInPeriod(t,start,end){let d=new Date(t.date||Date.now());return d>=start&&d<end}
 function groupAdd(obj,key,amt){obj[key]=(obj[key]||0)+Number(amt||0)}
-function renderAccountFilter(){}
 function renderBars(income,expense,net){
   let el=document.getElementById('cashFlowBars');if(!el)return;
   let range=periodStartEnd(),anchor=new Date(range.start),buckets=[],period=reportPeriod;
@@ -170,7 +167,8 @@ function openAccountDetail(id){let a=data.accounts.find(x=>x.id===id);if(!a)retu
 
 let searchFilter='All';
 function setSearchFilter(f,el){searchFilter=f;document.querySelectorAll('.searchTabs button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');renderGlobalSearch()}
-function renderGlobalSearch(){let out=document.getElementById('globalSearchResults');if(!out)return;let input=document.getElementById('globalSearchInput'),q=(input?.value||'').toLowerCase().trim();let results=[];if(searchFilter==='All'||searchFilter==='Transactions'){data.txns.slice().reverse().forEach(t=>{let hay=[t.type,t.category,t.note,accountLabel(t.from),accountLabel(t.to),peso(t.amount),new Date(t.date).toLocaleDateString('en-PH')].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'txn',title:`${t.type}${t.category?' - '+t.category:''}`,sub:`${accountLabel(t.from)||''}${t.to?' ? '+accountLabel(t.to):''} - ${new Date(t.date).toLocaleDateString('en-PH')}${t.note?' - '+t.note:''}`,amount:Number(t.amount||0),icon:t.type==='Income'?'??':t.type==='Expense'?'-':t.type==='Transfer'?'?':'??',id:t.id})})}if(searchFilter==='All'||searchFilter==='Accounts'){data.accounts.forEach(a=>{let hay=[a.name,a.institution,a.type,peso(a.balance),peso(a.outstanding)].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'acct',title:a.name,sub:`${a.institution||a.type} - ${a.type}`,amount:a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0),icon:'??',id:a.id})})}if(searchFilter==='All'||searchFilter==='Bills'){data.bills.slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)).forEach(b=>{let hay=[b.cardName,b.status,b.dueDate,peso(b.remaining)].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'bill',title:b.cardName,sub:`Due ${b.dueDate} - ${billStatus(b)}`,amount:Number(b.remaining||0),icon:'??',id:b.id})})}if(!q&&searchFilter==='All')results=results.slice(0,15);else results=results.slice(0,40);out.innerHTML=results.length?results.map(r=>`<div class="resultCard"><div class="resultLeft"><div class="dot">${r.icon}</div><div class="resultText"><b>${r.title}</b><div class="sub">${r.sub}</div></div></div><b class="${r.kind==='txn'&&r.title.startsWith('Income')?'green':r.kind==='txn'&&r.title.startsWith('Expense')?'red':''}">${peso(r.amount)}</b></div>`).join(''):`<div class="emptyCenter">${q?'No results found.':'Start typing to search your PesoTrack data.'}</div>`}
+function resultIcon(kind,type){if(kind==='acct')return 'AC';if(kind==='bill')return 'DU';if(type==='Income')return 'IN';if(type==='Expense')return 'EX';if(type==='Transfer')return 'TR';return 'TX'}
+function renderGlobalSearch(){let out=document.getElementById('globalSearchResults');if(!out)return;let input=document.getElementById('globalSearchInput'),q=(input?.value||'').toLowerCase().trim();let results=[];if(searchFilter==='All'||searchFilter==='Transactions'){data.txns.slice().reverse().forEach(t=>{let from=accountLabel(t.from),to=t.to?accountLabel(t.to):'',date=new Date(t.date).toLocaleDateString('en-PH'),hay=[t.type,t.category,t.note,from,to,peso(t.amount),date].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'txn',type:t.type,title:`${t.type}${t.category?' - '+t.category:''}`,sub:`${from}${to?' to '+to:''} - ${date}${t.note?' - '+t.note:''}`,amount:Number(t.amount||0),id:t.id})})}if(searchFilter==='All'||searchFilter==='Accounts'){data.accounts.forEach(a=>{let hay=[a.name,a.institution,a.type,peso(a.balance),peso(a.outstanding)].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'acct',title:a.name,sub:`${a.institution||a.type} - ${a.type}`,amount:a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0),id:a.id})})}if(searchFilter==='All'||searchFilter==='Bills'){data.bills.slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)).forEach(b=>{let hay=[b.cardName,b.status,b.dueDate,peso(b.remaining)].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'bill',title:b.cardName,sub:`Due ${b.dueDate} - ${billStatus(b)}`,amount:Number(b.remaining||0),id:b.id})})}results=results.slice(0,!q&&searchFilter==='All'?15:40);out.innerHTML=results.length?results.map(r=>`<div class="resultCard"><div class="resultLeft"><div class="dot">${resultIcon(r.kind,r.type)}</div><div class="resultText"><b>${htmlText(r.title)}</b><div class="sub">${htmlText(r.sub)}</div></div></div><b class="${r.kind==='txn'&&r.type==='Income'?'green':r.kind==='txn'&&r.type==='Expense'?'red':''}">${peso(r.amount)}</b></div>`).join(''):`<div class="emptyCenter">${q?'No results found.':'Start typing to search your PesoTrack data.'}</div>`}
 
 function monthKey(d){d=new Date(d);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function monthLabelFromKey(k){let [y,m]=k.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('en-PH',{month:'short'})}
@@ -178,8 +176,8 @@ function premiumMonthsBack(count=6){let now=new Date(),arr=[];for(let i=count-1;
 function premiumMonthTotals(){let months=premiumMonthsBack(6),map={};months.forEach(k=>map[k]={income:0,expense:0,net:0});data.txns.forEach(t=>{let k=monthKey(t.date||Date.now());if(!map[k])return;let amt=Number(t.amount||0);if(t.type==='Income')map[k].income+=amt;if(t.type==='Expense')map[k].expense+=amt;if(t.type==='Transfer'&&Number(t.fee||0))map[k].expense+=Number(t.fee||0)});months.forEach(k=>map[k].net=map[k].income-map[k].expense);return {months,map}}
 function premiumCurrentAndLast(){let now=new Date(),cur=monthKey(now),last=monthKey(new Date(now.getFullYear(),now.getMonth()-1,1)),res={cur:{income:0,expense:0},last:{income:0,expense:0}};data.txns.forEach(t=>{let k=monthKey(t.date||Date.now()),amt=Number(t.amount||0);let bucket=k===cur?res.cur:(k===last?res.last:null);if(!bucket)return;if(t.type==='Income')bucket.income+=amt;if(t.type==='Expense')bucket.expense+=amt;if(t.type==='Transfer'&&Number(t.fee||0))bucket.expense+=Number(t.fee||0)});return res}
 function premiumHealthScoreCalc(income,expense){let cards=data.accounts.filter(a=>a.type==='Credit Card'),util=cards.length?cards.reduce((s,a)=>s+((Number(a.outstanding||0)/Math.max(1,Number(a.limit||1)))*100),0)/cards.length:0;let savingsRate=income?Math.max(0,(income-expense)/income):0;let overdue=data.bills.filter(b=>b.status!=='Paid'&&daysUntil(b.dueDate)<0).length;let budgetScore=100;let spend=monthlyCategorySpend();if(data.budgets&&data.budgets.length){let scores=data.budgets.map(b=>{let pct=Number(spend[b.category]||0)/Math.max(1,Number(b.amount||1));return pct<=1?100:Math.max(30,100-((pct-1)*120))});budgetScore=scores.reduce((a,b)=>a+b,0)/scores.length}let score=50+(savingsRate*35)+Math.max(0,15-util*.45)+(budgetScore-70)*.2-(overdue*12);return Math.max(0,Math.min(100,Math.round(score)))}
-function renderPremiumAnalytics(){let hero=document.getElementById('premiumHealthScore');if(!hero)return;let {cur,last}=premiumCurrentAndLast(),income=cur.income,expense=cur.expense,net=income-expense,rate=income?Math.round((net/income)*100):0,score=premiumHealthScoreCalc(income,expense);premiumHealthScore.textContent=score;premiumHealthRingText.textContent=score;premiumHealthRing.style.setProperty('--health',score+'%');premiumHealthLabel.textContent=score>=90?'Excellent position':score>=75?'Healthy and stable':score>=60?'Needs attention':'Review spending soon';premiumSavingsRate.textContent=(income?rate:0)+'%';premiumSavedAmount.textContent=peso(net);let delta=expense-last.expense;premiumMonthlyCompare.textContent=last.expense?((delta<=0?'? ':'? ')+Math.abs(Math.round((delta/last.expense)*100))+'%'):'New month';premiumCompareDelta.textContent=(delta<=0?'Saved ':'More ')+peso(Math.abs(delta));let {months,map}=premiumMonthTotals(),max=Math.max(1,...months.flatMap(k=>[map[k].income,map[k].expense]));premiumTrendBars.innerHTML=months.map(k=>`<div style="display:flex;flex-direction:column;gap:3px;align-self:stretch;flex:1"><div class="trendBar inc" style="height:50%"><i style="height:${Math.max(6,map[k].income/max*100)}%"></i></div><div class="trendBar exp" style="height:50%"><i style="height:${Math.max(6,map[k].expense/max*100)}%"></i></div></div>`).join('');premiumTrendLabels.innerHTML=months.map(k=>`<span>${monthLabelFromKey(k)}</span>`).join('');let spend=monthlyCategorySpend(),entries=Object.entries(spend).sort((a,b)=>b[1]-a[1]).slice(0,5),catMax=Math.max(1,...entries.map(e=>e[1]));premiumCategoryViz.innerHTML=entries.length?entries.map(([cat,val])=>`<div class="catRow"><b>${cat}</b><div class="catTrack"><i style="width:${Math.max(5,val/catMax*100)}%"></i></div><span class="small">${peso(val)}</span></div>`).join(''):'<div class="reportEmpty">No category spending yet.</div>';let now=new Date(),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),daily={};data.txns.forEach(t=>{let d=new Date(t.date||Date.now());if(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&(t.type==='Expense'||(t.type==='Transfer'&&Number(t.fee||0)))){let day=d.getDate(),amt=t.type==='Transfer'?Number(t.fee||0):Number(t.amount||0);daily[day]=(daily[day]||0)+amt}});let maxDay=Math.max(1,...Object.values(daily));premiumHeatmap.innerHTML=Array.from({length:days},(_,i)=>{let day=i+1,v=daily[day]||0,l=v?Math.min(4,Math.ceil(v/maxDay*4)):0;return `<div class="heatDay l${l}" title="${day}: ${peso(v)}">${day}</div>`}).join('');let coachTitle='Financial Coach',coach='Add more transactions to unlock a stronger pattern.';if(income||expense){if(score>=90)coach='You are in an excellent financial position this month.';else if(expense>income)coach='Expenses are higher than income this month. Review top categories.';else if(rate>=30)coach=`Strong savings rate: ${rate}% of income is staying with you.`;else coach='Cash flow is positive, but there is room to improve savings.'}let next=data.bills.filter(b=>b.status!=='Paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))[0];if(next&&daysUntil(next.dueDate)<=3)coach=`${next.cardName} is ${daysUntil(next.dueDate)<0?'overdue':'due soon'} with ${peso(next.remaining)} remaining.`;premiumCoachTitle.textContent=coachTitle;premiumCoachText.textContent=coach}
-function renderReports(){renderAccountFilter();let {start,end}=periodStartEnd(),acct=(document.getElementById('reportAccount')||{}).value||'All';let txns=data.txns.filter(t=>txInPeriod(t,start,end)).filter(t=>acct==='All'||t.from===acct||t.to===acct);let income=0,expense=0,cats={},sources={},activity={};txns.forEach(t=>{let amt=Number(t.amount||0);if(t.type==='Income'){if(acct==='All'||t.from===acct){income+=amt;groupAdd(sources,t.category||accountLabel(t.from),amt);groupAdd(activity,accountLabel(t.from),amt)}}else if(t.type==='Expense'){if(acct==='All'||t.from===acct){expense+=amt;groupAdd(cats,t.category||'Other',amt);groupAdd(activity,accountLabel(t.from),-amt)}}else if(t.type==='Transfer'){let fee=Number(t.fee||0);if(fee&&(acct==='All'||t.from===acct)){expense+=fee;groupAdd(cats,'Transfer Fees',fee)}if(acct!=='All'){if(t.from===acct)groupAdd(activity,accountLabel(t.from),-(amt+fee));if(t.to===acct)groupAdd(activity,accountLabel(t.to),amt)}}else if(t.type==='Card Payment'){if(acct!=='All'){if(t.from===acct)groupAdd(activity,accountLabel(t.from),-amt);if(t.to===acct)groupAdd(activity,accountLabel(t.to),amt)}}});let net=income-expense;let reportIncomeEl=document.getElementById('reportIncome'),reportExpenseEl=document.getElementById('reportExpense'),reportNetEl=document.getElementById('reportNet');if(reportIncomeEl)reportIncomeEl.textContent=peso(income);if(reportExpenseEl)reportExpenseEl.textContent=peso(expense);if(reportNetEl){reportNetEl.textContent=(net>=0?'+':'')+peso(net);reportNetEl.className='value '+(net>=0?'green':'red')}renderBars(income,expense,net);renderReportList('categoryReport',cats,'cat');renderReportList('incomeReport',sources,'income');let acctObj={};Object.entries(activity).forEach(([k,v])=>acctObj[k]=v);renderReportList('accountReport',acctObj,'acct')}function showModal(){modalBackdrop.classList.add('show');document.body.classList.add('modal-open')}function hideModalIfNone(){setTimeout(()=>{if(!document.querySelector('.sheet.show')){modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}},0)}function closeTopModal(){let sheets=[...document.querySelectorAll('.sheet.show')];if(!sheets.length)return;let top=sheets[sheets.length-1];top.classList.remove('show');hideModalIfNone()}function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}function openAddAccount(){editingAccount=null;acctTitle.textContent='Add Account';atype.value='Savings';inst.value='';aname.value='';let lf=document.getElementById('instLogo');if(lf){lf.value='otherbank';lf.dataset.manual=''}renderAccountFields();renderLogoPicker('otherbank');showModal();accountSheet.classList.add('show')}function editAccount(id){let a=data.accounts.find(x=>x.id===id); if(!a)return; editingAccount=id; acctTitle.textContent='Edit Account';atype.value=a.type;inst.value=a.institution||'';aname.value=a.name;let key=a.logoKey||banks[a.institution]||'otherbank';let lf=document.getElementById('instLogo');if(lf){lf.value=key;lf.dataset.manual='1'}renderAccountFields(a);renderLogoPicker(key);showModal();accountSheet.classList.add('show')}function renderAccountFields(a={}){let t=atype.value;if(document.getElementById('inst')){inst.style.display=t==='Cash'?'none':''; if(t==='Cash') inst.value='';} if(t==='Cash' && document.getElementById('aname') && !aname.value) aname.value='Cash on Hand';dynamicFields.innerHTML=t==='Credit Card'?`<input class="field" id="limit" type="number" placeholder="Credit limit" value="${a.limit||''}"><input class="field" id="statementDay" type="number" placeholder="Statement day, e.g. 15" value="${a.statementDay||''}"><input class="field" id="dueDay" type="number" placeholder="Due day, e.g. 5" value="${a.dueDay||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`:`<input class="field" id="balance" type="number" placeholder="${t==='Investment'?'Current value':'Opening balance'}" value="${a.balance||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`}function saveAccount(){
+function renderPremiumAnalytics(){let hero=document.getElementById('premiumHealthScore');if(!hero)return;let {cur,last}=premiumCurrentAndLast(),income=cur.income,expense=cur.expense,net=income-expense,rate=income?Math.round((net/income)*100):0,score=premiumHealthScoreCalc(income,expense);premiumHealthScore.textContent=score;premiumHealthRingText.textContent=score;premiumHealthRing.style.setProperty('--health',score+'%');premiumHealthLabel.textContent=score>=90?'Excellent position':score>=75?'Healthy and stable':score>=60?'Needs attention':'Review spending soon';premiumSavingsRate.textContent=(income?rate:0)+'%';premiumSavedAmount.textContent=peso(net);let delta=expense-last.expense;premiumMonthlyCompare.textContent=last.expense?((delta<=0?'Down ':'Up ')+Math.abs(Math.round((delta/last.expense)*100))+'%'):'New month';premiumCompareDelta.textContent=(delta<=0?'Saved ':'More ')+peso(Math.abs(delta));let {months,map}=premiumMonthTotals(),max=Math.max(1,...months.flatMap(k=>[map[k].income,map[k].expense]));premiumTrendBars.innerHTML=months.map(k=>`<div style="display:flex;flex-direction:column;gap:3px;align-self:stretch;flex:1"><div class="trendBar inc" style="height:50%"><i style="height:${Math.max(6,map[k].income/max*100)}%"></i></div><div class="trendBar exp" style="height:50%"><i style="height:${Math.max(6,map[k].expense/max*100)}%"></i></div></div>`).join('');premiumTrendLabels.innerHTML=months.map(k=>`<span>${monthLabelFromKey(k)}</span>`).join('');let spend=monthlyCategorySpend(),entries=Object.entries(spend).sort((a,b)=>b[1]-a[1]).slice(0,5),catMax=Math.max(1,...entries.map(e=>e[1]));premiumCategoryViz.innerHTML=entries.length?entries.map(([cat,val])=>`<div class="catRow"><b>${cat}</b><div class="catTrack"><i style="width:${Math.max(5,val/catMax*100)}%"></i></div><span class="small">${peso(val)}</span></div>`).join(''):'<div class="reportEmpty">No category spending yet.</div>';let now=new Date(),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),daily={};data.txns.forEach(t=>{let d=new Date(t.date||Date.now());if(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&(t.type==='Expense'||(t.type==='Transfer'&&Number(t.fee||0)))){let day=d.getDate(),amt=t.type==='Transfer'?Number(t.fee||0):Number(t.amount||0);daily[day]=(daily[day]||0)+amt}});let maxDay=Math.max(1,...Object.values(daily));premiumHeatmap.innerHTML=Array.from({length:days},(_,i)=>{let day=i+1,v=daily[day]||0,l=v?Math.min(4,Math.ceil(v/maxDay*4)):0;return `<div class="heatDay l${l}" title="${day}: ${peso(v)}">${day}</div>`}).join('');let coachTitle='Financial Coach',coach='Add more transactions to unlock a stronger pattern.';if(income||expense){if(score>=90)coach='You are in an excellent financial position this month.';else if(expense>income)coach='Expenses are higher than income this month. Review top categories.';else if(rate>=30)coach=`Strong savings rate: ${rate}% of income is staying with you.`;else coach='Cash flow is positive, but there is room to improve savings.'}let next=data.bills.filter(b=>b.status!=='Paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))[0];if(next&&daysUntil(next.dueDate)<=3)coach=`${next.cardName} is ${daysUntil(next.dueDate)<0?'overdue':'due soon'} with ${peso(next.remaining)} remaining.`;premiumCoachTitle.textContent=coachTitle;premiumCoachText.textContent=coach}
+function renderReports(){let {start,end}=periodStartEnd(),acct=(document.getElementById('reportAccount')||{}).value||'All';let txns=data.txns.filter(t=>txInPeriod(t,start,end)).filter(t=>acct==='All'||t.from===acct||t.to===acct);let income=0,expense=0,cats={},sources={},activity={};txns.forEach(t=>{let amt=Number(t.amount||0);if(t.type==='Income'){if(acct==='All'||t.from===acct){income+=amt;groupAdd(sources,t.category||accountLabel(t.from),amt);groupAdd(activity,accountLabel(t.from),amt)}}else if(t.type==='Expense'){if(acct==='All'||t.from===acct){expense+=amt;groupAdd(cats,t.category||'Other',amt);groupAdd(activity,accountLabel(t.from),-amt)}}else if(t.type==='Transfer'){let fee=Number(t.fee||0);if(fee&&(acct==='All'||t.from===acct)){expense+=fee;groupAdd(cats,'Transfer Fees',fee)}if(acct!=='All'){if(t.from===acct)groupAdd(activity,accountLabel(t.from),-(amt+fee));if(t.to===acct)groupAdd(activity,accountLabel(t.to),amt)}}else if(t.type==='Card Payment'){if(acct!=='All'){if(t.from===acct)groupAdd(activity,accountLabel(t.from),-amt);if(t.to===acct)groupAdd(activity,accountLabel(t.to),amt)}}});let net=income-expense;let reportIncomeEl=document.getElementById('reportIncome'),reportExpenseEl=document.getElementById('reportExpense'),reportNetEl=document.getElementById('reportNet');if(reportIncomeEl)reportIncomeEl.textContent=peso(income);if(reportExpenseEl)reportExpenseEl.textContent=peso(expense);if(reportNetEl){reportNetEl.textContent=(net>=0?'+':'')+peso(net);reportNetEl.className='value '+(net>=0?'green':'red')}renderBars(income,expense,net);renderReportList('categoryReport',cats,'cat');renderReportList('incomeReport',sources,'income');let acctObj={};Object.entries(activity).forEach(([k,v])=>acctObj[k]=v);renderReportList('accountReport',acctObj,'acct')}function showModal(){modalBackdrop.classList.add('show');document.body.classList.add('modal-open')}function hideModalIfNone(){setTimeout(()=>{if(!document.querySelector('.sheet.show')){modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}},0)}function closeTopModal(){let sheets=[...document.querySelectorAll('.sheet.show')];if(!sheets.length)return;let top=sheets[sheets.length-1];top.classList.remove('show');hideModalIfNone()}function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}function openAddAccount(){editingAccount=null;acctTitle.textContent='Add Account';atype.value='Savings';inst.value='';aname.value='';let lf=document.getElementById('instLogo');if(lf){lf.value='otherbank';lf.dataset.manual=''}renderAccountFields();renderLogoPicker('otherbank');showModal();accountSheet.classList.add('show')}function editAccount(id){let a=data.accounts.find(x=>x.id===id); if(!a)return; editingAccount=id; acctTitle.textContent='Edit Account';atype.value=a.type;inst.value=a.institution||'';aname.value=a.name;let key=a.logoKey||banks[a.institution]||'otherbank';let lf=document.getElementById('instLogo');if(lf){lf.value=key;lf.dataset.manual='1'}renderAccountFields(a);renderLogoPicker(key);showModal();accountSheet.classList.add('show')}function renderAccountFields(a={}){let t=atype.value;if(document.getElementById('inst')){inst.style.display=t==='Cash'?'none':''; if(t==='Cash') inst.value='';} if(t==='Cash' && document.getElementById('aname') && !aname.value) aname.value='Cash on Hand';dynamicFields.innerHTML=t==='Credit Card'?`<input class="field" id="limit" type="number" placeholder="Credit limit" value="${a.limit||''}"><input class="field" id="statementDay" type="number" placeholder="Statement day, e.g. 15" value="${a.statementDay||''}"><input class="field" id="dueDay" type="number" placeholder="Due day, e.g. 5" value="${a.dueDay||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`:`<input class="field" id="balance" type="number" placeholder="${t==='Investment'?'Current value':'Opening balance'}" value="${a.balance||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`}function saveAccount(){
   try{
     const typeEl=document.getElementById('atype'), instEl=document.getElementById('inst'), nameEl=document.getElementById('aname');
     if(!typeEl) throw new Error('Account type field is missing');
@@ -402,7 +400,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.37',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.40',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -471,82 +469,6 @@ function categoryIconChoices(){return ['car','fuel','park','broom','helper','lau
   }
 })();
 
-
-
-
-
-
-/* Gold Master Phase 1: safe grouped Accounts renderer and dashboard account snapshot */
-(function(){
-  function gmAmount(a){return Number((a&&a.type)==='Credit Card'?(a.outstanding||0):(a&&a.balance||0));}
-  function gmGroupKey(a){
-    if(!a) return 'Other';
-    if(a.type==='Credit Card') return 'Credit Cards';
-    if(a.type==='Cash') return 'Cash on Hand';
-    if(a.type==='Wallet') return 'E-Wallets';
-    if(a.type==='Investment') return 'Investments';
-    return 'Bank Accounts';
-  }
-  function gmGroupIcon(name){return ({'Bank Accounts':'??','Cash on Hand':'??','E-Wallets':'??','Investments':'??','Credit Cards':'??'})[name]||'•'}
-  function gmFilterMatches(a){
-    if(acctFilter==='All') return true;
-    if(acctFilter==='Bank Accounts') return gmGroupKey(a)==='Bank Accounts';
-    if(acctFilter==='Cash') return a.type==='Cash';
-    if(acctFilter==='Wallet') return a.type==='Wallet';
-    if(acctFilter==='Investment') return a.type==='Investment';
-    if(acctFilter==='Credit Card') return a.type==='Credit Card';
-    return a.type===acctFilter;
-  }
-  function gmSafeLogo(a){try{return logo(a)}catch(e){return '<div class="bank otherbank">'+String((a&&a.institution)||'?').slice(0,3).toUpperCase()+'</div>'}}
-  function gmAccountCard(a){
-    const isCard=a.type==='Credit Card';
-    const amt=gmAmount(a);
-    const limit=Number(a.limit||0), out=Number(a.outstanding||0);
-    const pct=isCard&&limit?Math.min(100,Math.round(out/limit*100)):0;
-    const progClass=pct>=80?'danger':(pct>=50?'warn':'');
-    const typeLabel=isCard?'Credit Card':(a.type==='Cash'?'Cash':(a.type==='Wallet'?'E-Wallet':(a.type||'Account')));
-    const meta=isCard?`<div class="gmAcctMeta"><span>Limit</span><b>${peso(limit)}</b></div><div class="gmProgress ${progClass}"><i style="width:${pct}%"></i></div><div class="gmAcctMeta"><span>Utilization</span><b>${pct}%</b></div>`:`<div class="gmAcctMeta"><span>${gmGroupKey(a)}</span><b>${a.type==='Cash'?'Separate':(a.institution||a.type||'')}</b></div>`;
-    return `<div class="gmAccountCard ${isCard?'credit':''}" onclick="openAccountDetail('${a.id}')"><div class="gmAcctTop"><div>${gmSafeLogo(a)}</div><span class="gmTypeBadge">${typeLabel}</span></div><div><div class="gmAcctName">${a.name||'Unnamed Account'}</div><div class="gmAcctInst">${a.institution||a.type||''}</div></div><div class="gmAcctValue">${peso(amt)}</div>${meta}</div>`;
-  }
-  function gmEnsureAccountChips(){
-    const screenEl=document.getElementById('accounts');
-    if(!screenEl) return;
-    const chips=screenEl.querySelector('.chips');
-    if(!chips || chips.dataset.gm==='1') return;
-    chips.dataset.gm='1';
-    chips.innerHTML=`<button class="chip active" onclick="filterAccounts('All',this)">All</button><button class="chip" onclick="filterAccounts('Bank Accounts',this)">Banks</button><button class="chip" onclick="filterAccounts('Cash',this)">Cash</button><button class="chip" onclick="filterAccounts('Wallet',this)">Wallets</button><button class="chip" onclick="filterAccounts('Credit Card',this)">Cards</button><button class="chip" onclick="filterAccounts('Investment',this)">Invest</button>`;
-  }
-  window.filterAccounts=function(f,el){
-    acctFilter=f;
-    document.querySelectorAll('#accounts .chip').forEach(c=>c.classList.remove('active'));
-    if(el) el.classList.add('active');
-    renderAccounts();
-  };
-  window.renderAccounts=function(){
-    gmEnsureAccountChips();
-    const grid=document.getElementById('accountGrid');
-    if(!grid) return;
-    const accounts=(data.accounts||[]).filter(gmFilterMatches);
-    grid.classList.add('gmGrouped');
-    if(!accounts.length){
-      grid.innerHTML=`<div class="gmEmpty"><b>No accounts yet.</b><br><span>Tap Add Account to create Bank, Cash, Wallet, Credit Card, or Investment accounts.</span></div><div class="gmAddCard" onclick="openAddAccount()"><div class="gmAddIcon">+</div><div class="name">Add Account</div><div class="inst">Bank, cash, wallet, card, investment</div></div>`;
-      return;
-    }
-    const order=['Bank Accounts','Cash on Hand','E-Wallets','Investments','Credit Cards'];
-    const sections=order.map(group=>{
-      const items=accounts.filter(a=>gmGroupKey(a)===group);
-      if(!items.length) return '';
-      const total=items.reduce((s,a)=>s+gmAmount(a),0);
-      return `<section class="gmGroup"><div class="gmGroupHead"><div class="gmGroupTitle"><span class="gmGroupIcon">${gmGroupIcon(group)}</span>${group}</div><div class="gmGroupMeta">${items.length} - ${peso(total)}</div></div><div class="gmGroupGrid">${items.map(gmAccountCard).join('')}</div></section>`;
-    }).join('');
-    grid.innerHTML=`<div class="gmAccountsShell">${sections}<div class="gmAddCard" onclick="openAddAccount()"><div class="gmAddIcon">+</div><div class="name">Add Account</div><div class="inst">Bank, cash, wallet, card, investment</div></div></div>`;
-  };
-  const oldRender=window.render;
-  if(typeof oldRender==='function'){
-    window.render=function(){oldRender.apply(this,arguments);try{gmEnsureAccountChips();}catch(e){console.warn('GM account chips skipped',e)}};
-  }
-  window.addEventListener('load',function(){try{gmEnsureAccountChips();}catch(e){}});
-})();
 
 applySettings();
 (function wireTransactionSaveButton(){
@@ -632,12 +554,12 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
     if(!document.getElementById('gm3StoryLines')) return;
     const r=gm3Compute();
     const savingsRate=r.income ? Math.round((r.net/r.income)*100) : 0;
-    const top=r.catEntries[0] || ['—',0];
+    const top=r.catEntries[0] || ['-',0];
     const score = r.income ? (savingsRate>=50?'Excellent':savingsRate>=25?'Strong':savingsRate>=0?'Stable':'Review') : (r.expense?'Spending only':'New');
-    gm3Text('gm3ReportRange', `${gm3MonthName(r.start)} – ${gm3MonthName(new Date(r.end-86400000))}`);
-    gm3Text('gm3SavingsRate', r.income ? `${savingsRate}%` : '—');
+    gm3Text('gm3ReportRange', `${gm3MonthName(r.start)} - ${gm3MonthName(new Date(r.end-86400000))}`);
+    gm3Text('gm3SavingsRate', r.income ? `${savingsRate}%` : '-');
     gm3Text('gm3CashFlow', (r.net>=0?'+':'') + peso(r.net));
-    gm3Text('gm3TopCategory', top[0]==='—'?'—':top[0]);
+    gm3Text('gm3TopCategory', top[0]==='-'?'-':top[0]);
     gm3Text('gm3ActivityCount', `${r.txns.length} ${r.txns.length===1?'entry':'entries'}`);
     const pills=[];
     if(r.income) pills.push(`Income ${peso(r.income)}`);
@@ -651,19 +573,19 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
     gm3Text('gm3StorySaved', (r.net>=0?'+':'')+peso(r.net));
     gm3Text('gm3StoryScore', score);
     const lines=[];
-    if(!r.txns.length){ lines.push(['?','No activity yet for this period. Once you add transactions, PesoTrack will summarize your money story here.']); }
+    if(!r.txns.length){ lines.push(['--','No activity yet for this period. Once you add transactions, PesoTrack will summarize your money story here.']); }
     else{
-      lines.push(['?',`You earned ${peso(r.income)} and spent ${peso(r.expense)} during this period.`]);
-      if(r.income) lines.push([r.net>=0?'?':'! ', r.net>=0?`You kept ${peso(r.net)} after expenses (${savingsRate}% savings rate).`:`Expenses exceeded income by ${peso(Math.abs(r.net))}.`]);
-      if(top[1]) lines.push(['?',`Your biggest spending category was ${top[0]} at ${peso(top[1])}.`]);
-      if(r.fees) lines.push(['?',`Transfer fees totaled ${peso(r.fees)}.`]);
-      if(r.cardPayments) lines.push(['??',`You recorded ${peso(r.cardPayments)} in credit card payments. These are not double-counted as expenses.`]);
+      lines.push(['IN',`You earned ${peso(r.income)} and spent ${peso(r.expense)} during this period.`]);
+      if(r.income) lines.push([r.net>=0?'OK':'!', r.net>=0?`You kept ${peso(r.net)} after expenses (${savingsRate}% savings rate).`:`Expenses exceeded income by ${peso(Math.abs(r.net))}.`]);
+      if(top[1]) lines.push(['TOP',`Your biggest spending category was ${top[0]} at ${peso(top[1])}.`]);
+      if(r.fees) lines.push(['FE',`Transfer fees totaled ${peso(r.fees)}.`]);
+      if(r.cardPayments) lines.push(['CC',`You recorded ${peso(r.cardPayments)} in credit card payments. These are not double-counted as expenses.`]);
     }
     gm3Set('gm3StoryLines', lines.map(([i,t])=>`<div class="gm3-story-line"><i>${i}</i><span>${t}</span></div>`).join(''));
     const catEl=document.getElementById('categoryReport');
     if(catEl && r.catEntries.length){
       const max=Math.max(1,...r.catEntries.map(x=>x[1]));
-      catEl.innerHTML=r.catEntries.map(([cat,val])=>`<div class="gm3-category-card"><div><b>${(typeof catIcon==='function'?catIcon(cat):'•')} ${cat}</b><div class="sub">${Math.round((val/Math.max(1,r.expense))*100)}% of spending</div></div><b>${peso(val)}</b><div class="gm3-catbar"><i style="width:${Math.max(5,val/max*100)}%"></i></div></div>`).join('');
+      catEl.innerHTML=r.catEntries.map(([cat,val])=>`<div class="gm3-category-card"><div><b>${(typeof catIcon==='function'?catIcon(cat):'-')} ${cat}</b><div class="sub">${Math.round((val/Math.max(1,r.expense))*100)}% of spending</div></div><b>${peso(val)}</b><div class="gm3-catbar"><i style="width:${Math.max(5,val/max*100)}%"></i></div></div>`).join('');
     }
   };
   const prev=window.renderReports;
@@ -691,13 +613,7 @@ function premiumAccountCard(a){
     <div class="premiumValue">${peso(amt)}</div>${meta}
   </div>`;
 }
-function premiumMiniAccount(a){
-  const amt=accountAmount(a);
-  const isCard=a.type==='Credit Card';
-  const subtitle=isCard?'Outstanding':(a.type==='Cash'?'Cash on Hand':(a.institution||a.type||'Account'));
-  const trend=isCard?`Limit ${peso(a.limit||0)}`:(a.type==='Cash'?'Separate from savings':(a.type==='Investment'?'Investment value':(a.type==='Wallet'?'E-Wallet balance':'Bank balance')));
-  return `<div class="premiumMini" onclick="openAccountDetail('${jsString(a.id)}')">${logo(a)}<b>${htmlText(a.name,'Unnamed Account')}</b><div class="sub">${htmlText(subtitle)}</div><div class="miniBal">${peso(amt)}</div><div class="miniTrend">${htmlText(trend)}</div></div>`;
-}
+
 function renderBillCard(b,history=false){
   b.status=billStatus(b);
   let d=daysUntil(b.dueDate),dueText=b.status==='Paid'?'Paid':(d<0?`${Math.abs(d)}d overdue`:d===0?'Due today':`Due in ${d}d`);
@@ -802,24 +718,11 @@ function moveTransactionsToReportEnd(){
 
 /* Reports cleanup: focused views, fewer duplicate analytics panels. */
 (function(){
-  let reportView=data?.settings?.reportView||'Overview';
   function panelByTitle(title){
     return [...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()===title);
   }
   function setHidden(el,hidden){ if(el)el.classList.toggle('reportHidden',!!hidden); }
-  function ensureReportViewTabs(){
-    let tabs=document.getElementById('reportViewTabs');
-    if(tabs)tabs.remove();
-  }
-  window.setReportView=function(view){
-    reportView=view;
-    data.settings.reportView=view;
-    try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){};
-    applyReportsCleanup();
-  };
   function applyReportsCleanup(){
-    reportView=data.settings.reportView||reportView||'Overview';
-    ensureReportViewTabs();
     setHidden(document.querySelector('#reports .gm3-story'),true);
     setHidden(document.getElementById('analyticsHealthHero'),true);
     setHidden(panelByTitle('Analytics & Insights'),true);
@@ -945,71 +848,12 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     }
     renderBudgetReportForSelectedMonth();
   }
-  const oldSetReportView=window.setReportView;
-  window.setReportView=function(view){
-    if(typeof oldSetReportView==='function')oldSetReportView(view);
-    renderReports();
-  };
   const previous=window.renderReports;
   window.renderReports=function(){
     if(typeof previous==='function')previous();
     updateReportsScope();
   };
   window.addEventListener('load',()=>setTimeout(()=>{try{updateReportsScope();}catch(e){}},360));
-})();
-
-/* Reports tap reliability: stable delegated view-tab clicks. */
-(function(){
-  const validViews=['Overview','Transactions','Categories','Budgets'];
-  function normalizeReportView(view){
-    return validViews.includes(view)?view:'Overview';
-  }
-  function hardenReportViewTabs(){
-    const tabs=document.getElementById('reportViewTabs');
-    if(!tabs)return;
-    tabs.querySelectorAll('button').forEach(btn=>{
-      const view=normalizeReportView(btn.dataset.reportView||btn.textContent.trim());
-      btn.dataset.reportView=view;
-      btn.type='button';
-      btn.removeAttribute('onclick');
-      btn.classList.toggle('active',(data.settings.reportView||'Overview')===view);
-    });
-  }
-  const previousSetReportView=window.setReportView;
-  window.setReportView=function(view){
-    const next=normalizeReportView(view);
-    data.settings.reportView=next;
-    try{ localStorage.setItem(KEY,JSON.stringify(data)); }catch(e){}
-    if(typeof previousSetReportView==='function'){
-      try{ previousSetReportView(next); }catch(e){}
-    }
-    hardenReportViewTabs();
-    renderReports();
-  };
-  document.addEventListener('click',function(e){
-    const btn=e.target.closest&&e.target.closest('#reportViewTabs button');
-    if(!btn)return;
-    e.preventDefault();
-    e.stopPropagation();
-    window.setReportView(btn.dataset.reportView||btn.textContent.trim());
-  },true);
-  const previous=window.renderReports;
-  window.renderReports=function(){
-    if(typeof previous==='function')previous();
-    hardenReportViewTabs();
-  };
-  window.addEventListener('load',()=>setTimeout(()=>{try{hardenReportViewTabs();}catch(e){}},420));
-})();
-
-/* Reports cleanup: keep the active tab setter direct after legacy wrappers load. */
-(function(){
-  const validViews=['Overview','Transactions','Categories','Budgets'];
-  window.setReportView=function(view){
-    const next=validViews.includes(view)?view:'Overview';
-    data.settings.reportView=next;
-    try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}
-    renderReports();
-  };
 })();
 
 /* Bills support: shared setup styling and card-account shortcut. */
