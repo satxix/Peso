@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v173';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v174';
 const ASSETS = [
   './',
   './index.html',
@@ -20,7 +20,9 @@ const ASSETS = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS))
+      .then(cache => Promise.all(ASSETS.map(asset => fetch(asset).then(response => {
+        if (response.ok) return cache.put(asset, response);
+      }).catch(() => null))))
       .then(() => self.skipWaiting())
   );
 });
@@ -41,16 +43,13 @@ self.addEventListener('fetch', event => {
 
   if (isAppShell) {
     event.respondWith(
-      caches.match('./index.html').then(cached => {
-        const update = fetch(event.request)
-          .then(response => {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
-            return response;
-          })
-          .catch(() => cached);
-        return cached || update;
-      })
+      fetch(event.request)
+        .then(response => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          return response;
+        })
+        .catch(() => caches.match('./index.html'))
     );
     return;
   }
