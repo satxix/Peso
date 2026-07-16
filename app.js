@@ -143,7 +143,6 @@ function renderCreditCenter(){
 }
 function renderBills(){
   renderCreditCenter();
-  if(typeof billList!=='undefined'&&billList)billList.innerHTML='';
 }
 function txInPeriod(t,start,end){let d=new Date(t.date||Date.now());return d>=start&&d<end}
 function groupAdd(obj,key,amt){obj[key]=(obj[key]||0)+Number(amt||0)}
@@ -605,13 +604,6 @@ function logo(a){let key=cls(a),label=(a?.institution||a?.name||'?');return `<di
 function accountLabel(id){let a=data.accounts.find(x=>x.id===id);return a?`${a.name||'Account'} (${a.institution||a.type||'Account'})`:'Unknown account'}
 function safeAccountLabel(id){return htmlText(accountLabel(id),'Unknown account')}
 function safeDateText(v){return htmlText(v||'')}
-
-function renderBillCard(b,history=false){
-  b.status=billStatus(b);
-  let d=daysUntil(b.dueDate),dueText=b.status==='Paid'?'Paid':(d<0?`${Math.abs(d)}d overdue`:d===0?'Due today':`Due in ${d}d`);
-  let paid=Math.max(0,(b.amount||0)-(b.remaining||0)),pays=billPayments(b);
-  return `<div class="billCard"><div class="billTop"><div><b>${htmlText(b.cardName,'Card Bill')}</b><div class="sub">${htmlText(billPeriod(b))}</div></div><span class="statusPill ${safeClass(b.status)}">${htmlText(b.status)}</span></div><div class="billMeta"><div><span class="small">Statement</span><b>${peso(b.amount)}</b></div><div><span class="small">Remaining</span><b>${peso(b.remaining)}</b></div><div><span class="small">Due date</span><b>${safeDateText(b.dueDate)}</b></div><div><span class="small">${history?'Paid':'Status'}</span><b>${history?peso(paid):htmlText(dueText)}</b></div></div>${pays.length?`<div class="payHistory"><div class="small">Payments</div>${pays.slice(0,3).map(p=>`<div class="historyRow"><span>${txnDate(p)} - ${safeAccountLabel(p.from)}</span><b>${peso(p.amount)}</b></div>`).join('')}</div>`:''}${b.status!=='Paid'?`<button class="save" onclick="openSettle('${jsString(b.id)}')">Settle Bill</button>`:''}</div>`;
-}
 
 function renderReportList(target,obj,kind){let entries=Object.entries(obj).sort((a,b)=>b[1]-a[1]);document.getElementById(target).innerHTML=entries.length?entries.map(([k,v])=>`<div class="reportLine"><div><b>${kind==='cat'?catIcon(k)+' ':''}${htmlText(k)}</b><div class="sub">${kind==='acct'?'Selected period activity':'Total for '+reportPeriod.toLowerCase()}</div></div><b>${peso(v)}</b></div>`).join(''):`<div class="reportEmpty">No ${kind==='income'?'income':kind==='cat'?'expenses':'activity'} for this period.</div>`}
 function txnSummary(t){let left='',right='',tone='neutral',label=t.type||'Entry';if(t.type==='Income'){left=htmlText(t.category||'Income')+' - Deposit to '+safeAccountLabel(t.from);right='+'+peso(t.amount);tone='income';label='Income'}else if(t.type==='Expense'){left=htmlText(t.category||'Expense')+' - '+safeAccountLabel(t.from);right='-'+peso(t.amount);tone='expense';label='Expense'}else if(t.type==='Transfer'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to)+(Number(t.fee||0)?' - Fee '+peso(t.fee):'');right=peso(t.amount);tone='transfer';label='Transfer'}else if(t.type==='Card Payment'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to);right='Paid '+peso(t.amount);tone='payment';label='Payment'}return {left,right,tone,label}}
