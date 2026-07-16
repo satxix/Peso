@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Generic card logo">
+  <rect width="120" height="120" rx="28" fill="#f0fdfa"/>
+  <rect x="22" y="34" width="76" height="52" rx="12" fill="#2f5368"/>
+  <path d="M22 47h76v11H22z" fill="#2898ed"/>
+  <rect x="34" y="68" width="22" height="6" rx="3" fill="#f6d365"/>
+  <rect x="62" y="68" width="22" height="6" rx="3" fill="#c8f7e2"/>
+</svg>

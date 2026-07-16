@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v180';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v197';
 const ASSETS = [
   './',
   './index.html',
@@ -14,7 +14,44 @@ const ASSETS = [
   './icon-384.png',
   './icon-512.png',
   './icon-maskable-192.png',
-  './icon-maskable-512.png'
+  './icon-maskable-512.png',
+  './logos/aub-clean.png',
+  './logos/BDO.svg',
+  './logos/bdo-app-v2.png',
+  './logos/bdo-clean-local.png',
+  './logos/BPI.svg',
+  './logos/bpi-app-v2.png',
+  './logos/bpi-clean.png',
+  './logos/bpi-clean-local.png',
+  './logos/chinabank.svg',
+  './logos/cimb.svg',
+  './logos/cimb-clean.png',
+  './logos/eastwest-clean.png',
+  './logos/GCash.svg',
+  './logos/gcash-clean.png',
+  './logos/gotyme.svg',
+  './logos/gotyme-clean.png',
+  './logos/hsbc.svg',
+  './logos/hsbc-clean.png',
+  './logos/landbank-clean.png',
+  './logos/maribank.svg',
+  './logos/maribank-clean.png',
+  './logos/maya-clean.png',
+  './logos/metrobank.svg',
+  './logos/metrobank-app-v2.png',
+  './logos/metrobank-clean.png',
+  './logos/ownbank-clean.png',
+  './logos/PNB.svg',
+  './logos/pnb-app-v2.png',
+  './logos/pnb-clean.png',
+  './logos/rcbc-clean.png',
+  './logos/robinsonsbank-clean.png',
+  './logos/securitybank-clean.png',
+  './logos/standardchartered-clean.png',
+  './logos/tonik-clean.png',
+  './logos/unionbank.svg',
+  './logos/unionbank-app-v2.png',
+  './logos/unionbank-clean.png'
 ];
 
 self.addEventListener('install', event => {

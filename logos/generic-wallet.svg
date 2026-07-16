@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Generic wallet logo">
+  <rect width="120" height="120" rx="28" fill="#eff6ff"/>
+  <path d="M25 39c0-7 5-12 12-12h47c7 0 12 5 12 12v42c0 7-5 12-12 12H37c-7 0-12-5-12-12V39Z" fill="#2f5368"/>
+  <path d="M25 49h70v17H72c-7 0-12-5-12-11v-6Z" fill="#2898ed"/>
+  <circle cx="78" cy="58" r="6" fill="#f6d365"/>
+</svg>
