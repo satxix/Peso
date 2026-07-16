@@ -390,7 +390,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.55',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.56',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -937,25 +937,24 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
 (function(){
   const css=document.createElement('style');
   css.textContent=`
-    #accounts #accountGrid{display:block!important}
+    #accounts #accountGrid{display:block!important;padding-bottom:calc(128px + env(safe-area-inset-bottom))}
     #accounts > .chips{display:none!important}
-    #accounts .acctGroup{margin:0 0 16px}
+    #accounts .acctGroup{margin:0 0 14px}
     #accounts .acctGroupHead{width:100%;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px;text-align:left}
     #accounts .acctGroupName{font-size:13px;font-weight:950;color:var(--text)}
-    #accounts .acctGroupHead span{font-size:11px;color:var(--muted);font-weight:850;white-space:nowrap}
-    #accounts .acctGroupHead .acctChevron{color:var(--accent-2);font-size:14px;font-weight:950;margin-left:6px}
+    #accounts .acctGroupMeta{font-size:11px;color:var(--muted);font-weight:850;white-space:nowrap}
     #accounts .acctGroupTitle{display:flex;align-items:center;gap:7px;min-width:0}
     #accounts .acctGroup.collapsed .acctList{display:none}
     #accounts .acctGroup.collapsed{margin-bottom:10px}
-    #accounts .acctList{display:grid;gap:8px}
-    #accounts .acctRow{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:18px;padding:10px 11px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.08)}
-    #accounts .acctRow .bank{width:34px;height:34px;border-radius:13px;font-size:10px;margin:0}
+    #accounts .acctList{display:grid;gap:7px}
+    #accounts .acctRow{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;padding:9px 10px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+    #accounts .acctRow .bank{width:32px;height:32px;border-radius:12px;font-size:10px;margin:0}
     #accounts .acctMain{min-width:0}
     #accounts .acctName{display:block;font-size:14px;font-weight:950;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     #accounts .acctMeta{display:block;margin-top:4px;min-width:0}
     #accounts .acctInst{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    #accounts .acctRight{text-align:right;min-width:88px}
-    #accounts .acctAmount{display:block;font-size:16px;font-weight:950;line-height:1.1;font-variant-numeric:tabular-nums}
+    #accounts .acctRight{text-align:right;min-width:82px}
+    #accounts .acctAmount{display:block;font-size:15px;font-weight:950;line-height:1.1;font-variant-numeric:tabular-nums}
     #accounts .acctHint{display:block;font-size:10px;color:var(--muted);font-weight:850;margin-top:4px;white-space:nowrap}
     #accounts .acctUtil{height:5px;background:var(--card-inset,rgba(255,255,255,.07));border-radius:999px;overflow:hidden;margin-top:6px}
     #accounts .acctUtil i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
@@ -963,7 +962,7 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     #accounts .acctUtil.danger i{background:var(--red)}
     #accounts .top .iconbtn{display:none!important}
     #accounts .acctAddRow{border-style:dashed;grid-template-columns:auto 1fr;background:color-mix(in srgb,var(--card) 90%,var(--bg))}
-    #accounts .acctAddIcon{width:34px;height:34px;border-radius:13px;display:grid;place-items:center;background:var(--card-inset,rgba(255,255,255,.07));color:var(--accent-2);font-size:18px;font-weight:950}
+    #accounts .acctAddIcon{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:var(--card-inset,rgba(255,255,255,.07));color:var(--accent-2);font-size:18px;font-weight:950}
     @media(max-width:370px){#accounts .acctRow{grid-template-columns:auto minmax(0,1fr);padding:10px}#accounts .acctRight{grid-column:2;text-align:left;min-width:0}#accounts .acctAmount{font-size:15px}#accounts .acctHint{display:inline-block;margin-right:8px}}
   `;
   document.head.appendChild(css);
@@ -977,10 +976,7 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
       const limit=Number(a.limit||0), out=Number(a.outstanding||0);
       return limit?`${Math.round(out/limit*100)}% used`:'Outstanding';
     }
-    if(a.type==='Cash')return 'On hand';
-    if(a.type==='Wallet')return 'Wallet';
-    if(a.type==='Investment')return 'Value';
-    return 'Balance';
+    return '';
   }
   function accountRow(a){
     const amount=accountGlimpseAmount(a);
@@ -988,10 +984,11 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     const util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;
     const utilClass=util>=80?'danger':util>=50?'warn':'';
     const utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';
+    const hint=accountGlimpseHint(a);
     return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">
       ${logo(a)}
       <span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span>
-      <span class="acctRight"><b class="acctAmount">${peso(amount)}</b><span class="acctHint">${htmlText(accountGlimpseHint(a))}</span>${utilBar}</span>
+      <span class="acctRight"><b class="acctAmount">${peso(amount)}</b>${hint?`<span class="acctHint">${htmlText(hint)}</span>`:''}${utilBar}</span>
     </button>`;
   }
   function renderAccountRows(){
@@ -1003,12 +1000,12 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     arr.forEach(a=>{const key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});
     const sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{
       const total=groups[k].reduce((s,a)=>s+accountGlimpseAmount(a),0);
-      return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span><i class="acctChevron">-</i></span><span>${groups[k].length} account${groups[k].length===1?'':'s'} - ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`;
+      return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span></span><span class="acctGroupMeta">${groups[k].length} account${groups[k].length===1?'':'s'} &middot; ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`;
     }).join('');
     grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b>Tap + to add banks, cash on hand, wallets, cards, or investments.</div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;
     (data.settings.collapsedAccountGroups||[]).forEach(k=>{
       const sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);
-      if(sec){sec.classList.add('collapsed');const chev=sec.querySelector('.acctChevron');if(chev)chev.textContent='+';}
+      if(sec)sec.classList.add('collapsed');
     });
   }
   window.toggleAcctGroup=function(k){
