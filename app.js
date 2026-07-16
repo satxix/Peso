@@ -73,7 +73,13 @@ function accountSubtitleLine(a){
   if(a.type==='Investment')return 'Investment';
   return a.institution||a.type||'Account';
 }
-function renderAccounts(){let arr=data.accounts.filter(a=>acctFilter==='All'||a.type===acctFilter);accountGrid.innerHTML=arr.map(a=>{try{return premiumAccountCard(a)}catch(e){console.error('Account card render failed',e,a);return `<div class="card" onclick="editAccount('${a.id}')">${logo(a)}<div class="name">${a.name||'Account'}</div><div class="inst">${a.institution||a.type||''}</div><div class="bal">${peso(a.type==='Credit Card'?a.outstanding:a.balance)}</div></div>`}}).join('')+`<div class="premiumAddCard" onclick="openAddAccount()"><div class="premiumAddIcon">+</div><div class="name">Add Account</div><div class="inst">Bank, cash, wallet, card, investment</div></div>`}function filterAccounts(f,el){acctFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderAccounts()}function billStatus(b){return b.remaining<=0?'Paid':(b.remaining<(b.amount||0)?'Partial':'Unpaid')}
+function accountGroupLabel(type){return type==='Savings'?'Banks':type==='Credit Card'?'Cards':type==='Wallet'?'E-Wallets':type==='Cash'?'Cash':type==='Investment'?'Investments':'Other'}
+function accountGlimpseAmount(a){return a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0)}
+function accountGlimpseHint(a){if(a.type==='Credit Card'){let limit=Number(a.limit||0),out=Number(a.outstanding||0);return limit?`${Math.round(out/limit*100)}% used`:'Outstanding'}return ''}
+function accountRow(a){let amount=accountGlimpseAmount(a);let limit=Number(a.limit||0),out=Number(a.outstanding||0);let util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;let utilClass=util>=80?'danger':util>=50?'warn':'';let utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';let hint=accountGlimpseHint(a);return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">${logo(a)}<span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span><span class="acctRight"><b class="acctAmount">${peso(amount)}</b>${hint?`<span class="acctHint">${htmlText(hint)}</span>`:''}${utilBar}</span></button>`}
+function renderAccounts(){let grid=document.getElementById('accountGrid');if(!grid)return;let arr=data.accounts.filter(a=>acctFilter==='All'||a.type===acctFilter);let order=['Savings','Cash','Wallet','Credit Card','Investment'];let groups={};arr.forEach(a=>{let key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});let sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{let total=groups[k].reduce((sum,a)=>sum+accountGlimpseAmount(a),0);return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span></span><span class="acctGroupMeta">${groups[k].length} account${groups[k].length===1?'':'s'} &middot; ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`}).join('');grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b>Tap + to add banks, cash on hand, wallets, cards, or investments.</div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;(data.settings.collapsedAccountGroups||[]).forEach(k=>{let sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);if(sec)sec.classList.add('collapsed')})}
+function toggleAcctGroup(k){data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];let set=new Set(data.settings.collapsedAccountGroups);if(set.has(k))set.delete(k);else set.add(k);data.settings.collapsedAccountGroups=[...set];try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}renderAccounts()}
+function filterAccounts(f,el){acctFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');renderAccounts()}function billStatus(b){return b.remaining<=0?'Paid':(b.remaining<(b.amount||0)?'Partial':'Unpaid')}
 function billPeriod(b){if(b.periodStart&&b.periodEnd)return `${b.periodStart} - ${b.periodEnd}`;let end=b.statementDate||'';let card=data.accounts.find(a=>a.id===b.cardId)||{};let sd=card.statementDay||new Date(end||Date.now()).getDate();let e=new Date(end||Date.now());let start=new Date(e.getFullYear(),e.getMonth()-1,sd+1);return `${start.toISOString().slice(0,10)} - ${end}`}
 function shortStatementDate(d){let x=new Date(d);return isNaN(x)?String(d||''):x.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
 function compactBillPeriod(b){let start=b.periodStart,end=b.periodEnd||b.statementDate;if(!start||!end){let card=data.accounts.find(a=>a.id===b.cardId)||{};let e=new Date(end||b.dueDate||Date.now());let sd=card.statementDay||e.getDate();start=new Date(e.getFullYear(),e.getMonth()-1,sd+1);end=end||e}return shortStatementDate(start)+' - '+shortStatementDate(end)}
@@ -590,19 +596,6 @@ function logo(a){let key=cls(a),label=(a?.institution||a?.name||'?');return `<di
 function accountLabel(id){let a=data.accounts.find(x=>x.id===id);return a?`${a.name||'Account'} (${a.institution||a.type||'Account'})`:'Unknown account'}
 function safeAccountLabel(id){return htmlText(accountLabel(id),'Unknown account')}
 function safeDateText(v){return htmlText(v||'')}
-function premiumAccountCard(a){
-  const isCard=a.type==='Credit Card';
-  const amt=accountAmount(a);
-  const limit=Number(a.limit||0), out=Number(a.outstanding||0);
-  const pct=isCard&&limit?Math.min(100,Math.round(out/limit*100)):0;
-  const progClass=pct>=80?'danger':(pct>=50?'warn':'');
-  const meta=isCard?`<div class="premiumMetaRow"><span>Limit</span><b>${peso(limit)}</b></div><div class="premiumProgress ${progClass}"><i style="width:${pct}%"></i></div><div class="premiumMetaRow"><span>Due day</span><b>${htmlText(a.dueDay||'-')}</b></div>`:`<div class="premiumMetaRow"><span>${htmlText(accountSubtitleLine(a))}</span><b>${htmlText(a.type||'Account')}</b></div>`;
-  return `<div class="premiumAccountCard ${isCard?'credit':''}" onclick="openAccountDetail('${jsString(a.id)}')">
-    <div class="premiumAccountTop"><div>${logo(a)}</div><span class="premiumBadge">${htmlText(a.type||'Account')}</span></div>
-    <div><div class="premiumAcctName">${htmlText(a.name,'Unnamed Account')}</div><div class="premiumAcctInst">${htmlText(a.institution||a.type||'')}</div></div>
-    <div class="premiumValue">${peso(amt)}</div>${meta}
-  </div>`;
-}
 
 function renderBillCard(b,history=false){
   b.status=billStatus(b);
@@ -853,92 +846,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     setTimeout(()=>{try{if(document.getElementById('atype')){atype.value='Credit Card';renderAccountFields();}}catch(e){}},0);
   };
 })();
-/* Accounts glimpse pass: compact rows first, detail sheet on tap. */
-(function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    #accounts #accountGrid{display:block!important;padding-bottom:calc(128px + env(safe-area-inset-bottom))}
-    #accounts > .chips{display:none!important}
-    #accounts .acctGroup{margin:0 0 14px}
-    #accounts .acctGroupHead{width:100%;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px;text-align:left}
-    #accounts .acctGroupName{font-size:13px;font-weight:950;color:var(--text)}
-    #accounts .acctGroupMeta{font-size:11px;color:var(--muted);font-weight:850;white-space:nowrap}
-    #accounts .acctGroupTitle{display:flex;align-items:center;gap:7px;min-width:0}
-    #accounts .acctGroup.collapsed .acctList{display:none}
-    #accounts .acctGroup.collapsed{margin-bottom:10px}
-    #accounts .acctList{display:grid;gap:7px}
-    #accounts .acctRow{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;padding:9px 10px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.08)}
-    #accounts .acctRow .bank{width:32px;height:32px;border-radius:12px;font-size:10px;margin:0}
-    #accounts .acctMain{min-width:0}
-    #accounts .acctName{display:block;font-size:14px;font-weight:950;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    #accounts .acctMeta{display:block;margin-top:4px;min-width:0}
-    #accounts .acctInst{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    #accounts .acctRight{text-align:right;min-width:82px}
-    #accounts .acctAmount{display:block;font-size:15px;font-weight:950;line-height:1.1;font-variant-numeric:tabular-nums}
-    #accounts .acctHint{display:block;font-size:10px;color:var(--muted);font-weight:850;margin-top:4px;white-space:nowrap}
-    #accounts .acctUtil{height:5px;background:var(--card-inset,rgba(255,255,255,.07));border-radius:999px;overflow:hidden;margin-top:6px}
-    #accounts .acctUtil i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
-    #accounts .acctUtil.warn i{background:var(--orange)}
-    #accounts .acctUtil.danger i{background:var(--red)}
-    #accounts .top .iconbtn{display:none!important}
-    #accounts .acctAddRow{border-style:dashed;grid-template-columns:auto 1fr;background:color-mix(in srgb,var(--card) 90%,var(--bg))}
-    #accounts .acctAddIcon{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:var(--card-inset,rgba(255,255,255,.07));color:var(--accent-2);font-size:18px;font-weight:950}
-    @media(max-width:370px){#accounts .acctRow{grid-template-columns:auto minmax(0,1fr);padding:10px}#accounts .acctRight{grid-column:2;text-align:left;min-width:0}#accounts .acctAmount{font-size:15px}#accounts .acctHint{display:inline-block;margin-right:8px}}
-  `;
-  document.head.appendChild(css);
-
-  function accountGroupLabel(type){
-    return type==='Savings'?'Banks':type==='Credit Card'?'Cards':type==='Wallet'?'E-Wallets':type==='Cash'?'Cash':type==='Investment'?'Investments':'Other';
-  }
-  function accountGlimpseAmount(a){return a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0)}
-  function accountGlimpseHint(a){
-    if(a.type==='Credit Card'){
-      const limit=Number(a.limit||0), out=Number(a.outstanding||0);
-      return limit?`${Math.round(out/limit*100)}% used`:'Outstanding';
-    }
-    return '';
-  }
-  function accountRow(a){
-    const amount=accountGlimpseAmount(a);
-    const limit=Number(a.limit||0), out=Number(a.outstanding||0);
-    const util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;
-    const utilClass=util>=80?'danger':util>=50?'warn':'';
-    const utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';
-    const hint=accountGlimpseHint(a);
-    return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">
-      ${logo(a)}
-      <span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span>
-      <span class="acctRight"><b class="acctAmount">${peso(amount)}</b>${hint?`<span class="acctHint">${htmlText(hint)}</span>`:''}${utilBar}</span>
-    </button>`;
-  }
-  function renderAccountRows(){
-    const grid=document.getElementById('accountGrid');
-    if(!grid)return;
-    const arr=data.accounts.filter(a=>acctFilter==='All'||a.type===acctFilter);
-    const order=['Savings','Cash','Wallet','Credit Card','Investment'];
-    const groups={};
-    arr.forEach(a=>{const key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});
-    const sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{
-      const total=groups[k].reduce((s,a)=>s+accountGlimpseAmount(a),0);
-      return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span></span><span class="acctGroupMeta">${groups[k].length} account${groups[k].length===1?'':'s'} &middot; ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`;
-    }).join('');
-    grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b>Tap + to add banks, cash on hand, wallets, cards, or investments.</div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;
-    (data.settings.collapsedAccountGroups||[]).forEach(k=>{
-      const sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);
-      if(sec)sec.classList.add('collapsed');
-    });
-  }
-  window.toggleAcctGroup=function(k){
-    data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];
-    const set=new Set(data.settings.collapsedAccountGroups);
-    if(set.has(k))set.delete(k);else set.add(k);
-    data.settings.collapsedAccountGroups=[...set];
-    try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
-    renderAccountRows();
-  };
-  window.renderAccounts=renderAccountRows;
-})();
-
 (function(){
   function esc(v){return String(v??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
   function js(v){return String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}

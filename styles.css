@@ -988,3 +988,31 @@ body{
 .bankLogoMark.unionbank{background:#f8fafc!important;color:#f97316!important;border:1px solid rgba(249,115,22,.35)!important}
 .bankLogoMark.pnb{background:#f8fafc!important;color:#1750a4!important;border:1px solid rgba(23,80,164,.35)!important}.bankLogoMark.hsbc{background:#f8fafc!important;color:#dc2626!important;border:1px solid rgba(220,38,38,.35)!important}
 .bankLogoMark.bdo b,.bankLogoMark.bpi b,.bankLogoMark.metrobank b,.bankLogoMark.unionbank b,.bankLogoMark.pnb b,.bankLogoMark.hsbc b{margin:0!important;font-size:12px!important;letter-spacing:0!important;color:currentColor!important}
+/* Accounts: permanent compact grouped rows */
+#accounts #accountGrid{display:block!important;padding-bottom:calc(128px + env(safe-area-inset-bottom))}
+#accounts > .chips{display:none!important}
+#accounts .acctGroup{margin:0 0 14px}
+#accounts .acctGroupHead{width:100%;border:0;background:transparent;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px;padding:0 2px;text-align:left}
+#accounts .acctGroupName{font-size:13px;font-weight:950;color:var(--text)}
+#accounts .acctGroupMeta{font-size:11px;color:var(--muted);font-weight:850;white-space:nowrap}
+#accounts .acctGroupTitle{display:flex;align-items:center;gap:7px;min-width:0}
+#accounts .acctGroup.collapsed .acctList{display:none}
+#accounts .acctGroup.collapsed{margin-bottom:10px}
+#accounts .acctList{display:grid;gap:7px}
+#accounts .acctRow{width:100%;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;padding:9px 10px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+#accounts .acctRow .bank{width:32px;height:32px;border-radius:12px;font-size:10px;margin:0}
+#accounts .acctMain{min-width:0}
+#accounts .acctName{display:block;font-size:14px;font-weight:950;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#accounts .acctMeta{display:block;margin-top:4px;min-width:0}
+#accounts .acctInst{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#accounts .acctRight{text-align:right;min-width:82px}
+#accounts .acctAmount{display:block;font-size:15px;font-weight:950;line-height:1.1;font-variant-numeric:tabular-nums}
+#accounts .acctHint{display:block;font-size:10px;color:var(--muted);font-weight:850;margin-top:4px;white-space:nowrap}
+#accounts .acctUtil{height:5px;background:var(--card-inset,rgba(255,255,255,.07));border-radius:999px;overflow:hidden;margin-top:6px}
+#accounts .acctUtil i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
+#accounts .acctUtil.warn i{background:var(--orange)}
+#accounts .acctUtil.danger i{background:var(--red)}
+#accounts .top .iconbtn{display:none!important}
+#accounts .acctAddRow{border-style:dashed;grid-template-columns:auto 1fr;background:color-mix(in srgb,var(--card) 90%,var(--bg))}
+#accounts .acctAddIcon{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:var(--card-inset,rgba(255,255,255,.07));color:var(--accent-2);font-size:18px;font-weight:950}
+@media(max-width:370px){#accounts .acctRow{grid-template-columns:auto minmax(0,1fr);padding:10px}#accounts .acctRight{grid-column:2;text-align:left;min-width:0}#accounts .acctAmount{font-size:15px}#accounts .acctHint{display:inline-block;margin-right:8px}}
