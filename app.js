@@ -555,7 +555,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   function gm3Set(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
   function gm3Text(id,text){ const el=document.getElementById(id); if(el) el.textContent=text; }
   window.renderGoldMasterReports = function(){
-    if(!document.getElementById('gm3StoryLines')) return;
+    if(!document.getElementById('gm3ReportPills')) return;
     const r=gm3Compute();
     const savingsRate=r.income ? Math.round((r.net/r.income)*100) : 0;
     const top=r.catEntries[0] || ['-',0];
@@ -571,21 +571,6 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
     if(r.fees) pills.push(`Fees ${peso(r.fees)}`);
     if(r.cardPayments) pills.push(`Card payments ${peso(r.cardPayments)}`);
     gm3Set('gm3ReportPills', pills.length?pills.map(p=>`<span class="gm3-pill">${p}</span>`).join(''):'<span class="gm3-pill">Add transactions to build your story</span>');
-    gm3Text('gm3StoryTitle', reportPeriod==='Today'?'Today at a glance':`${reportPeriod} at a glance`);
-    gm3Text('gm3StoryIncome', peso(r.income));
-    gm3Text('gm3StoryExpense', peso(r.expense));
-    gm3Text('gm3StorySaved', (r.net>=0?'+':'')+peso(r.net));
-    gm3Text('gm3StoryScore', score);
-    const lines=[];
-    if(!r.txns.length){ lines.push(['--','No activity yet for this period. Once you add transactions, PesoTrack will summarize your money story here.']); }
-    else{
-      lines.push(['IN',`You earned ${peso(r.income)} and spent ${peso(r.expense)} during this period.`]);
-      if(r.income) lines.push([r.net>=0?'OK':'!', r.net>=0?`You kept ${peso(r.net)} after expenses (${savingsRate}% savings rate).`:`Expenses exceeded income by ${peso(Math.abs(r.net))}.`]);
-      if(top[1]) lines.push(['TOP',`Your biggest spending category was ${top[0]} at ${peso(top[1])}.`]);
-      if(r.fees) lines.push(['FE',`Transfer fees totaled ${peso(r.fees)}.`]);
-      if(r.cardPayments) lines.push(['CC',`You recorded ${peso(r.cardPayments)} in credit card payments. These are not double-counted as expenses.`]);
-    }
-    gm3Set('gm3StoryLines', lines.map(([i,t])=>`<div class="gm3-story-line"><i>${i}</i><span>${t}</span></div>`).join(''));
     const catEl=document.getElementById('categoryReport');
     if(catEl && r.catEntries.length){
       const max=Math.max(1,...r.catEntries.map(x=>x[1]));
@@ -605,7 +590,7 @@ function accountLabel(id){let a=data.accounts.find(x=>x.id===id);return a?`${a.n
 function safeAccountLabel(id){return htmlText(accountLabel(id),'Unknown account')}
 function safeDateText(v){return htmlText(v||'')}
 
-function renderReportList(target,obj,kind){let entries=Object.entries(obj).sort((a,b)=>b[1]-a[1]);document.getElementById(target).innerHTML=entries.length?entries.map(([k,v])=>`<div class="reportLine"><div><b>${kind==='cat'?catIcon(k)+' ':''}${htmlText(k)}</b><div class="sub">${kind==='acct'?'Selected period activity':'Total for '+reportPeriod.toLowerCase()}</div></div><b>${peso(v)}</b></div>`).join(''):`<div class="reportEmpty">No ${kind==='income'?'income':kind==='cat'?'expenses':'activity'} for this period.</div>`}
+function renderReportList(target,obj,kind){let el=document.getElementById(target);if(!el)return;let entries=Object.entries(obj).sort((a,b)=>b[1]-a[1]);el.innerHTML=entries.length?entries.map(([k,v])=>`<div class="reportLine"><div><b>${kind==='cat'?catIcon(k)+' ':''}${htmlText(k)}</b><div class="sub">${kind==='acct'?'Selected period activity':'Total for '+reportPeriod.toLowerCase()}</div></div><b>${peso(v)}</b></div>`).join(''):`<div class="reportEmpty">No ${kind==='income'?'income':kind==='cat'?'expenses':'activity'} for this period.</div>`}
 function txnSummary(t){let left='',right='',tone='neutral',label=t.type||'Entry';if(t.type==='Income'){left=htmlText(t.category||'Income')+' - Deposit to '+safeAccountLabel(t.from);right='+'+peso(t.amount);tone='income';label='Income'}else if(t.type==='Expense'){left=htmlText(t.category||'Expense')+' - '+safeAccountLabel(t.from);right='-'+peso(t.amount);tone='expense';label='Expense'}else if(t.type==='Transfer'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to)+(Number(t.fee||0)?' - Fee '+peso(t.fee):'');right=peso(t.amount);tone='transfer';label='Transfer'}else if(t.type==='Card Payment'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to);right='Paid '+peso(t.amount);tone='payment';label='Payment'}return {left,right,tone,label}}
 function renderSettings(){if(document.getElementById('weekStart'))weekStart.value=String(data.settings.weekStart??'1');if(document.getElementById('currencySetting'))currencySetting.value=data.settings.currency||'PHP';renderCategoryManager()}
 
@@ -699,46 +684,6 @@ function moveTransactionsToReportEnd(){
     reports.appendChild(txnPanel);
   }
 }
-
-/* Reports cleanup: focused views, fewer duplicate analytics panels. */
-(function(){
-  function panelByTitle(title){
-    return [...document.querySelectorAll('#reports .reportPanel')].find(p=>p.querySelector('h3')?.textContent.trim()===title);
-  }
-  function setHidden(el,hidden){ if(el)el.classList.toggle('reportHidden',!!hidden); }
-  function applyReportsCleanup(){
-    setHidden(document.querySelector('#reports .gm3-story'),true);
-    setHidden(document.getElementById('analyticsHealthHero'),true);
-    setHidden(panelByTitle('Analytics & Insights'),true);
-    setHidden(panelByTitle('Premium Analytics'),true);
-    setHidden(panelByTitle('Top Categories'),true);
-    setHidden(panelByTitle('Backup / Restore'),true);
-    setHidden(panelByTitle('Income Sources'),true);
-    setHidden(panelByTitle('Account Activity'),true);
-
-
-    const panels={
-      txns:panelByTitle('Transactions'),
-      cash:panelByTitle('Cash Flow'),
-      cats:panelByTitle('Spending by Category'),
-      budgets:panelByTitle('Monthly Budgets'),
-      insights:panelByTitle('Smart Insights')
-    };
-    Object.values(panels).forEach(p=>setHidden(p,true));
-    setHidden(panels.cash,false);
-    setHidden(panels.cats,false);
-    setHidden(panels.insights,false);
-    setHidden(panels.budgets,false);
-    setHidden(panels.txns,false);
-    moveTransactionsToReportEnd();
-  }
-  const previous=window.renderReports;
-  window.renderReports=function(){
-    if(typeof previous==='function')previous();
-    applyReportsCleanup();
-  };
-window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}catch(e){}},260));
-})();
 
 /* Reports clarity pass: period controls drive every report view. */
 (function(){

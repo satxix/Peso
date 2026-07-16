@@ -629,7 +629,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 
 
 /* Report View Controls */
-#reports .reportHidden{display:none!important}
+
 #reports .budgetCollapsed #budgetReport{display:none}
 #reports .budgetCollapsed.budgetOpen #budgetReport{display:grid}
 #reports .budgetToggleBtn{margin-right:8px}
