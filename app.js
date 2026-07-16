@@ -79,7 +79,7 @@ function accountGlimpseHint(a){if(a.type==='Credit Card'){let limit=Number(a.lim
 function accountRow(a){let amount=accountGlimpseAmount(a);let limit=Number(a.limit||0),out=Number(a.outstanding||0);let util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;let utilClass=util>=80?'danger':util>=50?'warn':'';let utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';let hint=accountGlimpseHint(a);return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">${logo(a)}<span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span><span class="acctRight"><b class="acctAmount">${peso(amount)}</b>${hint?`<span class="acctHint">${htmlText(hint)}</span>`:''}${utilBar}</span></button>`}
 function renderAccounts(){let grid=document.getElementById('accountGrid');if(!grid)return;let arr=data.accounts.filter(a=>acctFilter==='All'||a.type===acctFilter);let order=['Savings','Cash','Wallet','Credit Card','Investment'];let groups={};arr.forEach(a=>{let key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});let sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{let total=groups[k].reduce((sum,a)=>sum+accountGlimpseAmount(a),0);return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span></span><span class="acctGroupMeta">${groups[k].length} account${groups[k].length===1?'':'s'} &middot; ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`}).join('');grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b>Tap + to add banks, cash on hand, wallets, cards, or investments.</div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;(data.settings.collapsedAccountGroups||[]).forEach(k=>{let sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);if(sec)sec.classList.add('collapsed')})}
 function toggleAcctGroup(k){data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];let set=new Set(data.settings.collapsedAccountGroups);if(set.has(k))set.delete(k);else set.add(k);data.settings.collapsedAccountGroups=[...set];try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}renderAccounts()}
-function filterAccounts(f,el){acctFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');renderAccounts()}function billStatus(b){return b.remaining<=0?'Paid':(b.remaining<(b.amount||0)?'Partial':'Unpaid')}
+function filterAccounts(f,el){acctFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');renderAccounts()}function billStatus(b){let remaining=Number(b.remaining??b.amount??0),amount=Number(b.amount??remaining);return remaining<=0?'Paid':(remaining<amount?'Partial':'Unpaid')}
 function billPeriod(b){if(b.periodStart&&b.periodEnd)return `${b.periodStart} - ${b.periodEnd}`;let end=b.statementDate||'';let card=data.accounts.find(a=>a.id===b.cardId)||{};let sd=card.statementDay||new Date(end||Date.now()).getDate();let e=new Date(end||Date.now());let start=new Date(e.getFullYear(),e.getMonth()-1,sd+1);return `${start.toISOString().slice(0,10)} - ${end}`}
 function shortStatementDate(d){let x=new Date(d);return isNaN(x)?String(d||''):x.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
 function compactBillPeriod(b){let start=b.periodStart,end=b.periodEnd||b.statementDate;if(!start||!end){let card=data.accounts.find(a=>a.id===b.cardId)||{};let e=new Date(end||b.dueDate||Date.now());let sd=card.statementDay||e.getDate();start=new Date(e.getFullYear(),e.getMonth()-1,sd+1);end=end||e}return shortStatementDate(start)+' - '+shortStatementDate(end)}
@@ -92,22 +92,31 @@ function daysUntilDate(d){let today=new Date();today.setHours(0,0,0,0);let x=new
 function statusClass(status){status=String(status||'Unpaid');return status==='Paid'?'paid':(status==='Partial'?'partial':'unpaid')}
 function cardOpenBills(cardId){return data.bills.filter(b=>b.cardId===cardId&&billStatus(b)!=='Paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))}
 function cardAllBills(cardId){return data.bills.filter(b=>b.cardId===cardId).sort((a,b)=>new Date(b.statementDate||b.dueDate)-new Date(a.statementDate||a.dueDate))}
+function normCardKey(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
+function isCreditCardAccount(a){let hay=[a.type,a.name,a.institution].join(' ');return a.type==='Credit Card'||/credit|card|visa|mastercard|amex/i.test(hay)||Number(a.limit||0)>0||Number(a.statementDay||0)>0||Number(a.dueDay||0)>0}
+function accountForCardBill(b,cards){
+  let key=normCardKey(b.cardName);
+  return cards.find(a=>b.cardId&&a.id===b.cardId)||
+    cards.find(a=>key&&(normCardKey(a.name)===key||normCardKey(a.institution)===key))||
+    cards.find(a=>{let name=normCardKey(a.name),inst=normCardKey(a.institution);return key&&((name&&name.includes(key))||(name&&key.includes(name))||(inst&&inst.includes(key))||(inst&&key.includes(inst)))})
+}
 function renderCreditCenter(){
   let el=document.getElementById('creditCenter');
   if(!el)return;
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const billRows=(rows)=>rows&&rows.length?`<div class="ccStatementList">${rows.slice(0,4).map(b=>`<div class="ccStatementMini compactStatement"><div><b class="statementPeriod">${esc(compactBillPeriod(b))}</b><span class="sub">Due ${esc(displayDate(b.dueDate))}</span></div><div class="statementAmt"><b>${peso(b.remaining||0)}</b><span class="statusPill ${statusClass(billStatus(b))}">${billStatus(b)}</span></div></div>`).join('')}</div>`:'';
+  let cards=(data.accounts||[]).filter(isCreditCardAccount);
   const groupedBills={};
-  (data.bills||[]).forEach(b=>{let key=b.cardId||b.cardName||'Card Statement';if(!groupedBills[key])groupedBills[key]=[];groupedBills[key].push(b)});
+  (data.bills||[]).filter(b=>billStatus(b)!=='Paid'&&Number(b.remaining||b.amount||0)>0).forEach(b=>{let acct=accountForCardBill(b,cards);let key=acct?acct.id:(b.cardId||b.cardName||'Card Statement');if(!groupedBills[key])groupedBills[key]=[];groupedBills[key].push(b)});
   Object.values(groupedBills).forEach(rows=>rows.sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)));
-  let cards=(data.accounts||[]).filter(a=>a.type==='Credit Card');
-  let virtualCards=Object.entries(groupedBills).filter(([key])=>!cards.some(a=>a.id===key)).map(([key,rows])=>{
+  let cardsWithBills=cards.filter(a=>groupedBills[a.id]&&groupedBills[a.id].length);
+  let virtualCards=Object.entries(groupedBills).filter(([key])=>!cardsWithBills.some(a=>a.id===key)).map(([key,rows])=>{
     let open=rows.find(b=>billStatus(b)!=='Paid')||rows[0]||{};
     return {id:key,name:open.cardName||key||'Credit Card',institution:'Statement record',type:'Credit Card',limit:0,outstanding:rows.filter(b=>billStatus(b)!=='Paid').reduce((s,b)=>s+Number(b.remaining||0),0),_virtual:true,_bills:rows};
   });
-  let allCards=cards.concat(virtualCards);
+  let allCards=cardsWithBills.concat(virtualCards);
   if(!allCards.length){
-    el.innerHTML='<div class="billSetupCard"><b>Credit Card Center needs a card account</b><p>Add or finish setting up a credit card account so statement dates, due dates, and settlement details can appear here.</p><button type="button" onclick="openAddCreditCard()">Add Credit Card</button></div>';
+    el.innerHTML='<div class="billSetupCard"><b>No card bills to settle</b><p>Credit card accounts will appear here only when there is an unpaid statement or settlement due.</p></div>';
     return;
   }
   el.innerHTML=allCards.map(card=>{
@@ -123,18 +132,18 @@ function renderCreditCenter(){
     let dueText=nearest?`Due ${displayDate(nearest.dueDate)}`:(due?`Next due ${displayDate(due)}`:(card._virtual?'From statement records':'Add statement and due days'));
     let progClass=util>=80?'danger':util>=50?'warn':'';
     let pill=nearest?(dd<0?'Overdue':dd===0?'Due today':`${dd}d left`):(due?'No bill':(card._virtual?'Statement':'Setup needed'));
+    let dueTone=dd===null?'':(dd<0||dd<=2?'danger':dd<=7?'warn':'');
     let icon=card._virtual?'<div class="bank otherbank">CC</div>':logo(card);
     let primary=nearest?`<button class="primary" onclick="openSettle('${String(nearest.id).replace(/'/g,"\\'")}')">Settle</button>`:`<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>`;
     let secondary=card._virtual?'<button onclick="openAddCreditCard()">Create Account</button>':`<button onclick="openAccountDetail('${String(card.id).replace(/'/g,"\\'")}')">${(!statementDay||!dueDay||!limit)?'Finish Setup':'Details'}</button>`;
-    return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft">${icon}<div style="min-width:0"><div class="premiumCreditTitle">${esc(card.name||'Credit Card')}</div><div class="premiumCreditSub ${(!statementDay||!dueDay||!limit)&&!card._virtual?'missing':''}">${esc(card.institution||'Credit Card')} - ${esc(dueText)}</div></div></div><span class="premiumDuePill ${dd===null?'':premiumDueClass(dd)}">${pill}</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>${peso(out)}</b><div class="premiumProgress ${progClass}" style="margin-top:12px"><i style="width:${util}%"></i></div><div class="premiumMetaRow" style="margin-top:9px"><span>${limit?util.toFixed(0)+'% used':'Limit missing'}</span><span>${limit?peso(avail)+' available':'Add limit'}</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>${limit?peso(limit):'Add'}</b></div><div><span>Statement</span><b>${st?displayDate(st):(nearest?displayDate(nearest.statementDate||nearest.dueDate):'Add')}</b></div><div><span>Due day</span><b>${dueDay||'Add'}</b></div></div></div>${billRows(rows)}<div class="premiumCreditActions">${secondary}${primary}</div></div>`;
+    let activeStatement=nearest?(nearest.statementDate||nearest.periodEnd||st):st;
+    let activeDue=nearest?nearest.dueDate:due;
+    return `<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft">${icon}<div style="min-width:0"><div class="premiumCreditTitle">${esc(card.name||'Credit Card')}</div><div class="premiumCreditSub ${(!statementDay||!dueDay||!limit)&&!card._virtual?'missing':''}">${esc(card.institution||'Credit Card')} - ${esc(dueText)}</div></div></div><span class="premiumDuePill ${dueTone}">${pill}</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>${peso(out)}</b><div class="premiumProgress ${progClass}" style="margin-top:12px"><i style="width:${util}%"></i></div><div class="premiumMetaRow" style="margin-top:9px"><span>${limit?util.toFixed(0)+'% used':'Limit missing'}</span><span>${limit?peso(avail)+' available':'Add limit'}</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>${limit?peso(limit):'Add'}</b></div><div><span>Available</span><b>${limit?peso(avail):'Add'}</b></div><div><span>Statement</span><b>${activeStatement?displayDate(activeStatement):'Add'}</b></div><div><span>Due date</span><b>${activeDue?displayDate(activeDue):'Add'}</b></div></div></div>${billRows(rows)}<div class="premiumCreditActions">${secondary}${primary}</div></div>`;
   }).join('');
 }
 function renderBills(){
   renderCreditCenter();
-  let bills=(data.bills||[]).slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
-  bills.forEach(b=>b.status=billStatus(b));
-  let current=bills.filter(b=>b.status!=='Paid'),history=bills.filter(b=>b.status==='Paid');
-  billList.innerHTML=`<div class="statementSection"><h3>Current Statements</h3>${current.length?current.map(b=>renderBillCard(b)).join(''):'<div class="row"><span class="sub">No unpaid credit card statements.</span></div>'}</div><div class="statementSection"><h3>Statement History</h3>${history.length?history.slice().reverse().map(b=>renderBillCard(b,true)).join(''):'<div class="row"><span class="sub">Paid statements will appear here.</span></div>'}</div>`;
+  if(typeof billList!=='undefined'&&billList)billList.innerHTML='';
 }
 function txInPeriod(t,start,end){let d=new Date(t.date||Date.now());return d>=start&&d<end}
 function groupAdd(obj,key,amt){obj[key]=(obj[key]||0)+Number(amt||0)}
@@ -845,70 +854,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     openAddAccount();
     setTimeout(()=>{try{if(document.getElementById('atype')){atype.value='Credit Card';renderAccountFields();}}catch(e){}},0);
   };
-})();
-(function(){
-  function esc(v){return String(v??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
-  function js(v){return String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'")}
-  function safePeso(v){try{return peso(v)}catch(e){return '\u20b1'+Number(v||0).toLocaleString('en-PH')}}
-  function safeStatus(b){try{return billStatus(b)}catch(e){return Number(b.remaining||0)>0?'Unpaid':'Paid'}}
-  function safeStatusClass(s){try{return statusClass(s)}catch(e){return String(s||'unpaid').toLowerCase()}}
-  function safePeriod(b){try{return billPeriod(b)}catch(e){return [b.periodStart,b.periodEnd||b.statementDate].filter(Boolean).join(' - ')||'Statement'}}
-  function safeDate(v){try{return displayDate(v)}catch(e){return String(v||'Add')}}
-  function norm(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
-  function creditAccounts(){return (data.accounts||[]).filter(function(a){var hay=[a.type,a.name,a.institution].join(' ');return a.type==='Credit Card'||/credit|card|visa|master|amex/i.test(hay)||Number(a.limit||0)>0||Number(a.statementDay||0)>0||Number(a.dueDay||0)>0})}
-  function accountForBill(b,accounts){
-    var card=norm(b.cardName);
-    return accounts.find(function(a){return b.cardId&&a.id===b.cardId})||
-      accounts.find(function(a){return card&&(norm(a.name)===card||norm(a.institution)===card)})||
-      accounts.find(function(a){var n=norm(a.name),i=norm(a.institution);return card&&((n&&n.indexOf(card)>-1)||(n&&card.indexOf(n)>-1)||(i&&i.indexOf(card)>-1)||(i&&card.indexOf(i)>-1))})
-  }
-  function nextStatementSafe(a){try{return a?nextStatementDate(a):null}catch(e){return null}}
-  function nextDueSafe(a,statement){try{return a?dueFromStatement(a,statement):null}catch(e){return null}}
-  function forceBillCreditCenter(){
-    var el=document.getElementById('creditCenter');
-    if(!el||typeof data==='undefined'||!Array.isArray(data.bills)||!data.bills.length)return;
-    var groups={},groupAccounts={},accounts=creditAccounts();
-    data.bills.forEach(function(b){
-      var acct=accountForBill(b,accounts);
-      var key=acct?acct.id:(b.cardId||b.cardName||'Credit Card');
-      (groups[key]||(groups[key]=[])).push(b);
-      if(acct)groupAccounts[key]=acct;
-    });
-    var cards=Object.keys(groups).map(function(key){
-      var rows=groups[key].slice().sort(function(a,b){return new Date(a.dueDate)-new Date(b.dueDate)});
-      var open=rows.find(function(b){return safeStatus(b)!=='Paid'})||rows[0]||{};
-      var acct=groupAccounts[key]||accounts.find(function(a){return a.id===key})||accountForBill(open,accounts);
-      var title=acct?(acct.name||acct.institution||open.cardName||key):(open.cardName||key||'Credit Card');
-      var institution=acct?(acct.institution||'Credit Card'):'Statement record';
-      var remaining=rows.filter(function(b){return safeStatus(b)!=='Paid'}).reduce(function(s,b){return s+Number(b.remaining||0)},0);
-      var statement=acct?nextStatementSafe(acct):(open.statementDate||open.periodEnd||open.dueDate);
-      var due=acct?(open.dueDate||nextDueSafe(acct,statement)):open.dueDate;
-      var limit=acct?Number(acct.limit||0):0;
-      var outstanding=remaining||Number(open.remaining||0)||0;
-      var available=limit?Math.max(0,limit-outstanding):0;
-      var dd=due?(function(){var today=new Date();today.setHours(0,0,0,0);var d=new Date(due);d.setHours(0,0,0,0);return Math.ceil((d-today)/86400000)})():null;
-      var pill=dd===null?'Statement':(dd<0?'Overdue':dd===0?'Due today':dd+'d left');
-      var rowsHtml=rows.slice(0,4).map(function(b){
-        var st=safeStatus(b);
-        return '<div class="ccStatementMini compactStatement"><div><b class="statementPeriod">'+esc(typeof compactBillPeriod==='function'?compactBillPeriod(b):safePeriod(b))+'</b><span class="sub">Due '+esc(b.dueDate?safeDate(b.dueDate):'Add')+'</span></div><div class="statementAmt"><b>'+safePeso(b.remaining||0)+'</b><span class="statusPill '+safeStatusClass(st)+'">'+esc(st)+'</span></div></div>';
-      }).join('');
-      var settle=open.id&&safeStatus(open)!=='Paid'?'<button class="primary" onclick="openSettle(\''+js(open.id)+'\')">Settle</button>':'<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>';
-      var details=acct?'<button onclick="openAccountDetail(\''+js(acct.id)+'\')">Details</button>':'<button onclick="openAddCreditCard()">Create Account</button>';
-      return '<div class="premiumCreditCard"><div class="premiumCreditHeader"><div class="premiumCreditLeft"><div class="bank otherbank">CC</div><div style="min-width:0"><div class="premiumCreditTitle">'+esc(title)+'</div><div class="premiumCreditSub">'+esc(institution)+' - '+esc(due?'Due '+safeDate(due):'Statement history')+'</div></div></div><span class="premiumDuePill">'+esc(pill)+'</span></div><div class="premiumCreditBody"><div class="premiumCreditMain"><span>Outstanding</span><b>'+safePeso(outstanding)+'</b><div class="premiumMetaRow" style="margin-top:9px"><span>'+rows.length+' statement'+(rows.length===1?'':'s')+'</span><span>'+esc(acct?'From account':'From bills')+'</span></div></div><div class="premiumCreditSide"><div><span>Limit</span><b>'+esc(limit?safePeso(limit):'Add')+'</b></div><div><span>Available</span><b>'+esc(limit?safePeso(available):'Add')+'</b></div><div><span>Statement</span><b>'+esc(statement?safeDate(statement):'Add')+'</b></div><div><span>Due date</span><b>'+esc(due?safeDate(due):'Add')+'</b></div></div></div><div class="ccStatementList">'+rowsHtml+'</div><div class="premiumCreditActions">'+details+settle+'</div></div>';
-    }).join('');
-    if(cards)el.innerHTML=cards;
-  }
-  window.forceBillCreditCenter=forceBillCreditCenter;
-  var oldRenderBills=window.renderBills;
-  window.renderBills=function(){if(typeof oldRenderBills==='function')oldRenderBills();forceBillCreditCenter();};
-  try{renderBills=window.renderBills}catch(e){}
-  var oldRender=window.render;
-  window.render=function(){if(typeof oldRender==='function')oldRender();setTimeout(forceBillCreditCenter,0);};
-  try{render=window.render}catch(e){}
-  var oldGo=window.go;
-  window.go=function(id,btn){if(typeof oldGo==='function')oldGo(id,btn);if(id==='bills')setTimeout(forceBillCreditCenter,0);};
-  try{go=window.go}catch(e){}
-  window.addEventListener('load',function(){setTimeout(forceBillCreditCenter,350);setTimeout(forceBillCreditCenter,900)});
 })();
 
 /* Category manager: Settings editor and typed transaction categories. */
