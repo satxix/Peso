@@ -33,7 +33,7 @@ function accountTotals(){
   return {bank,cashHand,wallets,investments,cards,liquid,gross,netWorth};
 }
 function cashCategoryIcon(type){return {Savings:'BA',Cash:'CA',Wallet:'EW',Investment:'IN','Credit Card':'CC'}[type]||'AC'}
-function renderDash(){let totals=accountTotals();let cash=totals.liquid;let cards=totals.cards;let unpaid=data.bills.filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));let due=unpaid.reduce((s,b)=>s+Number(b.remaining||b.amount||0),0);let safe=Math.max(0,cash-due);let nw=totals.netWorth;let netWorthEl=document.getElementById('netWorth');if(netWorthEl)netWorthEl.textContent=peso(nw);let bankEl=document.getElementById('bankTotal');if(bankEl)bankEl.textContent=peso(totals.bank);let cashHandEl=document.getElementById('cashHandTotal');if(cashHandEl)cashHandEl.textContent=peso(totals.cashHand);let walletEl=document.getElementById('walletTotal');if(walletEl)walletEl.textContent=peso(totals.wallets);if(typeof cashTotal!=='undefined')cashTotal.textContent=peso(cash);cardTotal.textContent=peso(cards);billsDue.textContent=peso(due);safeSpend.textContent=peso(safe);safeSpendHero.textContent=peso(safe);dashDate.textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',month:'short',day:'numeric'});let tr=todaysRange(),todaySummary=summarizeTxns(txnsInRange(tr.start,tr.end));let todayTransfers=data.txns.filter(t=>{let d=new Date(t.date);return d>=tr.start&&d<tr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);let ti=document.getElementById('todayIncome'),te=document.getElementById('todayExpense'),tt=document.getElementById('todayTransfer'),tn=document.getElementById('todayNet');if(ti)ti.textContent=peso(todaySummary.income);if(te)te.textContent=peso(todaySummary.expense);if(tt)tt.textContent=peso(todayTransfers);if(tn)tn.textContent=peso(todaySummary.net);let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}let next=unpaid[0],d=next?daysUntil(next.dueDate):null;let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;let tb=document.getElementById('todayBills');if(tb)tb.textContent=dueToday?`${dueToday} due today`:`${unpaid.length} due`;dashHealth.textContent=next?(d<0?'Overdue':d===0?'Due today':`Due in ${d}d`):'All clear';dashHealth.style.background=next?(d<=3?'#fff3e6':'#f0eeff'):'#ecfdf5';dashHealth.style.color=next?(d<=3?'var(--orange)':'var(--accent)'):'var(--green)';let h=typeof calculateHealth==='function'?calculateHealth():{score:0,label:'Ready',cur:{savingsRate:0},util:0};let hsd=document.getElementById('healthScoreDash');if(hsd)hsd.textContent=h.score||'--';let hld=document.getElementById('healthLabelDash');if(hld)hld.textContent=h.label||'Ready';let hsum=document.getElementById('healthSummaryDash');if(hsum)hsum.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}% savings rate this month.`:'Add income and expenses to unlock a better score.';let hs=document.getElementById('healthSavingsDash');if(hs)hs.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}%`:'--';let hu=document.getElementById('healthUtilDash');if(hu)hu.textContent=data.accounts.some(a=>a.type==='Credit Card')?`${h.util}%`:'--';if(typeof setHealthRing==='function')setHealthRing('healthRing',h.score||0);upcoming.innerHTML=unpaid.length?unpaid.slice(0,4).map(b=>{let dd=daysUntil(b.dueDate);let badge=dd<0?'Overdue':dd===0?'Today':`${dd} day${dd===1?'':'s'}`;return `<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>${b.cardName}</b><span>Due ${b.dueDate} - ${badge}</span></div><div class="premiumTimelineAmt">${peso(b.remaining)}</div></div>`}).join(''):'<div class="softEmpty">No unpaid bills. Credit card bills appear after card purchases.</div>';recent.innerHTML=recentTxns(data.txns).slice(0,5).map(t=>txnRow(t,true)).join('')||'<div class="row"><span class="sub">No transactions yet.</span></div>'}
+function renderDash(){let totals=accountTotals();let cash=totals.liquid;let cards=totals.cards;let unpaid=data.bills.filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));let due=unpaid.reduce((s,b)=>s+Number(b.remaining||b.amount||0),0);let safe=Math.max(0,cash-due);let nw=totals.netWorth;let netWorthEl=document.getElementById('netWorth');if(netWorthEl)netWorthEl.textContent=peso(nw);let bankEl=document.getElementById('bankTotal');if(bankEl)bankEl.textContent=peso(totals.bank);let cashHandEl=document.getElementById('cashHandTotal');if(cashHandEl)cashHandEl.textContent=peso(totals.cashHand);let walletEl=document.getElementById('walletTotal');if(walletEl)walletEl.textContent=peso(totals.wallets);if(typeof cashTotal!=='undefined')cashTotal.textContent=peso(cash);cardTotal.textContent=peso(cards);billsDue.textContent=peso(due);safeSpend.textContent=peso(safe);safeSpendHero.textContent=peso(safe);dashDate.textContent='Today, '+new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric'});let tr=todaysRange(),todaySummary=summarizeTxns(txnsInRange(tr.start,tr.end));let todayTransfers=data.txns.filter(t=>{let d=new Date(t.date);return d>=tr.start&&d<tr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);let ti=document.getElementById('todayIncome'),te=document.getElementById('todayExpense'),tt=document.getElementById('todayTransfer'),tn=document.getElementById('todayNet');if(ti)ti.textContent=peso(todaySummary.income);if(te)te.textContent=peso(todaySummary.expense);if(tt)tt.textContent=peso(todayTransfers);if(tn)tn.textContent=peso(todaySummary.net);let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}let next=unpaid[0],d=next?daysUntil(next.dueDate):null;let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;let tb=document.getElementById('todayBills');if(tb)tb.textContent=dueToday?`${dueToday} due today`:`${unpaid.length} due`;dashHealth.textContent=next?(d<0?'Overdue':d===0?'Due today':`Due in ${d}d`):'All clear';dashHealth.style.background=next?(d<=3?'#fff3e6':'#f0eeff'):'#ecfdf5';dashHealth.style.color=next?(d<=3?'var(--orange)':'var(--accent)'):'var(--green)';let h=typeof calculateHealth==='function'?calculateHealth():{score:0,label:'Ready',cur:{savingsRate:0},util:0};let hsd=document.getElementById('healthScoreDash');if(hsd)hsd.textContent=h.score||'--';let hld=document.getElementById('healthLabelDash');if(hld)hld.textContent=h.label||'Ready';let hsum=document.getElementById('healthSummaryDash');if(hsum)hsum.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}% savings rate this month.`:'Add income and expenses to unlock a better score.';let hs=document.getElementById('healthSavingsDash');if(hs)hs.textContent=h.cur&&h.cur.income?`${h.cur.savingsRate}%`:'--';let hu=document.getElementById('healthUtilDash');if(hu)hu.textContent=data.accounts.some(a=>a.type==='Credit Card')?`${h.util}%`:'--';if(typeof setHealthRing==='function')setHealthRing('healthRing',h.score||0);upcoming.innerHTML=unpaid.length?unpaid.slice(0,4).map(b=>{let dd=daysUntil(b.dueDate);let badge=dd<0?'Overdue':dd===0?'Today':`${dd} day${dd===1?'':'s'}`;return `<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>${b.cardName}</b><span>Due ${b.dueDate} - ${badge}</span></div><div class="premiumTimelineAmt">${peso(b.remaining)}</div></div>`}).join(''):'<div class="softEmpty">No unpaid bills. Credit card bills appear after card purchases.</div>';recent.innerHTML=recentTxns(data.txns).slice(0,5).map(t=>txnRow(t,true)).join('')||'<div class="row"><span class="sub">No transactions yet.</span></div>'}
 function accountAmount(a){return Number(a&&a.type==='Credit Card'?a.outstanding:a.balance)||0}
 function heroAccountList(){let accounts=(data.accounts||[]).filter(a=>a.type!=='Credit Card');return accounts.length?accounts:(data.accounts||[])}
 function currentHeroAccount(){let list=heroAccountList();if(!list.length)return null;let saved=localStorage.getItem(HERO_ACCOUNT_KEY);return list.find(a=>a.id===saved)||list[0]}
@@ -853,86 +853,6 @@ window.addEventListener('load',()=>setTimeout(()=>{try{applyReportsCleanup();}ca
     setTimeout(()=>{try{if(document.getElementById('atype')){atype.value='Credit Card';renderAccountFields();}}catch(e){}},0);
   };
 })();
-/* PM Home pass: daily control room instead of mini report. */
-(function(){
-  const css=document.createElement('style');
-  css.textContent=`
-    #dashboard.pmHome .premiumHero{border-radius:28px;padding:18px;margin-bottom:12px}
-    #dashboard.pmHome .premiumHeroMain,#dashboard.pmHome .premiumMetrics{display:none!important}
-    #dashboard.pmHome .premiumCashBlock{display:block;margin-top:0}
-    #dashboard.pmHome .premiumCash{font-size:40px;margin:7px 0 4px}
-    #dashboard.pmHome .premiumHero .label:before{content:"Ready to use";font-size:12px;color:rgba(243,239,228,.66)}
-    #dashboard.pmHome .premiumHero .label{font-size:0}
-    #dashboard.pmHome .premiumHero .heroSub{max-width:260px}
-    #dashboard.pmHome .premiumHero .dashPill{display:inline-flex;margin-top:12px}
-    #dashboard.pmHome .premiumSummaryChips{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
-    #dashboard.pmHome .premiumSummaryChips button{padding:10px;border-radius:16px}
-    #dashboard.pmHome .premiumSummaryChips span{display:none}
-    #dashboard.pmHome .premiumSummaryChips b{font-size:12px;text-align:center}
-    .pmPriorityCard{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:22px;padding:15px;margin:12px 0 14px;box-shadow:0 10px 28px rgba(18,24,40,.07)}
-    .pmPriorityTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-    .pmPriorityLabel{font-size:11px;font-weight:950;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
-    .pmPriorityCard h2{font-size:18px;line-height:1.15;margin:4px 0 5px;letter-spacing:-.025em}
-    .pmPriorityCard p{margin:0;color:var(--muted);font-size:13px;font-weight:750;line-height:1.35}
-    .pmPriorityCard button{border:0;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:950;padding:11px 13px;white-space:nowrap;box-shadow:0 10px 24px color-mix(in srgb,var(--accent) 24%,transparent)}
-    #dashboard.pmHome .premiumSection{margin-top:18px}
-    #dashboard.pmHome .premiumSection h2{font-size:18px}
-    #dashboard.pmHome #upcoming .premiumTimelineItem:nth-child(n+4){display:none}
-    #dashboard.pmHome #recent .row:nth-child(n+5){display:none}body.dark .pmPriorityCard{background:var(--pt-dark-surface);border-color:var(--pt-dark-border);box-shadow:0 14px 34px rgba(0,0,0,.22)}
-    body.dark .pmPriorityCard p{color:var(--pt-dark-muted)}
-  `;
-  document.head.appendChild(css);
-
-  function navButton(index){ return document.querySelectorAll('.nav button')[index]||null; }
-  function placePriorityCard(){
-    const dash=document.getElementById('dashboard');
-    document.getElementById('pmPriorityCard')?.remove();
-    return null;
-  }
-  function priorityModel(){
-    const unpaid=(data.bills||[]).filter(b=>b.status!=='Paid').slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
-    const next=unpaid[0], dueDays=next?daysUntil(next.dueDate):null;
-    const today=todaysRange();
-    const todayCount=(data.txns||[]).filter(t=>{const d=new Date(t.date||Date.now());return d>=today.start&&d<today.end;}).length;
-    if(!(data.accounts||[]).length){
-      return {label:'Setup',title:'Add your first account',body:'Start with the bank, wallet, card, or cash account you check most often.',cta:'Add account',action:"openAddAccount()"};
-    }
-    if(next&&dueDays<=0){
-      return {label:'Urgent',title:`${next.cardName||'A bill'} needs attention`,body:`${peso(next.remaining||next.amount||0)} is ${dueDays<0?'overdue':'due today'}. Handle this before reviewing anything else.`,cta:'Open bills',action:"go('bills',navButton(3))"};
-    }
-    if(next&&dueDays<=3){
-      return {label:'Upcoming',title:`Prepare for ${next.cardName||'your next bill'}`,body:`${peso(next.remaining||next.amount||0)} is due in ${dueDays} day${dueDays===1?'':'s'}. Keep that cash separate.`,cta:'View bills',action:"go('bills',navButton(3))"};
-    }
-    if(!todayCount){
-      return {label:'Today',title:'Record your first transaction today',body:'A quick entry keeps the Home screen honest and makes Reports useful later.',cta:'Add transaction',action:'openTxn()'};
-    }
-    return {label:'Review',title:'You are up to date today',body:'Check the latest activity, then only go deeper if something looks off.',cta:'View reports',action:"go('reports',navButton(4))"};
-  }
-  window.pmHomeAction=function(action){
-    try{ new Function('navButton',action)(navButton); }catch(e){ console.warn('PM action skipped',e); }
-  };
-  function updatePmHome(){
-    const dash=document.getElementById('dashboard');
-    if(!dash)return;
-    dash.classList.add('pmHome');
-    const card=placePriorityCard();
-    const model=priorityModel();
-    if(card){
-      card.innerHTML=`<div class="pmPriorityTop"><div><div class="pmPriorityLabel">${htmlText(model.label)}</div><h2>${htmlText(model.title)}</h2><p>${htmlText(model.body)}</p></div><button type="button" onclick="pmHomeAction('${jsString(model.action)}')">${htmlText(model.cta)}</button></div>`;
-    }
-    const date=document.getElementById('dashDate');
-    if(date)date.textContent='Today, '+new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric'});
-    const safeHint=document.getElementById('safeSpendHint');
-    if(safeHint)safeHint.textContent='After unpaid bills are set aside';
-  }
-  const prevRender=window.render;
-  window.render=function(){
-    if(typeof prevRender==='function')prevRender();
-    try{updatePmHome();}catch(e){console.warn('PM home pass skipped',e)}
-  };
-  window.addEventListener('load',()=>setTimeout(()=>{try{updatePmHome();}catch(e){}},340));
-})();
-
 /* Accounts glimpse pass: compact rows first, detail sheet on tap. */
 (function(){
   const css=document.createElement('style');
