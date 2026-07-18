@@ -617,6 +617,10 @@ body.dark .tiny.danger,.txnActions .tiny.danger{color:#ffd0c8!important;-webkit-
 .expenseBarMeta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;font-weight:850}
 .expenseTrack{height:10px;border-radius:999px;background:rgba(148,163,184,.22);overflow:hidden}
 .expenseTrack i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent-2,#8b5cf6));min-width:5%}
+.otherBreakdownTrigger{cursor:pointer;position:relative}
+.otherBreakdownTrigger:active{transform:scale(.99)}
+.expenseDrillHint{font-size:11px;font-weight:950;color:var(--accent);margin-top:-2px}
+.otherSummary{margin-top:4px}
 .expenseEmpty{border:1px dashed var(--line);border-radius:18px;padding:14px;color:var(--muted);font-weight:850;line-height:1.35;background:color-mix(in srgb,var(--card) 94%,var(--bg))}
 body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{background:var(--pt-dark-surface,#111827);border-color:var(--pt-dark-border,var(--line))}
 @media(max-width:370px){.expenseBreakdownSummary{grid-template-columns:1fr}.expenseStat b{font-size:15px}}
