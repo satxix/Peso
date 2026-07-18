@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v211';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v214';
 const ASSETS = [
   './',
   './index.html',

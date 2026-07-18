@@ -187,7 +187,25 @@ function setSearchFilter(f,el){searchFilter=f;document.querySelectorAll('.search
 function resultIcon(kind,type){if(kind==='acct')return 'AC';if(kind==='bill')return 'DU';if(type==='Income')return 'IN';if(type==='Expense')return 'EX';if(type==='Transfer')return 'TR';return 'TX'}
 function renderGlobalSearch(){let out=document.getElementById('globalSearchResults');if(!out)return;let input=document.getElementById('globalSearchInput'),q=(input?.value||'').toLowerCase().trim();let results=[];if(searchFilter==='All'||searchFilter==='Transactions'){data.txns.slice().reverse().forEach(t=>{let from=accountLabel(t.from),to=t.to?accountLabel(t.to):'',date=new Date(t.date).toLocaleDateString('en-PH'),hay=[t.type,t.category,t.note,from,to,peso(t.amount),date].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'txn',type:t.type,title:`${t.type}${t.category?' - '+t.category:''}`,sub:`${from}${to?' to '+to:''} - ${date}${t.note?' - '+t.note:''}`,amount:Number(t.amount||0),id:t.id})})}if(searchFilter==='All'||searchFilter==='Accounts'){data.accounts.forEach(a=>{let hay=[a.name,a.institution,a.type,peso(a.balance),peso(a.outstanding)].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'acct',title:a.name,sub:`${a.institution||a.type} - ${a.type}`,amount:a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0),id:a.id})})}if(searchFilter==='All'||searchFilter==='Bills'){data.bills.slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)).forEach(b=>{let hay=[b.cardName,b.status,b.dueDate,peso(b.remaining)].join(' ').toLowerCase();if(!q||hay.includes(q))results.push({kind:'bill',title:b.cardName,sub:`Due ${b.dueDate} - ${billStatus(b)}`,amount:Number(b.remaining||0),id:b.id})})}results=results.slice(0,!q&&searchFilter==='All'?15:40);out.innerHTML=results.length?results.map(r=>`<div class="resultCard"><div class="resultLeft"><div class="dot">${resultIcon(r.kind,r.type)}</div><div class="resultText"><b>${htmlText(r.title)}</b><div class="sub">${htmlText(r.sub)}</div></div></div><b class="${r.kind==='txn'&&r.type==='Income'?'green':r.kind==='txn'&&r.type==='Expense'?'red':''}">${peso(r.amount)}</b></div>`).join(''):`<div class="emptyCenter">${q?'No results found.':'Start typing to search your PesoTrack data.'}</div>`}
 
-function renderReports(){let {start,end}=periodStartEnd(),acct=(document.getElementById('reportAccount')||{}).value||'All';let txns=data.txns.filter(t=>txInPeriod(t,start,end)).filter(t=>acct==='All'||t.from===acct||t.to===acct);let income=0,expense=0,cats={},sources={},activity={};txns.forEach(t=>{let amt=Number(t.amount||0);if(t.type==='Income'){if(acct==='All'||t.from===acct){income+=amt;groupAdd(sources,t.category||accountLabel(t.from),amt);groupAdd(activity,accountLabel(t.from),amt)}}else if(t.type==='Expense'){if(acct==='All'||t.from===acct){expense+=amt;groupAdd(cats,t.category||'Other',amt);groupAdd(activity,accountLabel(t.from),-amt)}}else if(t.type==='Transfer'){let fee=Number(t.fee||0);if(fee&&(acct==='All'||t.from===acct)){expense+=fee;groupAdd(cats,'Transfer Fees',fee)}if(acct!=='All'){if(t.from===acct)groupAdd(activity,accountLabel(t.from),-(amt+fee));if(t.to===acct)groupAdd(activity,accountLabel(t.to),amt)}}else if(t.type==='Card Payment'){if(acct!=='All'){if(t.from===acct)groupAdd(activity,accountLabel(t.from),-amt);if(t.to===acct)groupAdd(activity,accountLabel(t.to),amt)}}});let net=income-expense;let reportIncomeEl=document.getElementById('reportIncome'),reportExpenseEl=document.getElementById('reportExpense'),reportNetEl=document.getElementById('reportNet');if(reportIncomeEl)reportIncomeEl.textContent=peso(income);if(reportExpenseEl)reportExpenseEl.textContent=peso(expense);if(reportNetEl){reportNetEl.textContent=(net>=0?'+':'')+peso(net);reportNetEl.className='value '+(net>=0?'green':'red')}renderBars(income,expense,net);renderReportList('categoryReport',cats,'cat');renderReportList('incomeReport',sources,'income');let acctObj={};Object.entries(activity).forEach(([k,v])=>acctObj[k]=v);renderReportList('accountReport',acctObj,'acct')}function showModal(){modalBackdrop.classList.add('show');document.body.classList.add('modal-open')}function hideModalIfNone(){setTimeout(()=>{if(!document.querySelector('.sheet.show')){modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}},0)}function closeTopModal(){let sheets=[...document.querySelectorAll('.sheet.show')];if(!sheets.length)return;let top=sheets[sheets.length-1];top.classList.remove('show');hideModalIfNone()}function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}function openAddAccount(){editingAccount=null;acctTitle.textContent='Add Account';atype.value='Savings';inst.value='';aname.value='';let lf=document.getElementById('instLogo');if(lf){lf.value='otherbank';lf.dataset.manual=''}renderAccountFields();renderLogoPicker('otherbank');showModal();accountSheet.classList.add('show')}function editAccount(id){let a=data.accounts.find(x=>x.id===id); if(!a)return; editingAccount=id; acctTitle.textContent='Edit Account';atype.value=a.type;inst.value=a.institution||'';aname.value=a.name;let key=a.logoKey||banks[a.institution]||'otherbank';let lf=document.getElementById('instLogo');if(lf){lf.value=key;lf.dataset.manual='1'}renderAccountFields(a);renderLogoPicker(key);showModal();accountSheet.classList.add('show')}function renderAccountFields(a={}){let t=atype.value;if(document.getElementById('inst')){inst.style.display=t==='Cash'?'none':''; if(t==='Cash') inst.value='';} if(t==='Cash' && document.getElementById('aname') && !aname.value) aname.value='Cash on Hand';dynamicFields.innerHTML=t==='Credit Card'?`<input class="field" id="limit" type="number" placeholder="Credit limit" value="${a.limit||''}"><input class="field" id="statementDay" type="number" placeholder="Statement day, e.g. 15" value="${a.statementDay||''}"><input class="field" id="dueDay" type="number" placeholder="Due day, e.g. 5" value="${a.dueDay||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`:`<input class="field" id="balance" type="number" placeholder="${t==='Investment'?'Current value':'Opening balance'}" value="${a.balance||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`}function saveAccount(){
+function renderReports(){
+  ensureReportPeriodNav();
+  updateReportPeriodLabel();
+  const {start,end}=periodStartEnd();
+  const txns=(data.txns||[]).filter(t=>txInPeriod(t,start,end));
+  let income=0,expense=0;
+  txns.forEach(t=>{
+    const amt=Number(t.amount||0);
+    if(t.type==='Income')income+=amt;
+    else if(t.type==='Expense')expense+=amt;
+    else if(t.type==='Transfer'&&Number(t.fee||0))expense+=Number(t.fee||0);
+  });
+  renderBars(income,expense,income-expense);
+  try{if(typeof renderGoldMasterReports==='function')renderGoldMasterReports()}catch(e){console.warn('Report summary skipped',e)}
+  try{if(typeof updateReportsScope==='function')updateReportsScope()}catch(e){console.warn('Report scope skipped',e)}
+  try{if(typeof renderExpenseBreakdown==='function')renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}
+  try{if(typeof renderInsights==='function')renderInsights()}catch(e){console.warn('Report insights skipped',e)}
+  try{if(typeof renderTransactionsList==='function')renderTransactionsList()}catch(e){console.warn('Report transactions skipped',e)}
+}function showModal(){modalBackdrop.classList.add('show');document.body.classList.add('modal-open')}function hideModalIfNone(){setTimeout(()=>{if(!document.querySelector('.sheet.show')){modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}},0)}function closeTopModal(){let sheets=[...document.querySelectorAll('.sheet.show')];if(!sheets.length)return;let top=sheets[sheets.length-1];top.classList.remove('show');hideModalIfNone()}function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}function openAddAccount(){editingAccount=null;acctTitle.textContent='Add Account';atype.value='Savings';inst.value='';aname.value='';let lf=document.getElementById('instLogo');if(lf){lf.value='otherbank';lf.dataset.manual=''}renderAccountFields();renderLogoPicker('otherbank');showModal();accountSheet.classList.add('show')}function editAccount(id){let a=data.accounts.find(x=>x.id===id); if(!a)return; editingAccount=id; acctTitle.textContent='Edit Account';atype.value=a.type;inst.value=a.institution||'';aname.value=a.name;let key=a.logoKey||banks[a.institution]||'otherbank';let lf=document.getElementById('instLogo');if(lf){lf.value=key;lf.dataset.manual='1'}renderAccountFields(a);renderLogoPicker(key);showModal();accountSheet.classList.add('show')}function renderAccountFields(a={}){let t=atype.value;if(document.getElementById('inst')){inst.style.display=t==='Cash'?'none':''; if(t==='Cash') inst.value='';} if(t==='Cash' && document.getElementById('aname') && !aname.value) aname.value='Cash on Hand';dynamicFields.innerHTML=t==='Credit Card'?`<input class="field" id="limit" type="number" placeholder="Credit limit" value="${a.limit||''}"><input class="field" id="statementDay" type="number" placeholder="Statement day, e.g. 15" value="${a.statementDay||''}"><input class="field" id="dueDay" type="number" placeholder="Due day, e.g. 5" value="${a.dueDay||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`:`<input class="field" id="balance" type="number" placeholder="${t==='Investment'?'Current value':'Opening balance'}" value="${a.balance||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`}function saveAccount(){
   try{
     const typeEl=document.getElementById('atype'), instEl=document.getElementById('inst'), nameEl=document.getElementById('aname');
     if(!typeEl) throw new Error('Account type field is missing');
@@ -413,14 +431,14 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.87',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.90',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
 function csvEscape(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function downloadText(name,text,type='text/plain'){let blob=new Blob([text],{type});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function exportTransactionsCSV(){let rows=[['Date','Type','Account From','Account To','Category','Amount','Fee']];data.txns.forEach(t=>rows.push([new Date(t.date).toLocaleString('en-PH'),t.type,accountLabel(t.from),accountLabel(t.to),t.category||'',Number(t.amount||0),Number(t.fee||0)]));downloadText('pesotrack-transactions.csv',rows.map(r=>r.map(csvEscape).join(',')).join('\n'),'text/csv')}
-function exportReportCSV(){let {start,end}=periodStartEnd(),acct=(document.getElementById('reportAccount')||{}).value||'All';let rows=[['Report Period',reportPeriod],['From',start.toISOString().slice(0,10)],['To',end.toISOString().slice(0,10)],['Account',acct==='All'?'All accounts':accountLabel(acct)],[],['Date','Type','Account From','Account To','Category','Amount','Fee']];data.txns.filter(t=>txInPeriod(t,start,end)).filter(t=>acct==='All'||t.from===acct||t.to===acct).forEach(t=>rows.push([new Date(t.date).toLocaleDateString('en-PH'),t.type,accountLabel(t.from),accountLabel(t.to),t.category||'',Number(t.amount||0),Number(t.fee||0)]));downloadText('pesotrack-report-'+reportPeriod.toLowerCase()+'.csv',rows.map(r=>r.map(csvEscape).join(',')).join('\n'),'text/csv')}
+function exportReportCSV(){let {start,end}=periodStartEnd();let rows=[['Report Period',reportPeriod],['From',start.toISOString().slice(0,10)],['To',end.toISOString().slice(0,10)],[],['Date','Type','Account From','Account To','Category','Amount','Fee']];data.txns.filter(t=>txInPeriod(t,start,end)).forEach(t=>rows.push([new Date(t.date).toLocaleDateString('en-PH'),t.type,accountLabel(t.from),accountLabel(t.to),t.category||'',Number(t.amount||0),Number(t.fee||0)]));downloadText('pesotrack-report-'+reportPeriod.toLowerCase()+'.csv',rows.map(r=>r.map(csvEscape).join(',')).join('\n'),'text/csv')}
 function saveSettings(){data.settings.weekStart=weekStart.value;data.settings.currency=currencySetting.value;persist();toastMsg('Settings saved')}
 function addCategoryFromSettings(){let input=document.getElementById('settingsCategoryInput');let c=input?input.value:prompt('Category name');if(!c)return;c=String(c).trim();if(!c)return;if(!data.categories.some(x=>x.toLowerCase()===c.toLowerCase()))data.categories.push(c);data.categoryIcons=data.categoryIcons||{};data.categoryIcons[c]=settingsCategoryIcon||suggestCategoryIcon(c);if(input)input.value='';persist();toastMsg('Category added')}
 function deleteCategory(c){if(defaultCategories().includes(c)){alert('Default categories cannot be deleted.');return}if(confirm('Delete category '+c+'? Existing transactions will keep their category text.')){data.categories=data.categories.filter(x=>x!==c);if(data.categoryIcons)delete data.categoryIcons[c];persist();toastMsg('Category removed')}}
@@ -546,8 +564,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   }
   function gm3Compute(){
     const {start,end}=gm3Period();
-    const acct=(document.getElementById('reportAccount')||{}).value||'All';
-    const txns=(data.txns||[]).filter(t=>gm3InRange(t,start,end)).filter(t=>acct==='All'||t.from===acct||t.to===acct);
+    const txns=(data.txns||[]).filter(t=>gm3InRange(t,start,end));
     let income=0, expense=0, fees=0, transfers=0, cardPayments=0;
     const cats={}; const sources={};
     txns.forEach(t=>{
@@ -558,7 +575,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
       else if(t.type==='Card Payment'){ cardPayments+=amt; }
     });
     const catEntries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
-    return {start,end,acct,txns,income,expense,fees,transfers,cardPayments,cats,sources,catEntries,net:income-expense};
+    return {start,end,txns,income,expense,fees,transfers,cardPayments,cats,sources,catEntries,net:income-expense};
   }
   function gm3MonthName(d){ return d.toLocaleDateString('en-PH',{month:'short',day:'numeric'}); }
   function gm3Set(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
@@ -586,8 +603,6 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
       catEl.innerHTML=r.catEntries.map(([cat,val])=>`<div class="gm3-category-card"><div><b>${(typeof catIcon==='function'?catIcon(cat):'-')} ${cat}</b><div class="sub">${Math.round((val/Math.max(1,r.expense))*100)}% of spending</div></div><b>${peso(val)}</b><div class="gm3-catbar"><i style="width:${Math.max(5,val/max*100)}%"></i></div></div>`).join('');
     }
   };
-  const prev=window.renderReports;
-  if(typeof prev==='function'){ window.renderReports=function(){ prev(); try{ renderGoldMasterReports(); }catch(e){ console.warn('GM3 reports skipped', e); } }; }
   setTimeout(()=>{ try{ renderGoldMasterReports(); }catch(e){} },100);
 })();
 
@@ -603,22 +618,20 @@ function renderReportList(target,obj,kind){let el=document.getElementById(target
 function txnSummary(t){let left='',right='',tone='neutral',label=t.type||'Entry';if(t.type==='Income'){left=htmlText(t.category||'Income')+' - Deposit to '+safeAccountLabel(t.from);right='+'+peso(t.amount);tone='income';label='Income'}else if(t.type==='Expense'){left=htmlText(t.category||'Expense')+' - '+safeAccountLabel(t.from);right='-'+peso(t.amount);tone='expense';label='Expense'}else if(t.type==='Transfer'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to)+(Number(t.fee||0)?' - Fee '+peso(t.fee):'');right=peso(t.amount);tone='transfer';label='Transfer'}else if(t.type==='Card Payment'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to);right='Paid '+peso(t.amount);tone='payment';label='Payment'}return {left,right,tone,label}}
 function renderSettings(){if(document.getElementById('weekStart'))weekStart.value=String(data.settings.weekStart??'1');if(document.getElementById('currencySetting'))currencySetting.value=data.settings.currency||'PHP';renderCategoryManager()}
 
-/* Reports fix: transaction list follows selected period and account. */
+/* Reports transaction list follows the selected period. */
 function renderTransactionsList(){
   let el=document.getElementById('transactionReport');
   if(!el)return;
   let q=(document.getElementById('txnSearch')?.value||'').trim();
   let {start,end}=periodStartEnd();
-  let acct=(document.getElementById('reportAccount')||{}).value||'All';
   let arr=data.txns
     .filter(t=>txInPeriod(t,start,end))
-    .filter(t=>acct==='All'||t.from===acct||t.to===acct)
     .slice()
     .reverse()
     .filter(t=>txnMatches(t,q))
     .slice(0,80);
   let periodLabel=reportPeriod==='Today'?'today':`this ${reportPeriod.toLowerCase()}`;
-  el.innerHTML=arr.length?arr.map(t=>txnRow(t)).join(''):`<div class="reportEmpty">No transactions ${q?`match "${htmlText(q)}" `:''}for ${periodLabel}${acct==='All'?'':' in this account'}.</div>`;
+  el.innerHTML=arr.length?arr.map(t=>txnRow(t)).join(''):`<div class="reportEmpty">No transactions ${q?`match "${htmlText(q)}" `:''}for ${periodLabel}.</div>`;
 }
 
 /* Reports period navigation: previous/next day, week, month, year. */
@@ -675,13 +688,6 @@ function setReportPeriod(p,el){
   renderReports();
 }
 
-const reportNavPreviousRender=window.renderReports;
-window.renderReports=function(){
-  ensureReportPeriodNav();
-  if(typeof reportNavPreviousRender==='function')reportNavPreviousRender();
-  updateReportPeriodLabel();
-  renderTransactionsList();
-};
 
 /* Reports hierarchy: keep transactions as the final report section. */
 function moveTransactionsToReportEnd(){
@@ -786,11 +792,7 @@ function moveTransactionsToReportEnd(){
     }
     renderBudgetReportForSelectedMonth();
   }
-  const previous=window.renderReports;
-  window.renderReports=function(){
-    if(typeof previous==='function')previous();
-    updateReportsScope();
-  };
+  window.updateReportsScope=updateReportsScope;
   window.addEventListener('load',()=>setTimeout(()=>{try{updateReportsScope();}catch(e){}},360));
 })();
 
@@ -850,9 +852,8 @@ function moveTransactionsToReportEnd(){
   }
   function selectedExpenseData(){
     var range=typeof periodStartEnd==='function'?periodStartEnd():(function(){var now=new Date();return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)}})();
-    var acct=(document.getElementById('reportAccount')||{}).value||'All';
-    var current=expenseDataForRange(range,acct);
-    var previous=expenseDataForRange(previousExpenseRange(range),acct);
+    var current=expenseDataForRange(range,'All');
+    var previous=expenseDataForRange(previousExpenseRange(range),'All');
     current.previousCats=Object.fromEntries(previous.entries);
     return current;
   }
@@ -878,8 +879,6 @@ function moveTransactionsToReportEnd(){
     }).join('');
     el.innerHTML='<div class="expenseBreakdownSummary"><div class="expenseStat"><span>Total spent</span><b>'+peso(d.total)+'</b></div><div class="expenseStat"><span>Categories</span><b>'+d.entries.length+'</b></div><div class="expenseStat"><span>Biggest</span><b>'+esc(top[0])+'</b></div></div><div class="expenseBreakdownRows">'+rows+'</div>';
   };
-  var oldReports=window.renderReports;
-  window.renderReports=function(){if(typeof oldReports==='function')oldReports();try{renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}};
   window.addEventListener('load',function(){setTimeout(function(){try{renderExpenseBreakdown()}catch(e){}},420)});
 })();
 (function mobileBackNavigation(){
