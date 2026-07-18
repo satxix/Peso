@@ -421,7 +421,7 @@ function renderInsights(){let el=document.getElementById('insightReport');if(!el
 
 function ordinal(n){n=Number(n||0);if([11,12,13].includes(n%100))return 'th';return {1:'st',2:'nd',3:'rd'}[n%10]||'th'}
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
-function exportBackup(){let payload={app:'PesoTrack',version:'3.94',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
+function exportBackup(){let payload={app:'PesoTrack',version:'3.95',exportedAt:new Date().toISOString(),data};let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pesotrack-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)}function importBackup(){restoreFile.click()}function handleRestore(input){let file=input.files&&input.files[0];if(!file)return;let reader=new FileReader();reader.onload=()=>{try{let payload=JSON.parse(reader.result);let incoming=payload.data||payload;if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills))throw new Error('Invalid backup');if(!confirm('Restore this backup? Current local data will be replaced.'))return;data=normalizeData(incoming);persist();alert('Backup restored.')}catch(e){alert('Could not restore backup: '+e.message)}finally{input.value=''}};reader.readAsText(file)}
 function applySettings(){if(data.settings){data.settings.dark=true;data.settings.privacy=false;data.settings.pinEnabled=false;data.settings.pinHash=''}document.body.classList.remove('privacy');document.body.classList.add('dark')}
 function toastMsg(msg){if(!window.toast)return;toast.textContent=msg;toast.classList.add('show');clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800)}
 
@@ -538,64 +538,6 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
 })();
 
 
-// Gold Master Phase 3: Premium Reports & Financial Story
-(function(){
-  function gm3SafeNum(n){ return Number(n||0) || 0; }
-  function gm3InRange(t,start,end){
-    try{ const d=new Date(t.date||Date.now()); return d>=start && d<end; }catch(e){ return false; }
-  }
-  function gm3Period(){
-    if(typeof periodStartEnd==='function') return periodStartEnd();
-    const now=new Date();
-    return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)};
-  }
-  function gm3AccountName(id){
-    try{ return typeof accountLabel==='function' ? accountLabel(id) : ((data.accounts||[]).find(a=>a.id===id)||{}).name || 'Account'; }catch(e){ return 'Account'; }
-  }
-  function gm3Compute(){
-    const {start,end}=gm3Period();
-    const txns=(data.txns||[]).filter(t=>gm3InRange(t,start,end));
-    let income=0, expense=0, fees=0, transfers=0, cardPayments=0;
-    const cats={}; const sources={};
-    txns.forEach(t=>{
-      const amt=gm3SafeNum(t.amount);
-      if(t.type==='Income' && (acct==='All'||t.from===acct)){ income+=amt; sources[t.category||gm3AccountName(t.from)]=(sources[t.category||gm3AccountName(t.from)]||0)+amt; }
-      else if(t.type==='Expense' && (acct==='All'||t.from===acct)){ expense+=amt; cats[t.category||'Other']=(cats[t.category||'Other']||0)+amt; }
-      else if(t.type==='Transfer'){ const fee=gm3SafeNum(t.fee); transfers+=amt; if(fee && (acct==='All'||t.from===acct)){ expense+=fee; fees+=fee; cats['Transfer Fees']=(cats['Transfer Fees']||0)+fee; } }
-      else if(t.type==='Card Payment'){ cardPayments+=amt; }
-    });
-    const catEntries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
-    return {start,end,txns,income,expense,fees,transfers,cardPayments,cats,sources,catEntries,net:income-expense};
-  }
-  function gm3MonthName(d){ return d.toLocaleDateString('en-PH',{month:'short',day:'numeric'}); }
-  function gm3Set(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
-  function gm3Text(id,text){ const el=document.getElementById(id); if(el) el.textContent=text; }
-  window.renderGoldMasterReports = function(){
-    if(!document.getElementById('gm3ReportPills')) return;
-    const r=gm3Compute();
-    const savingsRate=r.income ? Math.round((r.net/r.income)*100) : 0;
-    const top=r.catEntries[0] || ['-',0];
-    const score = r.income ? (savingsRate>=50?'Excellent':savingsRate>=25?'Strong':savingsRate>=0?'Stable':'Review') : (r.expense?'Spending only':'New');
-    gm3Text('gm3ReportRange', `${gm3MonthName(r.start)} - ${gm3MonthName(new Date(r.end-86400000))}`);
-    gm3Text('gm3SavingsRate', r.income ? `${savingsRate}%` : '-');
-    gm3Text('gm3CashFlow', (r.net>=0?'+':'') + peso(r.net));
-    gm3Text('gm3TopCategory', top[0]==='-'?'-':top[0]);
-    gm3Text('gm3ActivityCount', `${r.txns.length} ${r.txns.length===1?'entry':'entries'}`);
-    const pills=[];
-    if(r.income) pills.push(`Income ${peso(r.income)}`);
-    if(r.expense) pills.push(`Expense ${peso(r.expense)}`);
-    if(r.fees) pills.push(`Fees ${peso(r.fees)}`);
-    if(r.cardPayments) pills.push(`Card payments ${peso(r.cardPayments)}`);
-    gm3Set('gm3ReportPills', pills.length?pills.map(p=>`<span class="gm3-pill">${p}</span>`).join(''):'<span class="gm3-pill">Add transactions to build your story</span>');
-    const catEl=document.getElementById('categoryReport');
-    if(catEl && r.catEntries.length){
-      const max=Math.max(1,...r.catEntries.map(x=>x[1]));
-      catEl.innerHTML=r.catEntries.map(([cat,val])=>`<div class="gm3-category-card"><div><b>${(typeof catIcon==='function'?catIcon(cat):'-')} ${cat}</b><div class="sub">${Math.round((val/Math.max(1,r.expense))*100)}% of spending</div></div><b>${peso(val)}</b><div class="gm3-catbar"><i style="width:${Math.max(5,val/max*100)}%"></i></div></div>`).join('');
-    }
-  };
-  setTimeout(()=>{ try{ renderGoldMasterReports(); }catch(e){} },100);
-})();
-
 
 /* Professional hardening pass: keep restored/user-entered data as text. */
 function cls(a){if(a&&typeof a==='object')return safeClass(a.logoKey||banks[a.institution]||'otherbank');return safeClass(banks[a]||'otherbank')}
@@ -666,8 +608,6 @@ function ensureReportPeriodNav(){
 function updateReportPeriodLabel(){
   const label=document.getElementById('reportPeriodLabel');
   if(label)label.textContent=reportPeriodTitle();
-  const range=document.getElementById('gm3ReportRange');
-  if(range)range.textContent=reportPeriodTitle();
 }
 function shiftReportPeriod(delta){reportOffset+=delta;renderReports();}
 function setReportPeriod(p,el){
@@ -707,24 +647,10 @@ function moveTransactionsToReportEnd(){
     const reports=document.getElementById('reports');
     const periodTabs=document.querySelector('#reports .reportTabs');
     const nav=document.getElementById('reportPeriodNav');
-    const hero=document.querySelector('#reports .gm3-reportHero');
     if(!reports||!periodTabs)return;
-    const anchor=reports.querySelector('.accountFilter')||hero;
-    reports.insertBefore(periodTabs,anchor);
+    const anchor=reports.querySelector('.accountFilter')||reports.querySelector('.reportPanel');
+    reports.insertBefore(periodTabs,anchor||reports.firstElementChild);
     if(nav)reports.insertBefore(nav,periodTabs.nextSibling);
-  }
-  function ensureReportScopeNote(){
-    const reports=document.getElementById('reports');
-    const hero=document.querySelector('#reports .gm3-reportHero');
-    if(!reports||!hero)return null;
-    let note=document.getElementById('reportScopeNote');
-    if(!note){
-      note=document.createElement('div');
-      note.id='reportScopeNote';
-      note.className='reportScopeNote';
-      hero.parentNode.insertBefore(note,hero.nextSibling);
-    }
-    return note;
   }
   function monthLabelForSelectedPeriod(){
     const {start}=periodStartEnd();
@@ -774,11 +700,6 @@ function moveTransactionsToReportEnd(){
     if(cashPanel){
       const h=cashPanel.querySelector('h3');
       if(h)h.textContent='Income vs Expense';
-    }
-    const note=ensureReportScopeNote();
-    const count=selectedReportTxns().length;
-    if(note){
-      note.innerHTML=`<b>${htmlText(reportPeriodTitle())}</b>${count} transaction${count===1?'':'s'} in this period. Spending, insights, and transactions use this selected range.`;
     }
     renderBudgetReportForSelectedMonth();
   }
