@@ -1016,3 +1016,4 @@ body{
 #accounts .acctAddRow{border-style:dashed;grid-template-columns:auto 1fr;background:color-mix(in srgb,var(--card) 90%,var(--bg))}
 #accounts .acctAddIcon{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:var(--card-inset,rgba(255,255,255,.07));color:var(--accent-2);font-size:18px;font-weight:950}
 @media(max-width:370px){#accounts .acctRow{grid-template-columns:auto minmax(0,1fr);padding:10px}#accounts .acctRight{grid-column:2;text-align:left;min-width:0}#accounts .acctAmount{font-size:15px}#accounts .acctHint{display:inline-block;margin-right:8px}}
+.accountBaseNote{margin-top:4px;font-size:12px;font-weight:800;opacity:.72}
