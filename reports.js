@@ -47,7 +47,7 @@ function renderTransactionsList(){
     .filter(t=>txInPeriod(t,start,end))
     .slice()
     .reverse()
-    .filter(t=>txnMatches(t,q))
+    .filter(t=>typeof txnMatches==='function'?txnMatches(t,q):!q||[t.type,t.category,t.note,accountLabel(t.from),accountLabel(t.to),String(t.amount),txnDate(t)].join(' ').toLowerCase().includes(q.toLowerCase()))
     .slice(0,80);
   let periodLabel=reportPeriod==='Today'?'today':`this ${reportPeriod.toLowerCase()}`;
   el.innerHTML=arr.length?arr.map(t=>txnRow(t)).join(''):`<div class="reportEmpty">No transactions ${q?`match "${htmlText(q)}" `:''}for ${periodLabel}.</div>`;

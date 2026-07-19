@@ -1,11 +1,19 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v231';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v245';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './storage.js',
   './logos.js',
+  './transactions.js',
+  './dashboard.js',
+  './accounts.js',
+  './bills.js',
+  './search.js',
+  './reports.js',
+  './settings.js',
   './app.js',
+  './ui.js',
   './manifest.json',
   './icon-72.png',
   './icon-96.png',
@@ -31,6 +39,14 @@ const ASSETS = [
   './logos/eastwest-clean.png',
   './logos/GCash.svg',
   './logos/gcash-clean.png',
+  './logos/generic-bank.svg',
+  './logos/generic-bills.svg',
+  './logos/generic-card.svg',
+  './logos/generic-credit.svg',
+  './logos/generic-investment.svg',
+  './logos/generic-payroll.svg',
+  './logos/generic-salary.svg',
+  './logos/generic-wallet.svg',
   './logos/gotyme.svg',
   './logos/gotyme-clean.png',
   './logos/hsbc.svg',
@@ -46,6 +62,7 @@ const ASSETS = [
   './logos/PNB.svg',
   './logos/pnb-app-v2.png',
   './logos/pnb-clean.png',
+  './logos/pnb-fit.png',
   './logos/rcbc-clean.png',
   './logos/robinsonsbank-clean.png',
   './logos/securitybank-clean.png',
@@ -53,7 +70,11 @@ const ASSETS = [
   './logos/tonik-clean.png',
   './logos/unionbank.svg',
   './logos/unionbank-app-v2.png',
-  './logos/unionbank-clean.png'
+  './logos/unionbank-clean.png',
+  './logos/unionbank-fit.png',
+  './logos/bpibanko.svg',
+  './logos/spay.svg',
+  './logos/unobank.svg'
 ];
 
 self.addEventListener('install', event => {

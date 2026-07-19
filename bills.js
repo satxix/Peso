@@ -21,13 +21,14 @@ function daysUntilDate(d){let today=new Date();today.setHours(0,0,0,0);let x=new
 
 function statusClass(status){status=String(status||'Unpaid');return status==='Paid'?'paid':(status==='Partial'?'partial':'unpaid')}
 
-function cardOpenBills(cardId){return data.bills.filter(b=>b.cardId===cardId&&billStatus(b)!=='Paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))}
+function cardOpenBills(cardId){return (data.bills||[]).filter(b=>b&&typeof b==='object'&&b.cardId===cardId&&billStatus(b)!=='Paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))}
 
-function cardAllBills(cardId){return data.bills.filter(b=>b.cardId===cardId).sort((a,b)=>new Date(b.statementDate||b.dueDate)-new Date(a.statementDate||a.dueDate))}
+function cardAllBills(cardId){return (data.bills||[]).filter(b=>b&&typeof b==='object'&&b.cardId===cardId).sort((a,b)=>new Date(b.statementDate||b.dueDate)-new Date(a.statementDate||a.dueDate))}
 
 function normCardKey(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]+/g,'')}
 
 function isCreditCardAccount(a){let hay=[a.type,a.name,a.institution].join(' ');return a.type==='Credit Card'||/credit|card|visa|mastercard|amex/i.test(hay)||Number(a.limit||0)>0||Number(a.statementDay||0)>0||Number(a.dueDay||0)>0}
+function billLogoSafe(a){try{return typeof logo==='function'?logo(a):''}catch(e){console.warn('Bill logo failed',e,a)}let label=String(a?.institution||a?.name||'CC').trim().slice(0,3).toUpperCase()||'CC';return '<div class="bank otherbank"><span class="bankLogoMark"><b>'+htmlText(label)+'</b></span></div>'}
 
 function accountForCardBill(b,cards){
   let key=normCardKey(b.cardName);
@@ -42,9 +43,9 @@ function renderCreditCenter(){
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const q=v=>String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
   const billRows=rows=>rows&&rows.length?'<div class="ccStatementList">'+rows.slice(0,4).map(b=>'<div class="ccStatementMini compactStatement"><div><b class="statementPeriod">'+esc(compactBillPeriod(b))+'</b><span class="sub">Due '+esc(displayDate(b.dueDate))+'</span></div><div class="statementAmt"><b>'+peso(b.remaining||0)+'</b><span class="statusPill '+statusClass(billStatus(b))+'">'+billStatus(b)+'</span></div></div>').join('')+'</div>':'';
-  let cards=(data.accounts||[]).filter(isCreditCardAccount);
+  let cards=(data.accounts||[]).filter(a=>a&&typeof a==='object').filter(isCreditCardAccount);
   const groupedBills={};
-  (data.bills||[]).filter(b=>billStatus(b)!=='Paid'&&Number(b.remaining||b.amount||0)>0).forEach(b=>{let acct=accountForCardBill(b,cards);let key=acct?acct.id:(b.cardId||b.cardName||'Card Statement');if(!groupedBills[key])groupedBills[key]=[];groupedBills[key].push(b)});
+  (data.bills||[]).filter(b=>b&&typeof b==='object'&&billStatus(b)!=='Paid'&&Number(b.remaining||b.amount||0)>0).forEach(b=>{let acct=accountForCardBill(b,cards);let key=acct?acct.id:(b.cardId||b.cardName||'Card Statement');if(!groupedBills[key])groupedBills[key]=[];groupedBills[key].push(b)});
   Object.values(groupedBills).forEach(rows=>rows.sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate)));
   let cardsWithBills=cards.filter(a=>groupedBills[a.id]&&groupedBills[a.id].length);
   let virtualCards=Object.entries(groupedBills).filter(([key])=>!cardsWithBills.some(a=>a.id===key)).map(([key,rows])=>{let open=rows.find(b=>billStatus(b)!=='Paid')||rows[0]||{};return {id:key,name:open.cardName||key||'Credit Card',institution:'Statement record',type:'Credit Card',limit:0,outstanding:rows.filter(b=>billStatus(b)!=='Paid').reduce((s,b)=>s+Number(b.remaining||0),0),_virtual:true,_bills:rows}});
@@ -63,7 +64,7 @@ function renderCreditCenter(){
     let progClass=util>=80?'danger':util>=50?'warn':'';
     let pill=nearest?(dd<0?'Overdue':dd===0?'Due today':dd+'d left'):(due?'No bill':(card._virtual?'Statement':'Setup needed'));
     let dueTone=dd===null?'':(dd<0||dd<=2?'danger':dd<=7?'warn':'');
-    let icon=card._virtual?'<div class="bank otherbank">CC</div>':logo(card);
+    let icon=card._virtual?'<div class="bank otherbank">CC</div>':billLogoSafe(card);
     let primary=nearest?'<button class="primary" onclick="openSettle(\''+q(nearest.id)+'\')">Settle</button>':'<button class="primary" onclick="closeSheets();openTxn()">Add Purchase</button>';
     let secondary=card._virtual?'<button onclick="openAddAccount()">Create Account</button>':'<button onclick="openAccountDetail(\''+q(card.id)+'\')">'+((!statementDay||!dueDay||!limit)?'Finish Setup':'Details')+'</button>';
     let activeStatement=nearest?(nearest.statementDate||nearest.periodEnd||st):st;
@@ -125,6 +126,6 @@ function recurringSortValue(r){let disabled=r.enabled===false,paid=recurringIsPa
 
 function sortRecurringItems(items){return (items||[]).slice().sort((a,b)=>{let aa=recurringSortValue(a),bb=recurringSortValue(b);return (aa.status-bb.status)||(aa.next-bb.next)||aa.name.localeCompare(bb.name)})}
 
-function renderRecurring(){let el=document.getElementById('recurringList');if(!el)return;let arr=sortRecurringItems(data.recurring||[]);el.innerHTML=arr.length?arr.map(r=>{let a=data.accounts.find(x=>x.id===r.accountId);let next=nextRecurringDate(r);let paid=recurringIsPaidThisMonth(r);let action=r.type==='Income'?'Received':'Pay';let doneLabel=r.type==='Income'?'Received':'Paid';let disabled=r.enabled===false;return `<div class="recurringCard ${paid?'isPaid':''}"><div class="recTop"><div class="recIdentity"><b>${htmlText(r.name)}</b><div class="recMeta">${htmlText(r.type)} - ${htmlText(r.category||'Other')} - ${a?htmlText(a.name)+' ('+htmlText(a.institution||a.type)+')':'Missing account'}</div></div><span class="recPill ${paid?'paid':'due'}">${paid?doneLabel:'Every '+htmlText(r.day)+recurringDaySuffix(r.day)}</span></div><div class="minirow" style="margin-top:10px"><span>Amount</span><b>${peso(r.amount)}</b></div><div class="minirow"><span>Next</span><b>${next.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</b></div><div class="recActions"><button class="tiny" onclick="openRecurring('${jsString(r.id)}')">Edit</button><button class="tiny ${disabled?'':'danger'}" onclick="toggleRecurring('${jsString(r.id)}')">${disabled?'Enable':'Disable'}</button>${paid?'':`<button class="tiny primary" ${disabled?'disabled':''} onclick="payRecurring('${jsString(r.id)}')">${action}</button>`}</div></div>`}).join(''):'<div class="row"><span class="sub">No recurring items yet. Add salary, subscriptions, MP2, utilities, or monthly bills.</span></div>'}
+function renderRecurring(){let el=document.getElementById('recurringList');if(!el)return;let arr=sortRecurringItems((data.recurring||[]).filter(r=>r&&typeof r==='object'));el.innerHTML=arr.length?arr.map(r=>{let a=(data.accounts||[]).find(x=>x&&x.id===r.accountId);let next=nextRecurringDate(r);let paid=recurringIsPaidThisMonth(r);let action=r.type==='Income'?'Received':'Pay';let doneLabel=r.type==='Income'?'Received':'Paid';let disabled=r.enabled===false;return `<div class="recurringCard ${paid?'isPaid':''}"><div class="recTop"><div class="recIdentity"><b>${htmlText(r.name)}</b><div class="recMeta">${htmlText(r.type)} - ${htmlText(r.category||'Other')} - ${a?htmlText(a.name)+' ('+htmlText(a.institution||a.type)+')':'Missing account'}</div></div><span class="recPill ${paid?'paid':'due'}">${paid?doneLabel:'Every '+htmlText(r.day)+recurringDaySuffix(r.day)}</span></div><div class="minirow" style="margin-top:10px"><span>Amount</span><b>${peso(r.amount)}</b></div><div class="minirow"><span>Next</span><b>${next.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</b></div><div class="recActions"><button class="tiny" onclick="openRecurring('${jsString(r.id)}')">Edit</button><button class="tiny ${disabled?'':'danger'}" onclick="toggleRecurring('${jsString(r.id)}')">${disabled?'Enable':'Disable'}</button>${paid?'':`<button class="tiny primary" ${disabled?'disabled':''} onclick="payRecurring('${jsString(r.id)}')">${action}</button>`}</div></div>`}).join(''):'<div class="row"><span class="sub">No recurring items yet. Add salary, subscriptions, MP2, utilities, or monthly bills.</span></div>'}
 
 function toggleRecurring(id){let r=data.recurring.find(x=>x.id===id);if(!r)return;r.enabled=!(r.enabled!==false);persist()}
