@@ -250,23 +250,6 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .bank .bankLogoMark{width:100%;height:100%;min-height:0;border-radius:inherit;box-shadow:none}
 .bankLogoMark b,.bankLogoMark i{position:relative;z-index:1;font-style:normal}
 .bankLogoMark i{font-size:7px;font-weight:900;opacity:.9;letter-spacing:.02em}
-.bankLogoMark.bpi{background:#c8103e;color:#fff}.bankLogoMark.bpi:after{content:"";position:absolute;left:9px;top:8px;width:7px;height:11px;border:2px solid #f5c542;border-radius:3px}.bankLogoMark.bpi b{margin-left:12px;font-size:13px}
-.bankLogoMark.bdo{background:#1261d6}.bankLogoMark.bdo:before{content:"";position:absolute;left:7px;top:50%;width:10px;height:10px;border-radius:999px;background:#fff;transform:translateY(-50%)}.bankLogoMark.bdo b{font-size:12px;margin-left:13px}
-.bankLogoMark.metrobank{background:#fff;color:#0b5e9e}.bankLogoMark.metrobank:before{content:"";position:absolute;left:8px;width:13px;height:13px;border:2px solid #0b77bd;transform:rotate(45deg);border-radius:2px}.bankLogoMark.metrobank b{font-size:10px;margin-left:18px}
-.bankLogoMark.unionbank{background:#fff;color:#111827}.bankLogoMark.unionbank b{color:#f97316;font-size:13px}.bankLogoMark.unionbank:after{content:"";position:absolute;right:7px;width:8px;height:8px;background:#111827;transform:skew(-14deg)}
-.bankLogoMark.maya{background:#050505;color:#27e59a}.bankLogoMark.maya b{font-size:12px;letter-spacing:-.05em}
-.bankLogoMark.gcash{background:#0b74e8;color:#fff}.bankLogoMark.gcash b{font-size:18px}.bankLogoMark.gcash i{position:absolute;right:7px;bottom:7px;font-size:6px}
-.bankLogoMark.cimb{background:#e92b2b;color:#fff}.bankLogoMark.cimb:before{content:"";position:absolute;left:7px;width:12px;height:12px;background:#fff;clip-path:polygon(0 0,100% 50%,0 100%)}.bankLogoMark.cimb b{font-size:9px;margin-left:15px}
-.bankLogoMark.bpibanko{background:#fff;color:#c42b2b}.bankLogoMark.bpibanko:before{content:"";position:absolute;top:6px;width:12px;height:12px;border:3px solid #f0b72f;border-radius:999px}.bankLogoMark.bpibanko b{font-size:9px;margin-top:13px}
-.bankLogoMark.gotyme{background:#f8fafc;color:#111827}.bankLogoMark.gotyme b{font-size:14px}.bankLogoMark.gotyme i{font-size:9px;margin-top:-4px}
-.bankLogoMark.maribank{background:#ff7a1a;color:#fff}.bankLogoMark.maribank b{font-size:18px}.bankLogoMark.maribank:after{content:"";position:absolute;left:13px;right:13px;bottom:9px;height:3px;border-radius:99px;background:#3aa7ff}
-.bankLogoMark.uno{background:#050505;color:#67e8f9}.bankLogoMark.uno b{font-size:12px;background:linear-gradient(90deg,#7c3aed,#0ea5e9,#f97316);-webkit-background-clip:text;background-clip:text;color:transparent}.bankLogoMark.uno i{font-size:5px;color:#fff;margin-top:-2px}
-.bankLogoMark.tonik{background:#7c4dff;color:#fff}.bankLogoMark.tonik b{font-size:12px;font-weight:800}
-.bankLogoMark.diskartech{background:#fff;color:#0891b2}.bankLogoMark.diskartech b{width:22px;height:22px;border:3px solid #19a3c2;border-radius:8px;display:grid;place-items:center;color:#eab308}
-.bankLogoMark.ownbank{background:#080808;color:#9ff06a}.bankLogoMark.ownbank{grid-template-rows:1fr 1fr}.bankLogoMark.ownbank b,.bankLogoMark.ownbank i{font-size:9px}
-.bankLogoMark.netbank{background:#0b5fc5;color:#fff}.bankLogoMark.netbank:before{content:"";position:absolute;width:19px;height:22px;border:3px solid #fff;border-radius:8px 8px 10px 10px}.bankLogoMark.netbank b{font-size:9px}
-.bankLogoMark.landbank{background:#fff;color:#45aa38}.bankLogoMark.landbank b{font-size:11px}.bankLogoMark.landbank:before{content:"";position:absolute;left:7px;width:10px;height:10px;border-radius:999px;background:#45aa38}
-.bankLogoMark.pnb{background:#fff;color:#1750a4}.bankLogoMark.pnb:before{content:"";position:absolute;left:7px;width:12px;height:12px;border:2px solid #d97706;border-radius:3px}.bankLogoMark.pnb b{font-size:11px;margin-left:13px}
 
 .bankLogoMark.mp2{background:#059669;color:#fff}.bankLogoMark.cash,.bankLogoMark.otherbank{background:#64748b;color:#fff}.bankLogoMark.otherbank .logoSwatchIcon{width:18px;height:18px}
 
@@ -275,48 +258,6 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .logoSwatch .bankLogoMark{min-height:38px;border-radius:13px}
 .bank .bankLogoMark{transform:scale(1.02)}
 .bankLogoMark:after,.bankLogoMark:before{pointer-events:none}
-.bankLogoMark.bpi{background:linear-gradient(145deg,#c80f42,#9d1235)}
-.bankLogoMark.bpi:after{left:7px;top:7px;width:8px;height:12px;border-color:#f4cf58;border-radius:4px}
-.bankLogoMark.bpi b{margin-left:14px;font-size:12px;letter-spacing:-.02em}
-.bankLogoMark.bdo{background:linear-gradient(145deg,#1b75e5,#0f4db5)}
-.bankLogoMark.bdo:before{left:7px;width:11px;height:11px;box-shadow:7px 0 0 rgba(255,255,255,.28)}
-.bankLogoMark.bdo b{font-size:12px;margin-left:16px}
-.bankLogoMark.metrobank{background:linear-gradient(145deg,#f8fbff,#dcecff);color:#075985}
-.bankLogoMark.metrobank:before{left:7px;width:12px;height:12px;border-color:#0284c7;background:linear-gradient(135deg,#e0f2fe,#fff)}
-.bankLogoMark.metrobank b{font-size:9px;margin-left:18px;font-weight:950}
-.bankLogoMark.unionbank{background:linear-gradient(145deg,#ffffff,#f3f4f6);color:#111827}
-.bankLogoMark.unionbank b{color:#f97316;font-size:13px;letter-spacing:-.04em}
-.bankLogoMark.unionbank:after{right:8px;width:8px;height:13px;background:linear-gradient(180deg,#111827,#374151)}
-.bankLogoMark.maya{background:linear-gradient(145deg,#020617,#111827);color:#37f59b}
-.bankLogoMark.maya b{font-size:12px;font-weight:800;letter-spacing:-.08em}
-.bankLogoMark.gcash{background:linear-gradient(145deg,#1677f2,#075ec4)}
-.bankLogoMark.gcash b{width:20px;height:20px;border-radius:999px;border:3px solid #fff;display:grid;place-items:center;font-size:11px}
-.bankLogoMark.gcash i{right:6px;bottom:5px;font-size:5px;letter-spacing:.01em}
-.bankLogoMark.cimb{background:linear-gradient(145deg,#ef3434,#bd1f1f)}
-.bankLogoMark.cimb:before{left:8px;width:13px;height:13px}
-.bankLogoMark.cimb b{font-size:8px;margin-left:16px;letter-spacing:-.03em}
-.bankLogoMark.bpibanko{background:linear-gradient(145deg,#fff,#fff7e6);color:#b42318}
-.bankLogoMark.bpibanko:before{top:5px;border-color:#eab308}
-.bankLogoMark.bpibanko b{font-size:8px;margin-top:14px}
-.bankLogoMark.gotyme{background:linear-gradient(145deg,#fff,#e5e7eb)}
-.bankLogoMark.gotyme b{font-size:13px;letter-spacing:-.05em}
-.bankLogoMark.gotyme i{font-size:8px}
-.bankLogoMark.maribank{background:linear-gradient(145deg,#ff8a1f,#ea580c)}
-.bankLogoMark.maribank b{font-size:16px}
-.bankLogoMark.uno{background:linear-gradient(145deg,#020617,#0f172a)}
-.bankLogoMark.uno b{font-size:12px;letter-spacing:-.08em}
-.bankLogoMark.tonik{background:linear-gradient(145deg,#7c3aed,#6d28d9)}
-.bankLogoMark.tonik b{font-size:11px;letter-spacing:-.05em}
-.bankLogoMark.diskartech{background:linear-gradient(145deg,#fff,#ecfeff)}
-.bankLogoMark.diskartech b{width:20px;height:22px;border-width:3px;border-radius:9px;font-size:0}
-.bankLogoMark.diskartech b:after{content:"";width:7px;height:10px;border:2px solid #f59e0b;border-radius:3px}
-.bankLogoMark.ownbank b,.bankLogoMark.ownbank i{font-size:8px;line-height:.9}
-.bankLogoMark.netbank{background:linear-gradient(145deg,#0f6ad6,#0b4fb3)}
-.bankLogoMark.netbank b{font-size:0}
-.bankLogoMark.landbank{background:linear-gradient(145deg,#fff,#ecfdf5)}
-.bankLogoMark.landbank b{font-size:9px;margin-left:12px}
-.bankLogoMark.pnb{background:linear-gradient(145deg,#fff,#eff6ff)}
-.bankLogoMark.pnb b{font-size:10px;margin-left:14px}
 
 
 .bankLogoMark.mp2{background:linear-gradient(145deg,#10b981,#047857)}
@@ -924,14 +865,6 @@ body{
 
 
 /* Clean fallback bank marks: no decorative artifacts inside the logo tile. */
-.bankLogoMark.bdo,.bankLogoMark.bpi,.bankLogoMark.metrobank,.bankLogoMark.unionbank,.bankLogoMark.pnb,.bankLogoMark.hsbc{display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important}
-.bankLogoMark.bdo:before,.bankLogoMark.bdo:after,.bankLogoMark.bpi:before,.bankLogoMark.bpi:after,.bankLogoMark.metrobank:before,.bankLogoMark.metrobank:after,.bankLogoMark.unionbank:before,.bankLogoMark.unionbank:after,.bankLogoMark.pnb:before,.bankLogoMark.pnb:after,.bankLogoMark.hsbc:before,.bankLogoMark.hsbc:after{display:none!important;content:none!important}
-.bankLogoMark.bdo{background:#f8fafc!important;color:#1557a6!important;border:1px solid rgba(21,87,166,.5)!important}
-.bankLogoMark.bpi{background:#c8103e!important;color:#fff!important}
-.bankLogoMark.metrobank{background:#f8fafc!important;color:#0b5e9e!important;border:1px solid rgba(11,94,158,.35)!important}
-.bankLogoMark.unionbank{background:#f8fafc!important;color:#f97316!important;border:1px solid rgba(249,115,22,.35)!important}
-.bankLogoMark.pnb{background:#f8fafc!important;color:#1750a4!important;border:1px solid rgba(23,80,164,.35)!important}.bankLogoMark.hsbc{background:#f8fafc!important;color:#dc2626!important;border:1px solid rgba(220,38,38,.35)!important}
-.bankLogoMark.bdo b,.bankLogoMark.bpi b,.bankLogoMark.metrobank b,.bankLogoMark.unionbank b,.bankLogoMark.pnb b,.bankLogoMark.hsbc b{margin:0!important;font-size:12px!important;letter-spacing:0!important;color:currentColor!important}
 /* Accounts: permanent compact grouped rows */
 #accounts #accountGrid{display:block!important;padding-bottom:calc(128px + env(safe-area-inset-bottom))}
 #accounts > .chips{display:none!important}
