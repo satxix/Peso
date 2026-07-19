@@ -156,9 +156,6 @@ body.dark .gmTypeBadge{background:#1f2937}body.dark .gmProgress{background:#1f29
 #transactionReport .txnActions{width:100%;justify-content:flex-start;margin-top:10px;}
 #transactionReport .tiny{border-radius:14px;padding:9px 12px;background:color-mix(in srgb,var(--card) 92%,var(--bg));}
 #transactionReport .tiny.danger{background:#fff5f5;border-color:#fecaca;}
-.gm2-empty-tip{background:linear-gradient(145deg,#fff,#fbfcff);border:1px dashed var(--line);border-radius:24px;padding:20px;text-align:center;color:var(--muted);font-weight:800;line-height:1.45;}
-.gm2-empty-tip b{display:block;color:var(--text);font-size:16px;margin-bottom:4px;}
-body.dark .gm2-empty-tip{background:#111827;border-color:var(--line);}
 @media(max-width:370px){.reportPanel{padding:15px 14px}}
 
 
@@ -355,7 +352,7 @@ body.dark{--card:#173f52;--card-inset:rgba(255,255,255,.07)}
 .cashCategoryCard,.calendarEvent,.resultCard,
 .emptyCenter,.premiumAddCard,.premiumEmpty,.premiumPulse,.gmAddCard,.gmEmpty,
 .emptyState,.empty,.option,.accountFilter,.backupBtn,.quick,.ghost,.premiumCreditCard,
-.gm2-empty-tip,.gm4-empty{
+.gm4-empty{
   background:var(--card);
   --text:#f3efe4;--muted:rgba(243,239,228,.62);--line:rgba(255,255,255,.12);
   color:var(--text);border-color:var(--line);
@@ -369,7 +366,7 @@ body.dark .cashCategoryCard,body.dark body.dark .calendarEvent,body.dark .result
 body.dark .emptyCenter,body.dark .premiumAddCard,body.dark .premiumEmpty,body.dark .premiumPulse,
 body.dark .gmAddCard,body.dark .gmEmpty,body.dark .emptyState,body.dark .empty,body.dark .option,
 body.dark .accountFilter,body.dark .backupBtn,body.dark .quick,body.dark .ghost,
-body.dark .premiumCreditCard,body.dark .gm2-empty-tip,
+body.dark .premiumCreditCard,
 body.dark .gm4-empty{
   background:var(--card);--text:#f3efe4;--muted:rgba(243,239,228,.62);--line:rgba(255,255,255,.12);
   color:var(--text);border-color:var(--line)
