@@ -3,7 +3,7 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
 
 /* Premium Edition Phase 2: Motion & Interaction */
 (function(){
-  const motionValueIds=['safeSpendHero','netWorth','cashTotal','cardTotal','billsDue','todayIncome','todayExpense','todayTransfer','todayNet','healthScoreDash'];
+  const motionValueIds=['safeSpendHero','netWorth','cashTotal','cardTotal','billsDue','todayIncome','todayExpense','todayTransfer','todayNet'];
   function addPressTargets(){
     document.querySelectorAll('button,.card,.row,.option,.ccCard,.budgetCard').forEach(el=>el.classList.add('pressLift'));
   }

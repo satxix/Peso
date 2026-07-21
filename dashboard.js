@@ -28,9 +28,6 @@ function renderDash(){
   let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');
   if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}
   let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;set('todayBills',dueToday?`${dueToday} due today`:`${unpaid.length} due`);
-  let h=typeof calculateHealth==='function'?calculateHealth():{score:0,label:'Ready',cur:{savingsRate:0},util:0};
-  set('healthScoreDash',h.score||'--');set('healthLabelDash',h.label||'Ready');set('healthSummaryDash',h.cur&&h.cur.income?`${h.cur.savingsRate}% savings rate this month.`:'Add income and expenses to unlock a better score.');set('healthSavingsDash',h.cur&&h.cur.income?`${h.cur.savingsRate}%`:'--');set('healthUtilDash',(data.accounts||[]).some(a=>a&&a.type==='Credit Card')?`${h.util}%`:'--');
-  if(typeof setHealthRing==='function')setHealthRing('healthRing',h.score||0);
   let upcomingEl=document.getElementById('upcoming');
   if(upcomingEl)upcomingEl.innerHTML=unpaid.length?unpaid.slice(0,4).map(b=>{let dd=daysUntil(b.dueDate);let badge=dd<0?'Overdue':dd===0?'Today':`${dd} day${dd===1?'':'s'}`;return `<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>${htmlText(b.cardName||'Card bill')}</b><span>Due ${htmlText(b.dueDate)} - ${badge}</span></div><div class="premiumTimelineAmt">${peso(b.remaining)}</div></div>`}).join(''):'<div class="softEmpty">No unpaid bills. Credit card bills appear after card purchases.</div>';
   let recentEl=document.getElementById('recent');

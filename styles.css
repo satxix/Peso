@@ -66,8 +66,6 @@ body.dark{background:radial-gradient(circle at top left,rgba(108,99,255,.13),tra
   .nav button.active{animation:navSelect .22s var(--motion-ease) both}
   @keyframes navSelect{from{transform:scale(.94)}to{transform:scale(1)}}
   .bar i,.budgetBar i,.reportBar i{transition:width .55s var(--motion-spring)}
-  .healthRing{transition:background .55s var(--motion-spring),transform .18s ease}
-  .healthRing:active{transform:scale(.98)}
   .valuePulse{animation:valuePulse .34s var(--motion-ease) both}
   @keyframes valuePulse{0%{transform:translateY(2px);opacity:.72}100%{transform:none;opacity:1}}
   .pressLift{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;position:relative;overflow:hidden}
@@ -146,7 +144,7 @@ body.dark{
 html,body{font-family:var(--font-body)}
 body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:radial-gradient(circle at top right,color-mix(in srgb,var(--accent-2) 10%,transparent),transparent 22rem),var(--bg)}
 .title,.name,h2,h3{font-family:var(--font-body);letter-spacing:-.01em}
-.amount,.premiumCash,.premiumValue,.value,.mValue,.bal,.miniBal,.healthScore,.healthRing b,.display,.premiumGreeting,.signatureMessage{font-family:var(--font-display);font-weight:560;letter-spacing:-.02em}
+.amount,.premiumCash,.premiumValue,.value,.mValue,.bal,.miniBal,.display,.premiumGreeting,.signatureMessage{font-family:var(--font-display);font-weight:560;letter-spacing:-.02em}
 
 /* ---- Bottom navigation: signature dark pill with gold active state ---- */
 .nav{background:var(--text)!important;border:1px solid rgba(255,255,255,.06)!important;box-shadow:0 22px 46px rgba(0,0,0,.28)!important;backdrop-filter:none!important}
@@ -161,8 +159,6 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .premiumHero .premiumHeroGlow{background:radial-gradient(circle,rgba(215,172,82,.28),rgba(215,172,82,0) 70%)}
 .premiumHero .label,.premiumHero .heroSub{color:rgba(243,239,228,.62)}
 .premiumHero .premiumHeroTitle,.premiumHero .premiumCash{color:#f7f4ea}
-.premiumHero .healthRing:after{background:#173f52;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
-.premiumHero .healthRing b{color:#f7f4ea}
 .premiumHero .dashMetric{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09)}
 .premiumHero .dashMetric .mLabel{color:rgba(243,239,228,.55)}
 .premiumHero .dashMetric .mValue{color:#f7f4ea}
@@ -382,7 +378,6 @@ body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--acce
 
 
 /* ---- Remaining light pills/boxes ---- */
-.forecastDelta{background:var(--card-inset)!important}
 .catCircle{background:var(--card-inset)!important;color:var(--accent-2)!important}
 .feeBox{background:var(--card-inset)!important;border-color:rgba(255,255,255,.12)!important}
 .feeBox b{color:var(--text)!important}
@@ -738,7 +733,7 @@ body.dark{
   color:var(--muted)!important;
 }
 .name,.title,.premiumAcctName,.acctName,.acctAmount,.reportLine b,.settingsCard h3,
-.settingRow label,.gm4-empty b,.forecastValue,.amount,.value,.mValue{
+.settingRow label,.gm4-empty b,.amount,.value,.mValue{
   color:var(--text)!important;
 }
 .statusPill,.insightItem.warn,.insightItem.good,.insightItem.danger,.insightTone.warn,.insightTone.good,.insightTone.danger{
@@ -837,7 +832,7 @@ body{
 .themeSettingRow{align-items:flex-start}.themePicker{display:grid;grid-template-columns:repeat(4,34px);gap:9px;justify-content:end;min-width:163px}.themeSwatch{width:34px;height:34px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:linear-gradient(145deg,var(--swatch-bg),var(--swatch-surface));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 8px 18px rgba(0,0,0,.14);position:relative;padding:0;cursor:pointer}.themeSwatch:before{content:"";position:absolute;inset:9px;border-radius:999px;background:var(--swatch-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--swatch-gold) 24%,transparent)}.themeSwatch.active{outline:2px solid var(--accent-2);outline-offset:3px}.themeSwatch:active{transform:scale(.96)}
 
 /* Theme picker should repaint the full shell, not only the page background. */
-.premiumHero,body.dark .premiumHero{background:linear-gradient(160deg,color-mix(in srgb,var(--theme-bg-top) 72%,var(--theme-surface)) 0%,var(--theme-surface) 50%,color-mix(in srgb,var(--theme-bg-bottom) 68%,#07110e) 100%)!important;border-color:color-mix(in srgb,var(--accent) 18%,rgba(255,255,255,.08))!important;box-shadow:0 26px 60px color-mix(in srgb,var(--theme-bg-bottom) 58%,rgba(0,0,0,.34))!important}.premiumHero .premiumHeroGlow{background:radial-gradient(circle,color-mix(in srgb,var(--accent-2) 28%,transparent),transparent 70%)!important}.premiumHero .healthRing:after{background:var(--theme-surface)!important}
+.premiumHero,body.dark .premiumHero{background:linear-gradient(160deg,color-mix(in srgb,var(--theme-bg-top) 72%,var(--theme-surface)) 0%,var(--theme-surface) 50%,color-mix(in srgb,var(--theme-bg-bottom) 68%,#07110e) 100%)!important;border-color:color-mix(in srgb,var(--accent) 18%,rgba(255,255,255,.08))!important;box-shadow:0 26px 60px color-mix(in srgb,var(--theme-bg-bottom) 58%,rgba(0,0,0,.34))!important}.premiumHero .premiumHeroGlow{background:radial-gradient(circle,color-mix(in srgb,var(--accent-2) 28%,transparent),transparent 70%)!important}
 .card,.row,.reportPanel,.settingsCard,.settingRow,.budgetCard,.ccCard,.billCard,.recurringCard,.detailHero,.resultCard,.premiumPulse,.premiumTimelineItem,.premiumAccountCard,.premiumAddCard,.premiumMini,.premiumCreditCard,.emptyCenter,.softEmpty,.premiumEmpty,.gmAddCard,.gmEmpty,.emptyState,.empty,body.dark .card,body.dark .row,body.dark .reportPanel,body.dark .settingsCard,body.dark .settingRow,body.dark .budgetCard,body.dark .ccCard,body.dark .billCard,body.dark .recurringCard,body.dark .detailHero,body.dark .resultCard,body.dark .premiumPulse,body.dark .premiumTimelineItem,body.dark .premiumAccountCard,body.dark .premiumAddCard,body.dark .premiumMini,body.dark .premiumCreditCard{background:linear-gradient(145deg,color-mix(in srgb,var(--card) 94%,var(--theme-bg-top)),var(--card))!important;border-color:color-mix(in srgb,var(--accent) 16%,var(--line))!important}
 .dashMetric,.metric,.ccStat,.statBox,.monthBox,.paySummary,.premiumCreditMain,.premiumCreditSide div,.insightItem,.insightTone,.recNote,.pulseGrid div,.premiumSummaryChips button,.statementMini,.ccStatementMini,.expenseStat,.expenseBarRow,.expenseEmpty,body.dark .dashMetric,body.dark .metric,body.dark .ccStat,body.dark .statBox,body.dark .monthBox,body.dark .paySummary,body.dark .premiumCreditMain,body.dark .premiumCreditSide div,body.dark .insightItem,body.dark .insightTone,body.dark .recNote,body.dark .pulseGrid div,body.dark .premiumSummaryChips button,body.dark .statementMini,body.dark .ccStatementMini{background:var(--card-inset)!important;border-color:color-mix(in srgb,var(--accent) 14%,var(--line))!important}
 .sheet,.field,.search,.txnSearch,.searchInputBig,.accountFilter,.backupBtn,.quick,.ghost,.option,.categoryPill,.payMode,body.dark .sheet,body.dark .field,body.dark .search,body.dark .txnSearch,body.dark .searchInputBig,body.dark .accountFilter,body.dark .backupBtn,body.dark .quick,body.dark .ghost,body.dark .option,body.dark .categoryPill,body.dark .payMode{background:color-mix(in srgb,var(--card) 88%,var(--theme-bg))!important;border-color:color-mix(in srgb,var(--accent) 15%,var(--line))!important;color:var(--text)!important}
@@ -881,3 +876,10 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 #reports .reportTabs button.active{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 58%,var(--theme-bg-top)))!important;color:#fff!important}
 #bills .section .sub,#reports .sub,#reports .expenseBarMeta,#reports .reportEmpty{color:color-mix(in srgb,var(--text) 68%,var(--muted))!important}
 .accountBaseNote{margin-top:4px;font-size:12px;font-weight:800;opacity:.72}
+
+/* Readable status/version pills after theme overrides. */
+#dashboard .appVersionPill,.appVersionPill,body.dark .appVersionPill{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-2) 18%,var(--theme-surface)),color-mix(in srgb,var(--accent) 10%,var(--theme-surface)))!important;color:color-mix(in srgb,var(--accent-2) 86%,#fff)!important;border:1px solid color-mix(in srgb,var(--accent-2) 48%,rgba(255,255,255,.22))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px color-mix(in srgb,var(--theme-bg-bottom) 34%,rgba(0,0,0,.18))!important}
+#bills .premiumDuePill,#bills .statusPill{background:color-mix(in srgb,var(--accent) 18%,var(--theme-surface))!important;color:color-mix(in srgb,var(--accent) 82%,#fff)!important;border:1px solid color-mix(in srgb,var(--accent) 36%,rgba(255,255,255,.16))!important}
+#bills .premiumDuePill.warn,#bills .statusPill.partial{background:color-mix(in srgb,var(--orange) 18%,var(--theme-surface))!important;color:#ffd38a!important;border-color:color-mix(in srgb,var(--orange) 42%,rgba(255,255,255,.16))!important}
+#bills .premiumDuePill.danger,#bills .statusPill.unpaid{background:color-mix(in srgb,var(--red) 16%,var(--theme-surface))!important;color:#ffb4ad!important;border-color:color-mix(in srgb,var(--red) 42%,rgba(255,255,255,.16))!important}
+#bills .statusPill.paid{background:color-mix(in srgb,var(--green) 18%,var(--theme-surface))!important;color:#9df0bf!important;border-color:color-mix(in srgb,var(--green) 42%,rgba(255,255,255,.16))!important}

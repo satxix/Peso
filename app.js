@@ -82,11 +82,6 @@ function selectCategory(c){c=String(c||'').trim();if(!c)return;if(!data.categori
 
 
 
-function averageCardUtilization(){let cards=data.accounts.filter(a=>a.type==='Credit Card'&&Number(a.limit||0)>0);if(!cards.length)return 0;return Math.round(cards.reduce((s,a)=>s+(Number(a.outstanding||0)/Number(a.limit||1))*100,0)/cards.length)}
-function budgetComplianceScore(){if(!data.budgets||!data.budgets.length)return 85;let spend=monthlyCategorySpend(),scores=data.budgets.map(b=>{let used=Number(spend[b.category]||0),limit=Number(b.amount||0)||1,pct=used/limit;if(pct<=.8)return 100;if(pct<=1)return 75;return Math.max(20,100-Math.round((pct-1)*120))});return Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)}
-function unpaidBillScore(){let unpaid=(data.bills||[]).filter(b=>b.status!=='Paid');if(!unpaid.length)return 100;let overdue=unpaid.filter(b=>daysUntil(b.dueDate)<0).length,soon=unpaid.filter(b=>daysUntil(b.dueDate)>=0&&daysUntil(b.dueDate)<=3).length;return Math.max(20,100-overdue*35-soon*12)}
-function calculateHealth(){let cur=summarizeTxns(txnsInRange(monthRange(0).start,monthRange(0).end));let savingsScore=cur.income>0?Math.max(0,Math.min(100,50+cur.savingsRate)):70;let util=averageCardUtilization();let utilScore=Math.max(0,100-util*2);let budgetScore=budgetComplianceScore();let billScore=unpaidBillScore();let score=Math.round(savingsScore*.35+utilScore*.25+budgetScore*.25+billScore*.15);let label=score>=90?'Excellent':score>=75?'Good':score>=60?'Needs attention':'At risk';return {score,label,cur,util,budgetScore,billScore}}
-function setHealthRing(id,score){let el=document.getElementById(id);if(!el)return;let deg=Math.max(0,Math.min(100,score))*3.6;el.style.background=`conic-gradient(var(--accent) ${deg}deg,#eef1f7 ${deg}deg)`}
 
 
 
