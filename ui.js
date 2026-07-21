@@ -18,7 +18,7 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
     });
   }
   function tagStagger(){
-    document.querySelectorAll('.premiumDashboard .timelineItem,.premiumDashboard .row,.premiumDashboard .premiumActions button').forEach((el,i)=>{
+    document.querySelectorAll('.premiumDashboard .premiumTimelineItem,.premiumDashboard .row').forEach((el,i)=>{
       el.style.animationDelay=Math.min(i*35,220)+'ms';
     });
   }
