@@ -591,14 +591,15 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 
 
 /* Home Header Polish */
-.premiumTop{align-items:center;margin:4px 0 12px}
-.premiumKicker{font-size:13px;text-transform:none;letter-spacing:0;color:var(--muted)}
+.premiumTop{align-items:center;margin:4px 0 14px}
+.premiumKicker{font-size:14px;text-transform:none;letter-spacing:0;color:color-mix(in srgb,var(--text) 78%,var(--muted));font-weight:900}
 
 
 /* Home Brand Mark */
-#dashboard .premiumTop>div:first-child{position:relative;min-height:46px;padding-left:54px;display:flex;flex-direction:column;justify-content:center}
-#dashboard .premiumTop>div:first-child:before{content:"\20B1";position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#1c4d62,#102d3c);border:1px solid rgba(216,184,103,.35);color:#f4d985;font-family:Arial,"Segoe UI Symbol","Noto Sans",sans-serif;font-size:26px;font-weight:900;box-shadow:0 12px 28px rgba(0,0,0,.18)}
-#dashboard .homeVersionPill{margin-top:5px}
+#dashboard .premiumTop>div:first-child{position:relative;min-height:54px;padding-left:64px;display:flex;flex-direction:column;justify-content:center}
+#dashboard .premiumTop>div:first-child:before{content:"\20B1";position:absolute;left:0;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 28% 24%,color-mix(in srgb,var(--accent-2) 22%,transparent),transparent 32%),linear-gradient(145deg,color-mix(in srgb,var(--theme-nav) 88%,var(--accent)),color-mix(in srgb,var(--theme-nav) 78%,#07110e));border:1px solid color-mix(in srgb,var(--accent-2) 52%,rgba(255,255,255,.18));color:#f7dc82;font-family:Arial,"Segoe UI Symbol","Noto Sans",sans-serif;font-size:32px;font-weight:900;line-height:1;box-shadow:0 15px 32px color-mix(in srgb,var(--theme-bg-bottom) 46%,rgba(0,0,0,.2)),inset 0 0 0 1px rgba(255,255,255,.08)}
+#dashboard .premiumTop>div:first-child:after{content:"";position:absolute;left:9px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent-2) 48%,transparent);pointer-events:none}
+#dashboard .homeVersionPill{margin-top:6px;width:max-content;min-width:58px;text-align:center}
 
 
 /* Home Focus Account */
@@ -856,11 +857,8 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 .nav .fab svg{color:currentColor!important;stroke:currentColor!important}
 .nav button.active,body.dark .nav button.active{background:color-mix(in srgb,var(--accent) 22%,var(--theme-nav))!important;color:var(--accent)!important;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)!important}
 .nav button.active svg,.nav button.active span{color:var(--accent)!important;stroke:currentColor!important}
-.premiumIconBtn,.settingsGearBtn,.settingsHomeBtn,.iconbtn.settingsHomeBtn,body.dark .premiumIconBtn,body.dark .settingsGearBtn,body.dark .settingsHomeBtn,body.dark .iconbtn.settingsHomeBtn{background:color-mix(in srgb,var(--theme-surface) 72%,#fff)!important;color:var(--accent)!important;border:1px solid color-mix(in srgb,var(--accent) 28%,rgba(255,255,255,.45))!important;box-shadow:0 16px 34px color-mix(in srgb,var(--theme-bg-bottom) 34%,rgba(0,0,0,.18))!important}
-.premiumIconBtn svg,.settingsGearBtn svg,.settingsHomeBtn svg,.iconbtn.settingsHomeBtn svg{color:currentColor!important;stroke:currentColor!important}
 .save,.backupBtn.primary,.billSetupCard button,.premiumCreditActions button.primary,.sheetActions button.primary,.payMode.active,.seg button.active,.reportTabs button.active,.chip.active,body.dark .save,body.dark .backupBtn.primary,body.dark .premiumCreditActions button.primary,body.dark .sheetActions button.primary,body.dark .payMode.active,body.dark .seg button.active,body.dark .reportTabs button.active,body.dark .chip.active{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 58%,var(--theme-bg-top)))!important;color:#fff!important;border-color:transparent!important;box-shadow:0 12px 26px color-mix(in srgb,var(--accent) 32%,rgba(0,0,0,.18))!important}
 #txnSheet .seg button.active{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 58%,var(--theme-bg-top)))!important}
-.appVersionPill,body.dark .appVersionPill{color:var(--accent-2)!important;background:color-mix(in srgb,var(--accent) 12%,transparent)!important;border-color:color-mix(in srgb,var(--accent-2) 34%,var(--line))!important}
 
 /* Theme-visible header icons: themed surface, high-contrast themed stroke. */
 .premiumIconBtn,.settingsGearBtn,.settingsHomeBtn,.iconbtn.settingsHomeBtn,body.dark .premiumIconBtn,body.dark .settingsGearBtn,body.dark .settingsHomeBtn,body.dark .iconbtn.settingsHomeBtn{background:linear-gradient(145deg,color-mix(in srgb,#fff 88%,var(--theme-bg-top)),color-mix(in srgb,#fff 78%,var(--accent)))!important;color:color-mix(in srgb,var(--theme-nav) 82%,var(--accent))!important;border:1px solid color-mix(in srgb,var(--accent) 42%,rgba(255,255,255,.62))!important;box-shadow:0 16px 34px color-mix(in srgb,var(--theme-bg-bottom) 38%,rgba(0,0,0,.20)),inset 0 0 0 1px rgba(255,255,255,.55)!important}
