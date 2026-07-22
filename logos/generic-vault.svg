@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Vault logo">
+  <rect width="120" height="120" rx="28" fill="#eef5ff"/>
+  <rect x="24" y="26" width="72" height="68" rx="15" fill="#2f5368"/>
+  <circle cx="60" cy="60" r="23" fill="#466b82"/>
+  <circle cx="60" cy="60" r="9" fill="#f6d365"/>
+  <path d="M60 38v10M60 72v10M38 60h10M72 60h10M45 45l7 7M68 68l7 7M75 45l-7 7M52 68l-7 7" stroke="#eef5ff" stroke-width="4" stroke-linecap="round"/>
+</svg>

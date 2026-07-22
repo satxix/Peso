@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Savings logo">
+  <rect width="120" height="120" rx="28" fill="#fff0f5"/>
+  <path d="M31 61c0-17 15-30 36-30 16 0 28 8 33 20h8v17h-8c-3 8-9 14-17 18v12H68v-8H52v8H37V86c-10-5-16-14-16-25Z" fill="#e35d8f"/>
+  <circle cx="84" cy="56" r="4" fill="#2f5368"/>
+  <path d="M48 42h30" stroke="#fff0f5" stroke-width="6" stroke-linecap="round"/>
+</svg>

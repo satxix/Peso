@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Receipt logo">
+  <rect width="120" height="120" rx="28" fill="#f5f2ff"/>
+  <path d="M34 23h52v74l-9-6-9 6-8-6-8 6-9-6-9 6V23Z" fill="#5b4fd4"/>
+  <path d="M46 44h28M46 58h28M46 72h19" stroke="#f5f2ff" stroke-width="6" stroke-linecap="round"/>
+</svg>

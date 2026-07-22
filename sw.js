@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v260';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v261';
 const ASSETS = [
   './',
   './index.html',
@@ -42,10 +42,20 @@ const ASSETS = [
   './logos/generic-bank.svg',
   './logos/generic-bills.svg',
   './logos/generic-card.svg',
+  './logos/generic-cash.svg',
+  './logos/generic-coins.svg',
   './logos/generic-credit.svg',
+  './logos/generic-debit.svg',
+  './logos/generic-fund.svg',
   './logos/generic-investment.svg',
+  './logos/generic-loan.svg',
+  './logos/generic-moneybag.svg',
   './logos/generic-payroll.svg',
+  './logos/generic-piggy.svg',
+  './logos/generic-receipt.svg',
   './logos/generic-salary.svg',
+  './logos/generic-transfer.svg',
+  './logos/generic-vault.svg',
   './logos/generic-wallet.svg',
   './logos/gotyme.svg',
   './logos/gotyme-clean.png',

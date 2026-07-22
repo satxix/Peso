@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Loan logo">
+  <rect width="120" height="120" rx="28" fill="#fff3f0"/>
+  <path d="M30 40h60v46H30z" fill="#ff7468"/>
+  <path d="M30 40 60 24l30 16H30Z" fill="#b5473e"/>
+  <path d="M44 54h32M44 67h23" stroke="#fff3f0" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="84" cy="82" r="16" fill="#f6d365"/>
+  <path d="M84 73v18M76 82h16" stroke="#2f5368" stroke-width="5" stroke-linecap="round"/>
+</svg>
