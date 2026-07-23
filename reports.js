@@ -163,6 +163,12 @@ function moveTransactionsToReportEnd(){
         };
         head.insertBefore(toggle,head.querySelector('button'));
       }
+      if(head&&!head.querySelector('#budgetTotalPill')){
+        const pill=document.createElement('span');
+        pill.id='budgetTotalPill';
+        pill.className='budgetTotalPill';
+        head.insertBefore(pill,head.querySelector('button'));
+      }
     }
     const {start}=periodStartEnd();
     const mStart=new Date(start.getFullYear(),start.getMonth(),1);
@@ -173,6 +179,12 @@ function moveTransactionsToReportEnd(){
       if(t.type==='Transfer'&&Number(t.fee||0))groupAdd(spend,'Transfer Fees',Number(t.fee||0));
     });
     const arr=data.budgets||[];
+    const totalLimit=arr.reduce((sum,b)=>sum+Math.abs(Number(b.amount||0)),0);
+    const totalPill=document.getElementById('budgetTotalPill');
+    if(totalPill){
+      totalPill.textContent=arr.length?'Monthly '+peso(totalLimit):'';
+      totalPill.classList.toggle('hide',!arr.length);
+    }
     const monthName=monthLabelForSelectedPeriod();
     el.innerHTML=arr.length?arr.map(b=>{
       const used=Number(spend[b.category]||0),limit=Number(b.amount||0),pct=limit?Math.round((used/limit)*100):0,barClass=pct>=100?'danger':pct>=80?'warn':'';
