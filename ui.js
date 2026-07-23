@@ -73,6 +73,7 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
 (function mobileBackNavigation(){
   var internalNav=false;
   var initialized=false;
+  var lastHomeBack=0;
   var screenIds=['dashboard','bills','accounts','reports','settings','search'];
   function activeScreen(){
     var active=document.querySelector('.screen.active');
@@ -116,8 +117,18 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
     var target=e.state&&e.state.pesoTrack?e.state.screen:'dashboard';
     if(!screenIds.includes(target))target='dashboard';
     if(target===activeScreen()){
+      if(target==='dashboard'){
+        var now=Date.now();
+        if(now-lastHomeBack<1800){
+          setTimeout(function(){try{history.back()}catch(e){}},0);
+          return;
+        }
+        lastHomeBack=now;
+        pushScreen(target,false);
+        if(typeof toastMsg==='function')toastMsg('Swipe back again to exit');
+        return;
+      }
       pushScreen(target,false);
-      if(typeof toastMsg==='function')toastMsg('You are already on Home');
       return;
     }
     internalNav=true;
