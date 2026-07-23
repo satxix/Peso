@@ -1,6 +1,7 @@
 /* PesoTrack dashboard totals, home hero, pulse, upcoming, and recent activity. Loaded before app.js. */
 function daysUntil(dateStr){let today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());let d=new Date(dateStr);d=new Date(d.getFullYear(),d.getMonth(),d.getDate());return Math.ceil((d-today)/86400000)}
 function todaysRange(){let start=new Date();start.setHours(0,0,0,0);let end=new Date(start);end.setDate(end.getDate()+1);return {start,end}}
+function monthRange(){let now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1),end=new Date(now.getFullYear(),now.getMonth()+1,1);return {start,end}}
 function setQuickTransfer(){openTxn();setTxnType('Transfer',document.querySelector('#txnSheet .seg button:nth-child(3)'))}
 function accountTotals(){
   const accounts=(data.accounts||[]).filter(a=>a&&typeof a==='object');
@@ -22,9 +23,9 @@ function renderDash(){
   let set=(id,value)=>{let el=document.getElementById(id);if(el)el.textContent=value};
   set('netWorth',peso(nw));set('bankTotal',peso(totals.bank));set('cashHandTotal',peso(totals.cashHand));set('walletTotal',peso(totals.wallets));set('cashTotal',peso(cash));set('cardTotal',peso(cards));set('billsDue',peso(due));set('safeSpend',peso(safe));set('safeSpendHero',peso(safe));
   set('dashDate','Today, '+new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
-  let tr=todaysRange(),todaySummary=summarizeTxns(txnsInRange(tr.start,tr.end));
-  let todayTransfers=(data.txns||[]).filter(t=>{let d=new Date(t&&t.date);return d>=tr.start&&d<tr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);
-  set('todayIncome',peso(todaySummary.income));set('todayExpense',peso(todaySummary.expense));set('todayTransfer',peso(todayTransfers));set('todayNet',peso(todaySummary.net));
+  let mr=monthRange(),monthSummary=summarizeTxns(txnsInRange(mr.start,mr.end));
+  let monthTransfers=(data.txns||[]).filter(t=>{let d=new Date(t&&t.date);return d>=mr.start&&d<mr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);
+  set('todayIncome',peso(monthSummary.income));set('todayExpense',peso(monthSummary.expense));set('todayTransfer',peso(monthTransfers));set('todayNet',peso(due));
   let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');
   if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}
   let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;set('todayBills',dueToday?`${dueToday} due today`:`${unpaid.length} due`);
