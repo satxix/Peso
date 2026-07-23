@@ -2,6 +2,7 @@
 function daysUntil(dateStr){let today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());let d=new Date(dateStr);d=new Date(d.getFullYear(),d.getMonth(),d.getDate());return Math.ceil((d-today)/86400000)}
 function todaysRange(){let start=new Date();start.setHours(0,0,0,0);let end=new Date(start);end.setDate(end.getDate()+1);return {start,end}}
 function monthRange(){let now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),1),end=new Date(now.getFullYear(),now.getMonth()+1,1);return {start,end}}
+function wholePeso(n){let sign=Number(n)<0?'-':'';let v=Math.round(Math.abs(Number(n)||0));return sign+'₱'+v.toLocaleString('en-PH')}
 function setQuickTransfer(){openTxn();setTxnType('Transfer',document.querySelector('#txnSheet .seg button:nth-child(3)'))}
 function accountTotals(){
   const accounts=(data.accounts||[]).filter(a=>a&&typeof a==='object');
@@ -25,7 +26,7 @@ function renderDash(){
   set('dashDate','Today, '+new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
   let mr=monthRange(),monthSummary=summarizeTxns(txnsInRange(mr.start,mr.end));
   let monthTransfers=(data.txns||[]).filter(t=>{let d=new Date(t&&t.date);return d>=mr.start&&d<mr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);
-  set('todayIncome',peso(monthSummary.income));set('todayExpense',peso(monthSummary.expense));set('todayTransfer',peso(monthTransfers));set('todayNet',peso(due));
+  set('todayIncome',wholePeso(monthSummary.income));set('todayExpense',wholePeso(monthSummary.expense));set('todayTransfer',wholePeso(monthTransfers));set('todayNet',peso(due));
   let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');
   if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}
   let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;set('todayBills',dueToday?`${dueToday} due today`:`${unpaid.length} due`);

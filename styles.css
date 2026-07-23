@@ -843,6 +843,7 @@ body{
 body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card)!important;--pt-dark-border:var(--line)!important;--pt-dark-muted:var(--muted)!important;--pt-dark-text:var(--text)!important}
 #dashboard .premiumPulse,#dashboard .premiumTimelineItem,#dashboard .softEmpty,#dashboard .row,#dashboard .txnRow,#dashboard .premiumRecent .row{background:linear-gradient(145deg,color-mix(in srgb,var(--theme-surface) 82%,var(--theme-bg-top)),color-mix(in srgb,var(--theme-surface) 94%,#07110e))!important;border-color:color-mix(in srgb,var(--accent) 28%,var(--line))!important;box-shadow:0 14px 34px color-mix(in srgb,var(--theme-bg-bottom) 42%,rgba(0,0,0,.18))!important}
 #dashboard .pulseGrid div,#dashboard .upcomingDateBadge,#dashboard .premiumSummaryChips button{background:color-mix(in srgb,var(--theme-surface-inset) 65%,var(--accent) 8%)!important;border-color:color-mix(in srgb,var(--accent) 26%,var(--line))!important}
+#dashboard .pulseGrid b{font-size:13px!important;letter-spacing:-.03em!important;max-width:100%!important}
 #dashboard .premiumTimelineItem:before{background:var(--accent)!important;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 28%,transparent)!important}
 #dashboard .upcomingKind{background:color-mix(in srgb,var(--accent) 18%,transparent)!important;color:var(--accent-2)!important}
 
