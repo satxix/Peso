@@ -30,8 +30,6 @@ function renderDash(){
   let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');
   if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}
   let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;set('todayBills',dueToday?`${dueToday} due today`:`${unpaid.length} due`);
-  let upcomingEl=document.getElementById('upcoming');
-  if(upcomingEl)upcomingEl.innerHTML=unpaid.length?unpaid.slice(0,4).map(b=>{let dd=daysUntil(b.dueDate);let badge=dd<0?'Overdue':dd===0?'Today':`${dd} day${dd===1?'':'s'}`;return `<div class="premiumTimelineItem"><div class="premiumTimelineMain"><b>${htmlText(b.cardName||'Card bill')}</b><span>Due ${htmlText(b.dueDate)} - ${badge}</span></div><div class="premiumTimelineAmt">${peso(b.remaining)}</div></div>`}).join(''):'<div class="softEmpty">No unpaid bills. Credit card bills appear after card purchases.</div>';
   let recentEl=document.getElementById('recent');
   if(recentEl)recentEl.innerHTML=recentTxns(data.txns||[]).slice(0,5).map(t=>txnRow(t,true)).join('')||'<div class="row"><span class="sub">No transactions yet.</span></div>';
 }
@@ -87,5 +85,4 @@ function cycleHeroAccount(){let list=heroAccountList();if(!list.length){go('acco
     renderHomeUpcomingFocus();
   };
   try{renderDash=window.renderDash}catch(e){}
-  window.addEventListener('load',function(){setTimeout(function(){try{renderHomeUpcomingFocus()}catch(e){}},260)});
 })();
