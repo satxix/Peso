@@ -368,8 +368,7 @@ body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--acce
 .reportBar{background:rgba(255,255,255,.1)!important}
 
 
-/* ---- More readability fixes: Today's Pulse cells, 6-month trend bars, Add Transaction ---- */
-.pulseGrid div{background:rgba(255,255,255,.07)!important;border-color:rgba(255,255,255,.12)!important}
+/* ---- More readability fixes: pulse cells, trend bars, Add Transaction ---- */
 .trendBar{background:rgba(255,255,255,.08)!important}
 .display{background:var(--card-inset)!important;border-color:rgba(255,255,255,.14)!important;color:var(--text)!important}
 .pad button{background:var(--card-inset)!important;color:var(--text)!important;border-color:rgba(255,255,255,.12)!important}
