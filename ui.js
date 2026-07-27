@@ -69,8 +69,9 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
   }catch(e){console.warn('Unable to wire Save Transaction button',e)}
 })();
 
-/* Reports transaction list follows the selected period. */
+/* Android/PWA back behavior: sheets first, app screens second, double-back on Home exits. */
 (function mobileBackNavigation(){
+  var BACK_EXIT_WINDOW_MS=1800;
   var internalNav=false;
   var initialized=false;
   var lastHomeBack=0;
@@ -86,6 +87,22 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
   }
   function hasOpenSheet(){
     return !!document.querySelector('.sheet.show');
+  }
+  function canExitFromHome(target){
+    return target==='dashboard'&&target===activeScreen();
+  }
+  function promptOrExitHome(){
+    var now=Date.now();
+    if(now-lastHomeBack<BACK_EXIT_WINDOW_MS){
+      setTimeout(function(){try{history.back()}catch(e){}},0);
+      return;
+    }
+    lastHomeBack=now;
+    pushScreen('dashboard',false);
+    if(typeof toastMsg==='function')toastMsg('Swipe back again to exit');
+  }
+  function restoreCurrentState(){
+    pushScreen(activeScreen(),false);
   }
   function stateFor(id){
     return {pesoTrack:true,screen:screenIds.includes(id)?id:'dashboard'};
@@ -111,24 +128,17 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
   window.addEventListener('popstate',function(e){
     if(hasOpenSheet()){
       closeTopModal();
-      pushScreen(activeScreen(),false);
+      restoreCurrentState();
       return;
     }
     var target=e.state&&e.state.pesoTrack?e.state.screen:'dashboard';
     if(!screenIds.includes(target))target='dashboard';
+    if(canExitFromHome(target)){
+      promptOrExitHome();
+      return;
+    }
     if(target===activeScreen()){
-      if(target==='dashboard'){
-        var now=Date.now();
-        if(now-lastHomeBack<1800){
-          setTimeout(function(){try{history.back()}catch(e){}},0);
-          return;
-        }
-        lastHomeBack=now;
-        pushScreen(target,false);
-        if(typeof toastMsg==='function')toastMsg('Swipe back again to exit');
-        return;
-      }
-      pushScreen(target,false);
+      restoreCurrentState();
       return;
     }
     internalNav=true;
