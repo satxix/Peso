@@ -212,48 +212,88 @@ function moveTransactionsToReportEnd(){
   };
 })();
 
-(function(){try{var p=new URLSearchParams(location.search);var action=p.get("action");if(!action)return;window.addEventListener("load",function(){setTimeout(function(){try{if(action==="add"&&typeof openTxn==="function")openTxn();else if(action==="accounts"&&typeof go==="function")go("accounts",document.querySelectorAll(".nav button")[1]);else if(action==="reports"&&typeof go==="function")go("reports",document.querySelectorAll(".nav button")[4]);}catch(e){}},280)});}catch(e){}})();
+(function handleQueryAction(){
+  try{
+    var p=new URLSearchParams(location.search);
+    var action=p.get('action');
+    if(!action)return;
+    window.addEventListener('load',function(){
+      setTimeout(function(){
+        try{
+          if(action==='add'&&typeof openTxn==='function')openTxn();
+          else if(action==='accounts'&&typeof go==='function')go('accounts',document.querySelectorAll('.nav button')[1]);
+          else if(action==='reports'&&typeof go==='function')go('reports',document.querySelectorAll('.nav button')[4]);
+        }catch(e){}
+      },280);
+    });
+  }catch(e){}
+})();
 
 (function expenseBreakdownAtAGlance(){
-  function esc(v){return typeof htmlText==='function'?htmlText(v):String(v==null?'':v).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]})}
+  function esc(v){
+    if(typeof htmlText==='function')return htmlText(v);
+    return String(v==null?'':v).replace(/[&<>'"]/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+    });
+  }
   function expenseDataForRange(range,acct){
-    var cats={},count=0,total=0;
+    var cats={};
+    var count=0;
+    var total=0;
     (data.txns||[]).forEach(function(t){
       if(typeof txInPeriod==='function'&&!txInPeriod(t,range.start,range.end))return;
       if(!(acct==='All'||t.from===acct||t.to===acct))return;
       if(t.type==='Expense'&&(acct==='All'||t.from===acct)){
-        var amount=Number(t.amount||0); if(!amount)return;
-        cats[t.category||'Other']=(cats[t.category||'Other']||0)+amount; total+=amount; count++;
+        var amount=Number(t.amount||0);
+        if(!amount)return;
+        cats[t.category||'Other']=(cats[t.category||'Other']||0)+amount;
+        total+=amount;
+        count++;
       }
       if(t.type==='Transfer'&&Number(t.fee||0)&&(acct==='All'||t.from===acct)){
         var fee=Number(t.fee||0);
-        cats['Transfer Fees']=(cats['Transfer Fees']||0)+fee; total+=fee; count++;
+        cats['Transfer Fees']=(cats['Transfer Fees']||0)+fee;
+        total+=fee;
+        count++;
       }
     });
     var entries=Object.entries(cats).sort(function(a,b){return b[1]-a[1]});
     return {entries:entries,total:total,count:count,range:range};
   }
+
   function previousExpenseRange(range){
-    var start=new Date(range.start),end=new Date(range.end);
-    if(reportPeriod==='Year')return {start:new Date(start.getFullYear()-1,0,1),end:new Date(start.getFullYear(),0,1)};
-    if(reportPeriod==='Month')return {start:new Date(start.getFullYear(),start.getMonth()-1,1),end:new Date(start.getFullYear(),start.getMonth(),1)};
+    var start=new Date(range.start);
+    var end=new Date(range.end);
+    if(reportPeriod==='Year'){
+      return {start:new Date(start.getFullYear()-1,0,1),end:new Date(start.getFullYear(),0,1)};
+    }
+    if(reportPeriod==='Month'){
+      return {start:new Date(start.getFullYear(),start.getMonth()-1,1),end:new Date(start.getFullYear(),start.getMonth(),1)};
+    }
     var days=Math.round((end-start)/86400000)||1;
     return {start:new Date(start.getTime()-days*86400000),end:new Date(end.getTime()-days*86400000)};
   }
+
   function compareLabel(current,previous){
-    current=Number(current||0);previous=Number(previous||0);
+    current=Number(current||0);
+    previous=Number(previous||0);
     var diff=current-previous;
     if(!previous&&current)return {text:'New',tone:'up',icon:'+'};
-    if(previous&&!current)return {text:peso(previous),tone:'down',icon:'↓'};
+    if(previous&&!current)return {text:peso(previous),tone:'down',icon:'v'};
     if(Math.abs(diff)<0.01)return {text:'Same',tone:'same',icon:'='};
-    return {text:peso(Math.abs(diff)),tone:diff>0?'up':'down',icon:diff>0?'↑':'↓'};
+    return {text:peso(Math.abs(diff)),tone:diff>0?'up':'down',icon:diff>0?'^':'v'};
   }
   function selectedExpenseData(){
-    var range=typeof periodStartEnd==='function'?periodStartEnd():(function(){var now=new Date();return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)}})();
+    var range=typeof periodStartEnd==='function'?periodStartEnd():currentReportMonthRange();
     var current=expenseDataForRange(range,'All');
     var previous=expenseDataForRange(previousExpenseRange(range),'All');
     current.previousCats=Object.fromEntries(previous.entries);
     return current;
+  }
+
+  function currentReportMonthRange(){
+    var now=new Date();
+    return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)};
   }
   function expenseRowHtml(item,total,max,label){
     var cat=item.name,val=item.value,pct=Math.round((val/Math.max(1,total))*100),width=Math.max(5,Math.round((val/max)*100));

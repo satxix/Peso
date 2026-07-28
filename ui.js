@@ -1,5 +1,31 @@
 /* PesoTrack UI helpers: modals, motion, save-button wiring, mobile back handling, and boot cleanup. Loaded after app.js. */
-function showModal(){modalBackdrop.classList.add('show');document.body.classList.add('modal-open')}function hideModalIfNone(){setTimeout(()=>{if(!document.querySelector('.sheet.show')){modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}},0)}function closeTopModal(){let sheets=[...document.querySelectorAll('.sheet.show')];if(!sheets.length)return;let top=sheets[sheets.length-1];top.classList.remove('show');hideModalIfNone()}function closeSheets(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));modalBackdrop.classList.remove('show');document.body.classList.remove('modal-open')}
+function showModal(){
+  modalBackdrop.classList.add('show');
+  document.body.classList.add('modal-open');
+}
+
+function hideModalIfNone(){
+  setTimeout(()=>{
+    if(!document.querySelector('.sheet.show')){
+      modalBackdrop.classList.remove('show');
+      document.body.classList.remove('modal-open');
+    }
+  },0);
+}
+
+function closeTopModal(){
+  let sheets=[...document.querySelectorAll('.sheet.show')];
+  if(!sheets.length)return;
+  let top=sheets[sheets.length-1];
+  top.classList.remove('show');
+  hideModalIfNone();
+}
+
+function closeSheets(){
+  document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));
+  modalBackdrop.classList.remove('show');
+  document.body.classList.remove('modal-open');
+}
 
 /* Premium Edition Phase 2: Motion & Interaction */
 (function(){
