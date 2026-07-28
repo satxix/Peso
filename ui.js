@@ -43,13 +43,8 @@ function closeSheets(){
       el.dataset.motionLast=txt;
     });
   }
-  function tagStagger(){
-    document.querySelectorAll('.premiumDashboard .premiumTimelineItem,.premiumDashboard .row').forEach((el,i)=>{
-      el.style.animationDelay=Math.min(i*35,220)+'ms';
-    });
-  }
   function afterRenderMotion(){
-    addPressTargets(); pulseChangedValues(); tagStagger();
+    addPressTargets(); pulseChangedValues();
   }
   document.addEventListener('pointerdown',e=>{
     const target=e.target.closest('button'); if(!target || target.disabled) return;
@@ -63,7 +58,6 @@ function closeSheets(){
     setTimeout(()=>ripple.remove(),650);
   },{passive:true});
   window.addEventListener('load',()=>{
-    document.body.classList.add('motion-ready');
     afterRenderMotion();
   });
   const prevRender=window.render;
