@@ -156,10 +156,11 @@ function persist(){
 }
 
 function go(id,btn){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   if(btn&&!btn.classList.contains('fab'))btn.classList.add('active');
+  const target=document.getElementById(id);
+  if(screen===id&&target&&target.classList.contains('active'))return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
   screen=id;
   render();
 }
