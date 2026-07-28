@@ -1,4 +1,5 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v276';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v277';
+const APP_SHELL = './index.html';
 const ASSETS = [
   './',
   './index.html',
@@ -87,6 +88,29 @@ const ASSETS = [
   './logos/unobank.svg'
 ];
 
+function appShellRequests() {
+  return [
+    APP_SHELL,
+    './',
+    new URL('./index.html', self.registration.scope).href,
+    new URL('./', self.registration.scope).href
+  ];
+}
+
+async function cacheAppShell(cache, response) {
+  if (!response || !response.ok) return;
+  await Promise.all(appShellRequests().map(key => cache.put(key, response.clone()).catch(() => null)));
+}
+
+async function cachedAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  for (const key of appShellRequests()) {
+    const match = await cache.match(key);
+    if (match) return match;
+  }
+  return cache.match(APP_SHELL);
+}
+
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -115,11 +139,10 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          caches.open(CACHE_NAME).then(cache => cacheAppShell(cache, response));
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => cachedAppShell())
     );
     return;
   }
