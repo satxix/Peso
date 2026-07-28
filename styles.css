@@ -7,7 +7,7 @@
 
 .statusPill{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;background:#f1f5f9;color:#475569}.statusPill.Unpaid{background:#fff7ed;color:#ea580c}.statusPill.Partial{background:#fefce8;color:#ca8a04}.statusPill.Paid{background:#ecfdf5;color:#16a34a}.paymentModes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.payMode{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px;font-weight:900}.payMode.active{background:#f0eeff;border-color:var(--accent);color:var(--accent)}.paySummary{background:#f7f8fb;border-radius:18px;padding:14px;margin:10px 0}.payHistory{border-top:1px solid var(--line);padding-top:8px;margin-top:4px}.historyRow{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);margin-top:6px}.historyRow b{color:var(--text)}
 .feeBox{grid-column:1/-1;background:#f7f8fb;border:1px solid var(--line);border-radius:18px;padding:12px;display:grid;grid-template-columns:1fr 112px;gap:10px;align-items:center;max-width:100%;overflow:hidden}.feeBox b{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.02em}.feeBox span{font-size:12px;color:var(--muted);font-weight:700}.feeBox input{width:100%;min-width:0;border:0;background:#fff;border-radius:14px;padding:11px 10px;font:inherit;font-weight:900;text-align:right}.feeBox input:focus{outline:2px solid var(--accent);outline-offset:1px}@media(max-width:360px){.txnPickText span{font-size:14px}.txnPickText em{font-size:11px}.pick{gap:8px}.pick button{padding:11px}.feeBox{grid-template-columns:1fr 96px}}
-/* vNext: account details, search, timeline */
+
 .detailHero{background:#fff;border-radius:26px;padding:18px;box-shadow:var(--shadow);margin-bottom:12px}.detailTop{display:flex;gap:14px;align-items:center}.detailTop .bank{margin:0}.detailAmount{font-size:30px;font-weight:900;margin-top:10px}.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.statBox{background:#f6f7fb;border-radius:18px;padding:12px}.statBox b{display:block;font-size:16px;margin-top:4px}.sheetActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.sheetActions button{border:0;border-radius:16px;padding:12px;font-weight:900;background:#f4f5fb}.sheetActions .primary{background:var(--accent);color:#fff}.txnSearch{width:100%;border:1px solid var(--line);background:#fff;border-radius:18px;padding:13px 14px;font:inherit;margin-bottom:12px}.emptyState{background:#fff;border:1px dashed var(--line);border-radius:20px;padding:18px;color:var(--muted);font-weight:800;text-align:center}.detailList{max-height:42vh;overflow:auto;padding-bottom:4px}
 
 .recurringCard{background:#fff;border-radius:22px;padding:15px 16px;box-shadow:0 8px 24px rgba(18,24,40,.05);margin-bottom:10px}.recTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.recIdentity{min-width:0;flex:1}.recIdentity>b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.recMeta{font-size:13px;color:var(--muted);font-weight:700;margin-top:4px;line-height:1.25}.recActions{display:flex;gap:8px;margin-top:12px}.recPill{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;white-space:nowrap;border-radius:999px;padding:7px 11px;border:1px solid rgba(255,255,255,.14);background:rgba(40,152,237,.14);color:#7dd3fc;font-weight:950;font-size:12px;line-height:1}.recPill.paid{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.26);color:#7ee6b0}.recPill.due{background:rgba(216,184,103,.14);border-color:rgba(216,184,103,.28);color:#f2d88b}.toggleRow{display:flex;align-items:center;gap:10px;margin:8px 0 12px}.toggleRow input{width:18px;height:18px}.recNote{background:#f8fafc;border:1px solid var(--line);border-radius:18px;padding:12px;font-size:13px;color:var(--muted);font-weight:700;margin:10px 0}.section button.ghost{padding:9px 12px}
@@ -18,7 +18,7 @@
 .settingRow{background:#fff;border-radius:20px;padding:14px 16px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line)}.settingRow label{font-weight:900}.settingRow select,.settingRow input{max-width:160px}.categoryGrid{display:flex;flex-wrap:wrap;gap:8px}.categoryPill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;font-size:12px;font-weight:900}.categoryPill button{border:0;background:transparent;color:var(--red);font-weight:900;margin-left:6px}.dangerZone{border-color:#fecaca;background:#fff7f7}.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(18px);background:#172033;color:#fff;border-radius:18px;padding:12px 16px;font-weight:900;z-index:80;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 body.dark{--bg:#0f172a;--card:#111827;--text:#f8fafc;--muted:#94a3b8;--line:#263244;--shadow:0 16px 40px rgba(0,0,0,.28)}body.dark .card,body.dark .row,body.dark .sheet,body.dark .reportPanel,body.dark .budgetCard{background:#111827;color:var(--text);border-color:var(--line)}body.dark .dot,body.dark .pad button,body.dark .seg,body.dark .empty,body.dark .search{background:#1f2937;color:var(--text);border-color:var(--line)}body.dark .field,body.dark .ghost,body.dark .chip,body.dark .nav,body.dark .option,body.dark .accountFilter,body.dark .backupBtn,body.dark .settingRow,body.dark .categoryPill{background:#111827;color:var(--text);border-color:var(--line)}body.dark .chip.active,body.dark .save,body.dark .fab{background:var(--accent)!important;color:#fff!important}body.dark .seg button.active,body.dark .reportTabs button.active,body.dark .nav button.active{background:#1f2937;color:var(--accent)}.txnNoteLine{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.25;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.txnActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 
-/* Release Candidate polish pass: consistent spacing, safer modal layout, smoother mobile feel */
+
 html{scroll-behavior:smooth}body{-webkit-tap-highlight-color:transparent}.app{width:100%;max-width:440px;padding:20px 16px calc(104px + env(safe-area-inset-bottom));overflow-x:hidden}.top{gap:12px}.title{letter-spacing:-.02em}.sub{line-height:1.35}.iconbtn,.ghost,.save,.chip,.nav button,.pad button,.option,.backupBtn,.tiny,.dangerBtn{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,background .12s ease,opacity .12s ease}.iconbtn:active,.ghost:active,.save:active,.chip:active,.nav button:active,.pad button:active,.option:active,.backupBtn:active,.tiny:active,.dangerBtn:active{transform:scale(.98)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 30%,transparent);outline-offset:2px}.card,.row,.reportPanel,.budgetCard{border:1px solid rgba(232,235,242,.88);box-shadow:0 10px 28px rgba(18,24,40,.06)}.row{min-width:0}.reportPanel,.card,.row b,.name,.inst,.sub,.small{overflow-wrap:anywhere}.grid{align-items:stretch}.card{display:flex;flex-direction:column}.bal{margin-top:auto}.chips{padding-bottom:3px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.section{margin:24px 0 12px}.section h2{letter-spacing:-.02em}.modalBackdrop{z-index:45;backdrop-filter:blur(4px)}.nav{z-index:40;padding-bottom:calc(10px + env(safe-area-inset-bottom))}.sheet{z-index:60;width:min(430px,100%);max-height:92dvh;overflow-y:auto;overflow-x:hidden;padding:18px 16px calc(20px + env(safe-area-inset-bottom));overscroll-behavior:contain}.sheet.show{animation:sheetLift .2s ease both}@keyframes sheetLift{from{transform:translateY(110%)}to{transform:translateY(0)}}.sheet .top{position:sticky;top:0;z-index:3;background:var(--card);padding-bottom:8px;margin-top:-2px}.pick{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.pick button{min-width:0;overflow:hidden}.pick button span{display:block;white-space:normal;overflow-wrap:anywhere}.display{font-variant-numeric:tabular-nums;letter-spacing:-.03em}.pad{gap:9px}.pad button{height:46px}.option{min-width:0}.option>div:last-child{min-width:0}.minirow{min-width:0;align-items:flex-start}.minirow span:last-child{text-align:right;overflow-wrap:anywhere}.field,.search,.txnSearch{min-width:0;max-width:100%;background:var(--card);color:var(--text)}.save{box-shadow:0 12px 26px color-mix(in srgb,var(--accent) 28%,transparent)}.toast{max-width:min(390px,calc(100% - 28px));text-align:center}.value,.amount,.bal{font-variant-numeric:tabular-nums}.empty{line-height:1.4}.backupGrid,.budgetGrid{min-width:0}@media (max-width:370px){.app{padding-left:12px;padding-right:12px}.title{font-size:22px}.amount{font-size:30px}.grid{grid-template-columns:1fr}.pick{grid-template-columns:1fr}.pad button{height:43px}.sheet{border-radius:24px 24px 0 0;padding-left:12px;padding-right:12px}.nav{width:calc(100% - 16px);bottom:10px;border-radius:24px}.nav button{font-size:12px}}@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
 .ccGrid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}.ccStat{background:#f7f8fb;border-radius:16px;padding:10px}.ccStat span{display:block;font-size:11px;color:var(--muted);font-weight:800}.ccStat b{display:block;margin-top:4px;font-size:14px}.statementList{display:flex;flex-direction:column;gap:8px}.statementMini{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center}.statusPill{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:900;background:#f1f3f8;color:var(--muted)}.statusPill.paid{background:#dcfce7;color:#166534}.statusPill.partial{background:#fef3c7;color:#92400e}.statusPill.unpaid{background:#fee2e2;color:#991b1b}
@@ -28,7 +28,7 @@ body.dark .resultCard,body.dark .searchInputBig,body.dark .searchTabs button,bod
 
 @media(max-width:370px){.recTop{gap:8px}.recPill{font-size:11px;padding:6px 9px}.recMeta{font-size:12px}}
 
-/* Phase 17: Premium UI polish */
+
 :root{--radius-xl:28px;--radius-lg:22px;--soft-shadow:0 14px 34px rgba(18,24,40,.075);--soft-border:1px solid rgba(232,235,242,.9)}
 body{background:radial-gradient(circle at top left,rgba(108,99,255,.08),transparent 26rem),var(--bg)}
 .app{padding-top:22px}.top{margin-bottom:20px}.title{font-size:24px;font-weight:900;letter-spacing:-.035em}.sub,.small,.label{letter-spacing:-.005em}.card,.row,.reportPanel,.budgetCard,.resultCard{border-radius:var(--radius-xl);box-shadow:var(--soft-shadow);border:var(--soft-border)}
@@ -42,16 +42,16 @@ body.dark{background:radial-gradient(circle at top left,rgba(108,99,255,.13),tra
 @media(max-width:370px){.title{font-size:21px}.card,.reportPanel,.budgetCard{border-radius:22px}.display{border-radius:20px}}
 
 
-/* Premium Edition Phase 1: Dashboard 3.0 */
+
 :root{--premium-primary:#5B5CEB;--premium-success:#10B981;--premium-bg:#F7F8FC;--premium-ink:#111827}
 .premiumDashboard{padding-top:18px}.premiumTop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin:8px 0 16px}.premiumKicker{font-size:12px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.08em}.premiumIconBtn{width:46px;height:46px;border:0;border-radius:18px;background:rgba(255,255,255,.92);box-shadow:0 14px 34px rgba(18,24,40,.09);font-size:22px;color:var(--accent);font-weight:900}.premiumHero{position:relative;overflow:hidden;background:linear-gradient(145deg,#ffffff 0%,#fbfbff 58%,#f1efff 100%);border:1px solid rgba(232,235,242,.92);border-radius:34px;padding:20px;box-shadow:0 22px 55px rgba(18,24,40,.10);margin-bottom:14px}.premiumHeroGlow{position:absolute;right:-56px;top:-70px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(91,92,235,.24),rgba(91,92,235,0) 70%);pointer-events:none}.premiumCashBlock{position:relative;display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-top:18px}.premiumCash{font-size:38px;font-weight:950;letter-spacing:-.055em;line-height:1.02;margin:6px 0 2px;font-variant-numeric:tabular-nums}.premiumSummaryChips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:16px 0 0;position:relative}.premiumSummaryChips button{border:1px solid rgba(232,235,242,.9);background:rgba(255,255,255,.82);border-radius:18px;padding:11px 8px;min-width:0;text-align:left;box-shadow:0 8px 18px rgba(18,24,40,.045);font-weight:900}.premiumSummaryChips span{display:block;font-size:16px;margin-bottom:5px}.premiumSummaryChips b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.premiumPulse{background:#fff;border:1px solid rgba(232,235,242,.9);border-radius:26px;padding:16px;box-shadow:0 12px 32px rgba(18,24,40,.06);margin:14px 0}.pulseHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.pulseHead h2{margin:2px 0 0;font-size:19px;letter-spacing:-.035em}.pulseGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.pulseGrid div{background:#f7f8fb;border:1px solid #eef1f7;border-radius:18px;padding:12px;min-width:0}.pulseGrid span{display:block;color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.pulseGrid b{display:block;font-size:15px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pulseGrid .green{color:var(--green)}.pulseGrid .red{color:var(--red)}.premiumSection{margin-top:26px}.premiumTimeline{display:flex;flex-direction:column;gap:10px}.premiumTimelineItem{position:relative;background:#fff;border:1px solid rgba(232,235,242,.9);border-radius:22px;padding:14px 15px 14px 17px;box-shadow:0 10px 26px rgba(18,24,40,.05);display:flex;justify-content:space-between;align-items:center;gap:12px}.premiumTimelineItem:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);position:absolute;left:-3px;top:22px;box-shadow:0 0 0 5px #f0eeff}.premiumTimelineMain{min-width:0}.premiumTimelineMain b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.premiumTimelineMain span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-top:3px}.premiumTimelineAmt{font-weight:950;white-space:nowrap}.premiumRecent .row{border-radius:22px}.softEmpty{background:#fff;border:1px dashed var(--line);border-radius:22px;padding:18px;color:var(--muted);font-weight:800;text-align:center}body.dark .premiumHero,body.dark .premiumPulse,body.dark .premiumTimelineItem,body.dark .premiumSummaryChips button{background:#111827;border-color:#263244;color:var(--text)}body.dark .premiumPulse .pulseGrid div{background:#1f2937;border-color:#263244}body.dark .premiumHero{background:linear-gradient(145deg,#111827,#151f33 65%,#1f2440)}body.dark .premiumTimelineItem:before{box-shadow:0 0 0 5px rgba(91,92,235,.22)}@media(max-width:370px){.premiumCash{font-size:32px}.premiumSummaryChips,.pulseGrid,.premiumCashBlock{display:block}}
 
 
-/* Premium Edition Phase 3: Premium Cards */
+
 :root{--premium-card-radius:28px;--premium-card-shadow:0 18px 42px rgba(18,24,40,.075)}
 .premiumMetaRow{display:flex;justify-content:space-between;gap:10px;align-items:center;color:var(--muted);font-size:12px;font-weight:850}.premiumMetaRow b{color:var(--text);font-weight:950}.premiumProgress{height:8px;background:#eef1f7;border-radius:999px;overflow:hidden}.premiumProgress i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),#8b5cf6);width:0;transition:width .5s ease}.premiumProgress.warn i{background:linear-gradient(90deg,var(--orange),#fb923c)}.premiumProgress.danger i{background:linear-gradient(90deg,var(--red),#f87171)}.premiumCreditCard{background:linear-gradient(145deg,#fff,#fbfcff);border:1px solid rgba(232,235,242,.9);border-radius:28px;padding:17px;box-shadow:var(--premium-card-shadow);position:relative;overflow:hidden}.premiumCreditCard:before{content:"";position:absolute;right:-52px;top:-52px;width:150px;height:150px;border-radius:50%;background:rgba(91,92,235,.08)}.premiumCreditHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:relative}.premiumCreditLeft{display:flex;gap:12px;align-items:center;min-width:0}.premiumCreditLeft .bank{margin:0;box-shadow:0 10px 22px rgba(18,24,40,.12)}.premiumCreditTitle{font-size:18px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.premiumCreditSub{font-size:12px;color:var(--muted);font-weight:850;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.premiumCreditBody{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-top:16px;position:relative}.premiumCreditMain{background:#f7f8fb;border-radius:20px;padding:14px}.premiumCreditMain span,.premiumCreditSide span{font-size:11px;color:var(--muted);font-weight:900}.premiumCreditMain b{display:block;font-size:24px;letter-spacing:-.025em;margin-top:5px}.premiumCreditSide{display:grid;gap:10px}.premiumCreditSide div{background:#f7f8fb;border-radius:18px;padding:12px}.premiumCreditSide b{display:block;margin-top:4px;font-size:13px}.premiumCreditActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.premiumCreditActions button{border:1px solid var(--line);background:#fff;border-radius:16px;padding:11px;font-weight:950}.premiumCreditActions button.primary{background:var(--accent);border-color:var(--accent);color:#fff}.premiumDuePill{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:950;background:#f0eeff;color:var(--accent);white-space:nowrap}.premiumDuePill.warn{background:#fff7ed;color:var(--orange)}.premiumDuePill.danger{background:#fef2f2;color:var(--red)}body.dark .premiumCreditCard{background:linear-gradient(145deg,#111827,#0f172a);border-color:var(--line)}body.dark .premiumCreditMain,body.dark .premiumCreditSide div{background:#1f2937}body.dark .premiumCreditActions button{background:#111827;color:var(--text);border-color:var(--line)}@media(max-width:370px){.premiumCreditBody{grid-template-columns:1fr}.premiumCreditTitle{font-size:16px}}
 
-/* Premium Edition Phase 2: Motion & Interaction */
+
 :root{--motion-ease:cubic-bezier(.2,.8,.2,1);--motion-spring:cubic-bezier(.16,1,.3,1)}
 @media (prefers-reduced-motion:no-preference){
   \.premiumDashboard .premiumHero,.premiumDashboard .premiumPulse,.reportPanel{animation:premiumFadeUp .32s var(--motion-ease) both;will-change:transform,opacity}
@@ -81,7 +81,7 @@ body.dark{background:radial-gradient(circle at top left,rgba(108,99,255,.13),tra
 .iconbtn,.ghost,.save,.chip,.nav button,.pad button,.option,.backupBtn,.tiny,.dangerBtn,.searchTabs button,.payMode,.budgetActions button,
 
 
-/* Premium Phase 5 - Design System & Signature Experience */
+
 :root{
   --pt-radius-card:28px;
   --pt-radius-control:18px;
@@ -98,7 +98,7 @@ body{background:radial-gradient(circle at top right,rgba(91,92,235,.08),transpar
 
 
 
-/* Gold Master Phase 2: reports premium polish */
+
 .reportPanel{border-radius:28px;padding:17px 16px;}
 .reportPanel h3{font-size:18px;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;}
 .reportPanel h3:before{content:"";width:8px;height:8px;border-radius:999px;background:var(--accent);display:inline-block;}
@@ -115,11 +115,7 @@ body{background:radial-gradient(circle at top right,rgba(91,92,235,.08),transpar
 
 
 
-/* ============================================================
-   Editorial Premium Refresh — cohesive design pass
-   Reworks color, type, nav, and hero surfaces. Overrides tokens
-   and specific components; no structural/markup changes.
-   ============================================================ */
+
 :root{
   --bg:#f6f3ea;--card:#ffffff;--text:#171b17;--muted:#6f766e;--line:#e6e0d2;
   --accent:#0f5c4c;--accent-2:#b6892f;--green:#1f8a55;--red:#b3462f;--orange:#b9812c;
@@ -146,7 +142,7 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .title,.name,h2,h3{font-family:var(--font-body);letter-spacing:-.01em}
 .amount,.premiumCash,.value,.bal,.display{font-family:var(--font-display);font-weight:560;letter-spacing:-.02em}
 
-/* ---- Bottom navigation: signature dark pill with gold active state ---- */
+
 .nav{background:var(--text)!important;border:1px solid rgba(255,255,255,.06)!important;box-shadow:0 22px 46px rgba(0,0,0,.28)!important;backdrop-filter:none!important}
 .nav button{color:rgba(255,255,255,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;padding:9px 0 8px}
 .nav button svg{width:20px;height:20px;flex:0 0 auto}
@@ -154,7 +150,7 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .nav .fab{background:linear-gradient(155deg,var(--accent-2),var(--accent))!important;color:#14100a!important;box-shadow:0 14px 26px rgba(182,137,47,.4);display:grid;place-items:center;transform:translateY(-8px);border-radius:20px!important}
 .nav .fab svg{width:23px;height:23px}
 
-/* ---- Hero card: treated like a physical premium card, dark in both themes ---- */
+
 .premiumHero,body.dark .premiumHero{background:linear-gradient(160deg,#1c4d62 0%,#173f52 48%,#102d3c 100%);border-color:rgba(255,255,255,.08);box-shadow:0 26px 60px rgba(12,32,44,.36)}
 .premiumHero .premiumHeroGlow{background:radial-gradient(circle,rgba(215,172,82,.28),rgba(215,172,82,0) 70%)}
 .premiumHero .label,.premiumHero .heroSub{color:rgba(243,239,228,.62)}
@@ -163,23 +159,23 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .premiumHero .premiumSummaryChips b{color:#f7f4ea}
 .premiumIconBtn{color:var(--accent);background:var(--card)}
 
-/* ---- Signature / command surfaces: swap indigo for emerald + gold ---- */
 
-/* ---- Buttons & accents ---- */
+
+
 .chip.active{box-shadow:0 10px 22px color-mix(in srgb,var(--accent) 30%,transparent)}
 .premiumProgress i{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
 .premiumDuePill{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
 
-/* ---- Refined, slightly tighter geometry for a crisper, less "bubbly" feel ---- */
+
 .card,.row,.reportPanel,.budgetCard,.recurringCard,.premiumCreditCard{border-radius:20px}
 .sheet{border-radius:24px 24px 0 0}
 
-/* ---- Perf/legibility niceties ---- */
+
 ::selection{background:color-mix(in srgb,var(--accent) 30%,transparent)}
 *{scrollbar-width:thin}
 
 
-/* ---- Account logo/color picker ---- */
+
 .logoPickLabel{font-size:12px;font-weight:700;color:var(--muted);margin:2px 0 8px;text-transform:uppercase;letter-spacing:.04em}
 .logoPickGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .logoSwatch{width:100%;min-height:52px;border:0;border-radius:14px;display:grid;place-items:center;color:#fff;cursor:pointer;box-shadow:0 0 0 2px transparent;transition:transform .12s ease,box-shadow .12s ease;padding:8px 6px}
@@ -197,7 +193,7 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 
 .bankLogoMark.mp2{background:#059669;color:#fff}.bankLogoMark.cash,.bankLogoMark.otherbank{background:#64748b;color:#fff}.bankLogoMark.otherbank .logoSwatchIcon{width:18px;height:18px}
 
-/* Logo polish pass: tighter app-icon marks that stay readable inside 32-48px slots. */
+
 .logoSwatch{aspect-ratio:1.08/1;min-height:44px}
 .logoSwatch .bankLogoMark{min-height:38px;border-radius:13px}
 .bank .bankLogoMark{transform:scale(1.02)}
@@ -211,7 +207,7 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .bankLogoMark.fileLogo img{width:100%;height:100%;object-fit:contain;display:block}
 .bank .bankLogoMark.fileLogo{padding:4px}
 
-/* Real SVG wordmarks need wider tiles than the original initials grid. */
+
 .logoPickGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-height:310px;padding:3px 4px 10px}
 .logoSwatch{aspect-ratio:1.48/1;min-height:70px;border-radius:18px;padding:8px;background:rgba(255,255,255,.1)}
 .logoSwatch .bankLogoMark{min-height:54px;border-radius:15px}
@@ -223,12 +219,7 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;backgr
 .detailTop .bank,.premiumCreditLeft .bank{width:48px;height:48px;border-radius:17px}
 
 
-/* ============================================================
-   Unified card system — every card/section/sheet now shares the
-   same rich deep-blue surface (the tone from the dashboard
-   hero), floating on the light page background, with text tokens
-   redefined locally so all nested content stays readable.
-   ============================================================ */
+
 :root{--card:#173f52;--card-inset:rgba(255,255,255,.07)}
 body.dark{--card:#173f52;--card-inset:rgba(255,255,255,.07)}
 
@@ -264,7 +255,7 @@ body.dark .insightItem,body.dark .recNote{
   background:var(--card-inset);border-color:rgba(255,255,255,.12)
 }
 
-/* Form controls & pills inside the now-dark cards/sheets */
+
 .field,.chip,.categoryPill,.searchInputBig,.searchTabs button,.seg,.seg button{
   background:var(--card-inset)!important;color:var(--text)!important;border-color:rgba(255,255,255,.14)!important
 }
@@ -288,10 +279,7 @@ body.dark .softEmpty,body.dark .premiumTimelineItem,body.dark .settingRow{
   color:var(--text);border-color:var(--line)
 }
 
-/* ============================================================
-   True dark mode by default — the whole app (not just cards)
-   now uses the dark palette out of the box.
-   ============================================================ */
+
 :root{
   --theme-bg:#2f5368;
   --theme-bg-top:#3a6479;
@@ -312,55 +300,47 @@ body.dark .softEmpty,body.dark .premiumTimelineItem,body.dark .settingRow{
 body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--accent-2) 8%,transparent),transparent 22rem),var(--bg)}
 
 
-/* ---- Fixes after flipping to dark-by-default ---- */
 
-/* Nav background was tied to var(--text), which is now light — pin it to a fixed dark ink instead */
+
+
 .nav{background:var(--theme-nav)!important}
 
-/* Quick action buttons on the dashboard were never covered by the card system */
 
 
-/* Insight/signature cards were a separate near-black tone that now barely
-   shows against the equally-dark page — bring them into the same family */
 
 
-/* ============================================================
-   Readability fixes — several elements relied on a body.dark
-   CLASS toggle for their dark styling, which never fires since
-   we changed color TOKENS instead of applying that class. Also
-   fixes pastel status pills that inherited light text on light
-   backgrounds once the global text color flipped to light.
-   ============================================================ */
 
 
-/* Day/Week/Month/Year segmented control */
+
+
+
+
 .reportTabs{background:var(--card-inset)!important}
 .reportTabs button{color:rgba(243,239,228,.55)}
 .reportTabs button.active{background:var(--accent)!important;color:#fff!important;box-shadow:none!important}
 
-/* Spending heatmap — keep intensity levels but make every cell readable */
 
 
 
 
 
 
-/* Status pills: pastel backgrounds are intentional (semantic color coding)
-   but need dark, not light, text now that the global text color is light */
+
+
 .insightItem.good{color:#0d5c3f!important}
 .insightItem.warn{color:#9a5b12!important}
 .insightItem.danger{color:#a4291f!important}
 
 
 
-/* ---- More readability fixes: pulse cells, trend bars, Add Transaction ---- */
+
 .trendBar{background:rgba(255,255,255,.08)!important}
 .display{background:var(--card-inset)!important;border-color:rgba(255,255,255,.14)!important;color:var(--text)!important}
 .pad button{background:var(--card-inset)!important;color:var(--text)!important;border-color:rgba(255,255,255,.12)!important}
 .txnPickBtn{background:var(--card-inset)!important;color:var(--text)!important;border-color:rgba(255,255,255,.12)!important}
 
 
-/* ---- Remaining light pills/boxes ---- */
+
 .catCircle{background:var(--card-inset)!important;color:var(--accent-2)!important}
 .feeBox{background:var(--card-inset)!important;border-color:rgba(255,255,255,.12)!important}
 .feeBox b{color:var(--text)!important}
@@ -373,7 +353,7 @@ body{background:radial-gradient(circle at top right,color-mix(in srgb,var(--acce
 .appVersionPill{display:inline-flex;align-items:center;width:max-content;border-radius:999px;background:rgba(15,92,76,.10);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 26%,var(--line));padding:6px 10px;font-size:11px;font-weight:950;margin-top:8px;letter-spacing:.01em}body.dark .appVersionPill{background:rgba(255,255,255,.08);color:#d8b867;border-color:rgba(255,255,255,.14)}.txnDatePill{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid color-mix(in srgb,var(--accent) 18%,var(--line));background:color-mix(in srgb,var(--card) 88%,var(--bg));border-radius:999px;padding:8px 10px 8px 13px;margin:8px 0;font-weight:950;color:var(--text)}.txnDatePill span{font-size:12px;color:var(--muted);font-weight:950}.txnDatePill input{border:0;background:transparent;color:var(--text);font:inherit;font-size:13px;font-weight:950;outline:0;min-width:132px;text-align:right}body.dark .txnDatePill{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}.homeVersionPill{margin-top:6px;padding:5px 9px;font-size:10px;text-transform:none;letter-spacing:.01em}#pickerSheet.compactCategoryPicker{max-height:min(76dvh,620px)}#pickerSheet.compactCategoryPicker .search{margin-bottom:10px}.categoryCompactGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.categoryCompactChip{min-height:44px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:16px;padding:8px 10px;display:flex;align-items:center;gap:8px;font:inherit;font-weight:950;text-align:left;min-width:0}.categoryCompactChip b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.catMiniIcon{width:28px;height:28px;border-radius:10px;background:color-mix(in srgb,var(--accent) 10%,var(--card));display:grid;place-items:center;flex:0 0 28px;color:var(--accent);overflow:hidden}.catMiniIcon svg{width:16px;height:16px}.categoryCreate .catMiniIcon{font-size:18px}body.dark .categoryCompactChip{background:#111827;border-color:var(--line)}body.dark .catMiniIcon{background:rgba(255,255,255,.08)}body.booting .app,body.booting .nav,body.booting .sheet,body.booting .toast{visibility:hidden!important}body.booting{background:#07110e!important}@media(max-width:430px){.categoryCompactGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:330px){.categoryCompactGrid{grid-template-columns:1fr}}.txnRow{position:relative;overflow:hidden;align-items:flex-start;border-left:0!important;padding-left:18px!important}.txnRow:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--muted);opacity:.95}.txn-income:before{background:var(--green)}.txn-expense:before{background:var(--red)}.txn-transfer:before{background:var(--accent)}.txn-payment:before{background:#d8b867}.txnMain{flex:1;min-width:0}.txnTitleLine{display:flex;align-items:center;gap:7px;min-width:0}.txnTitleLine>b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.txnTypePill{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:950;line-height:1;background:rgba(148,163,184,.14);color:var(--muted);border:1px solid var(--line);white-space:nowrap}.txn-income .txnTypePill{background:rgba(22,163,74,.12);color:var(--green);border-color:rgba(22,163,74,.24)}.txn-expense .txnTypePill{background:rgba(220,38,38,.12);color:var(--red);border-color:rgba(220,38,38,.22)}.txn-transfer .txnTypePill{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 28%,var(--line))}.txn-payment .txnTypePill{background:rgba(216,184,103,.16);color:#b88a25;border-color:rgba(216,184,103,.32)}.txnAmount{white-space:nowrap;font-variant-numeric:tabular-nums}.txn-income .txnAmount{color:var(--green)}.txn-expense .txnAmount{color:var(--red)}.txn-transfer .txnAmount{color:var(--accent)}.txn-payment .txnAmount{color:#d8b867}body.dark .txn-payment .txnTypePill{color:#e5c879}.premiumRecent .txnRow .txnActions{display:none}@media(max-width:360px){.txnTypePill{padding:3px 6px}.txnTitleLine>b{font-size:13px}.txnAmount{font-size:13px}}.txnUtilityRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin:7px 0}.txnUtilityRow .txnDatePill{margin:0}.txnNoteToggle{height:40px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:0 12px;font-weight:950;font-size:12px}.txnNoteField.collapsed{display:none!important}#txnSheet .pad{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px!important}#txnSheet .pad button{height:42px!important;border-radius:16px!important;font-size:18px!important;box-shadow:none!important}#txnSheet .pad button.backspace{color:var(--accent);font-weight:950}#txnSheet .display{font-size:28px!important;min-height:50px!important;margin:7px 0!important;border-radius:20px!important}body.dark .txnNoteToggle{background:var(--card-inset);border-color:var(--line);color:var(--text)}@media(max-width:360px){.txnUtilityRow{grid-template-columns:1fr}.txnNoteToggle{width:100%}}
 
 
-/* Compact Transaction Rows */
+
 .txnRow{border-radius:16px!important;padding:10px 12px 10px 13px!important;gap:10px!important;align-items:flex-start!important;min-height:0!important;box-shadow:0 6px 18px rgba(18,24,40,.045)!important}
 .txnRow:before{width:4px!important}
 .txnMain{min-width:0!important}
@@ -398,7 +378,7 @@ body.dark .tiny.danger,.txnActions .tiny.danger{color:#ffd0c8!important;-webkit-
 @media(max-width:370px){.txnRow{padding:9px 10px 9px 12px!important}.txnAmount{font-size:13px!important;max-width:98px!important}.txnActions .tiny{font-size:10px!important;padding:0 8px!important}}
 
 
-/* Reports Visual Polish */
+
     #reports .txnTitleLine{margin-bottom:3px!important}
     #reports .txnTitleLine b{display:none!important}
     #insightReport .insightItem{color:var(--pt-dark-text,#f8f4ea)!important;background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:16px!important;font-weight:850!important;line-height:1.35!important}
@@ -407,7 +387,7 @@ body.dark .tiny.danger,.txnActions .tiny.danger{color:#ffd0c8!important;-webkit-
     #insightReport .insightItem.danger{color:#ffd0c7!important;background:rgba(255,122,98,.12)!important;border-color:rgba(255,122,98,.25)!important}
 
 
-/* Expense Breakdown */
+
 .expenseBreakdownSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:2px 0 12px}
 .expenseStat{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:11px 10px;min-width:0}
 .expenseStat span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -429,13 +409,13 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 @media(max-width:370px){.expenseBreakdownSummary{grid-template-columns:1fr}.expenseStat b{font-size:15px}}
 
 
-/* Report Period Navigation */
+
 .reportPeriodNav{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:8px;margin:8px 0 10px}
 .reportPeriodNav button{height:40px;border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);font-size:22px;font-weight:950}
 .reportPeriodNav b{display:block;text-align:center;color:var(--text);font-size:15px;font-weight:950}
 
 
-/* Report View Controls */
+
 
 #reports .budgetCollapsed #budgetReport{display:none}
 #reports .budgetCollapsed.budgetOpen #budgetReport{display:grid}
@@ -458,7 +438,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 
 
 #reports .reportTabs,#reports .reportPeriodNav{position:relative;z-index:5;pointer-events:auto}
-/* Reports Density Pass */
+
 #reports .reportTabs{margin:6px 0 8px!important;padding:4px!important;gap:5px!important;border-radius:16px!important}
     #reports .reportTabs button{min-height:36px!important;padding:7px 4px!important;border-radius:12px!important;font-size:12px!important}
     #reports .reportPeriodNav{grid-template-columns:36px 1fr 36px!important;gap:6px!important;margin:6px 0 8px!important}
@@ -500,7 +480,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
     }
 
 
-/* Transfer Color Separation */
+
 :root{--transfer:#38bdf8}
 .txn-transfer:before{background:var(--transfer)!important}
 .txn-transfer .txnTypePill{background:rgba(56,189,248,.14)!important;color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important;border-color:rgba(56,189,248,.36)!important}
@@ -508,7 +488,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #todayTransfer,.pulseGrid #todayTransfer{color:var(--transfer)!important;-webkit-text-fill-color:var(--transfer)!important}
 
 
-/* Income Color Separation */
+
 :root{--income:#34d399}
 .txn-income:before{background:var(--income)!important}
 .txn-income .txnTypePill{background:rgba(52,211,153,.14)!important;color:var(--income)!important;-webkit-text-fill-color:var(--income)!important;border-color:rgba(52,211,153,.36)!important}
@@ -516,7 +496,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #todayIncome,.pulseGrid #todayIncome{color:var(--income)!important;-webkit-text-fill-color:var(--income)!important}
 
 
-/* Add Transaction Sheet Layout Cleanup */
+
 #txnSheet{display:flex!important;flex-direction:column!important;gap:8px!important;padding:14px 14px calc(14px + env(safe-area-inset-bottom))!important}
 #txnSheet .top{margin:0!important;padding:0 0 4px!important}
 #txnSheet .seg{margin:0!important}
@@ -540,7 +520,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 @media(max-height:740px){#txnSheet{gap:6px!important}#txnSheet .display{min-height:46px!important;font-size:25px!important}#txnSheet .pad button{height:41px!important}}
 
 
-/* Add Transaction Color Tuning */
+
 #txnSheet .seg button.active{background:linear-gradient(135deg,var(--accent),#d8b867)!important;color:#fff!important;border-color:transparent!important}
 #txnSheet .display{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035))!important;border:1px solid rgba(216,184,103,.22)!important;color:var(--pt-dark-text,#f3efe4)!important}
 #txnSheet .pad button{background:rgba(255,255,255,.065)!important;color:#f3efe4!important;border:1px solid rgba(255,255,255,.12)!important}
@@ -551,7 +531,7 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #txnSheet .pad button:active,#txnSheet .pad button:focus{transform:none!important;outline:0!important}
 
 
-/* Soft App Background */
+
 :root{--app-bg-soft:var(--theme-bg)}
 body,body.dark{--bg:var(--app-bg-soft)!important;background:
   radial-gradient(circle at top left,rgba(216,184,103,.16),transparent 18rem),
@@ -559,19 +539,19 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
   linear-gradient(180deg,var(--theme-bg-top) 0%,var(--theme-bg) 48%,var(--theme-bg-bottom) 100%)!important}
 
 
-/* Home Header Polish */
+
 .premiumTop{align-items:center;margin:4px 0 14px}
 .premiumKicker{font-size:14px;text-transform:none;letter-spacing:0;color:color-mix(in srgb,var(--text) 78%,var(--muted));font-weight:900}
 
 
-/* Home Brand Mark */
+
 #dashboard .premiumTop>div:first-child{position:relative;min-height:54px;padding-left:64px;display:flex;flex-direction:column;justify-content:center}
 #dashboard .premiumTop>div:first-child:before{content:"\20B1";position:absolute;left:0;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:18px;display:grid;place-items:center;background:radial-gradient(circle at 28% 24%,color-mix(in srgb,var(--accent-2) 22%,transparent),transparent 32%),linear-gradient(145deg,color-mix(in srgb,var(--theme-nav) 88%,var(--accent)),color-mix(in srgb,var(--theme-nav) 78%,#07110e));border:1px solid color-mix(in srgb,var(--accent-2) 52%,rgba(255,255,255,.18));color:#f7dc82;font-family:Arial,"Segoe UI Symbol","Noto Sans",sans-serif;font-size:32px;font-weight:900;line-height:1;box-shadow:0 15px 32px color-mix(in srgb,var(--theme-bg-bottom) 46%,rgba(0,0,0,.2)),inset 0 0 0 1px rgba(255,255,255,.08)}
 #dashboard .premiumTop>div:first-child:after{content:"";position:absolute;left:9px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent-2) 48%,transparent);pointer-events:none}
 #dashboard .homeVersionPill{margin-top:6px;width:max-content;min-width:58px;text-align:center}
 
 
-/* Home Focus Account */
+
 #dashboard .premiumSummaryChips{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 #dashboard .premiumSummaryChips button{min-height:56px;text-align:center;padding:10px 7px}
 #dashboard .premiumSummaryChips span{font-size:11px!important;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--pt-dark-muted,rgba(243,239,228,.7))}
@@ -580,7 +560,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 @media(max-width:370px){#dashboard .premiumSummaryChips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}#dashboard .premiumSummaryChips b{font-size:12px!important}#dashboard .premiumCash{font-size:32px!important}}
 
 
-/* Bills Setup Support */
+
 .billSetupCard{border:1px dashed color-mix(in srgb,var(--accent) 42%,var(--line));background:var(--card);color:var(--text);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:0 10px 26px rgba(18,24,40,.05)}
 .billSetupCard b{display:block;font-size:16px;margin-bottom:5px}
 .billSetupCard p{margin:0;color:var(--muted);font-size:13px;font-weight:750;line-height:1.38}
@@ -592,7 +572,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 .ccStatementMini .sub{font-size:12px}
 
 
-/* Accounts Density Pass */
+
 
 
 
@@ -612,7 +592,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 @media(max-width:370px){#accounts #accounts }
 
 
-/* Dark Surface Finishing */
+
 
 
 .ccStatementMini,.statementMini,.premiumCreditMain,.premiumCreditSide>div,.premiumCreditActions button:not(.primary){background:rgba(255,255,255,.07)!important;box-shadow:none!important}
@@ -639,7 +619,7 @@ body,body.dark{--bg:var(--app-bg-soft)!important;background:
 .categoryHint{color:var(--pt-dark-muted)!important;font-size:12px;font-weight:800}
 
 
-/* Final Dark Contrast Sweep */
+
 :root{
   --pt-dark-surface:#173f52;
   --pt-dark-surface-2:rgba(255,255,255,.07);
@@ -717,14 +697,14 @@ body.dark{
 ::placeholder{color:rgba(243,239,228,.45)!important}
 
 
-/* PWA Gesture Guard */
+
 html,
 body{
   overscroll-behavior-y:contain;
 }
 
 
-/* Home Upcoming Focus */
+
 #dashboard .premiumTimelineItem{align-items:flex-start}
 #dashboard .premiumTimelineMain span{font-size:12px;line-height:1.35}
 #dashboard .premiumTimelineAmt{display:grid;justify-items:end;gap:4px}
@@ -738,7 +718,7 @@ body{
 #dashboard .premiumTimelineItem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
 
 
-/* Category Manager */
+
 .compactCategoryAdd{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
 .categoryIconPicker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:8px 0 12px;max-height:154px;overflow-y:auto;padding-right:2px;overscroll-behavior:contain}
 .categoryIconChoice{border:1px solid var(--line);background:var(--card-inset,var(--card));color:var(--text);border-radius:15px;padding:7px;display:grid;place-items:center;font-weight:900;min-width:0;min-height:44px}
@@ -748,14 +728,14 @@ body{
 @media(max-width:370px){.categoryIconPicker{grid-template-columns:repeat(5,minmax(0,1fr));max-height:146px}}
 
 
-/* Category tray organization */
+
 .categoryChipGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;max-height:238px;overflow-y:auto;padding-right:2px;overscroll-behavior:contain}
 .categoryChipGrid .improvedCategory{width:100%;justify-content:flex-start;min-width:0}
 .categoryChipGrid .improvedCategory>span:nth-child(2){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:370px){.categoryChipGrid{grid-template-columns:1fr!important;max-height:230px}}
 
 
-/* Bank logo picker polish */
+
 .logoPickGrid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;max-height:244px!important;padding:3px 4px 10px!important}
 .logoSwatch{aspect-ratio:1/1!important;min-height:54px!important;border-radius:17px!important;padding:6px!important;background:rgba(255,255,255,.1)!important}
 .logoSwatch .bankLogoMark{min-height:42px!important;border-radius:14px!important}
@@ -767,8 +747,8 @@ body{
 .detailTop .bank,.premiumCreditLeft .bank{width:50px!important;height:50px!important;border-radius:18px!important}
 
 
-/* Clean fallback bank marks: no decorative artifacts inside the logo tile. */
-/* Accounts: permanent compact grouped rows */
+
+
 #accounts #accountGrid{display:block!important;padding-bottom:calc(128px + env(safe-area-inset-bottom))}
 #accounts > .chips{display:none!important}
 #accounts .acctGroup{margin:0 0 14px}
@@ -829,7 +809,7 @@ body{
 }
 .themeSwatch:active{transform:scale(.96)}
 
-/* Theme picker should repaint the full shell, not only the page background. */
+
 .premiumHero,body.dark .premiumHero{background:linear-gradient(160deg,color-mix(in srgb,var(--theme-bg-top) 72%,var(--theme-surface)) 0%,var(--theme-surface) 50%,color-mix(in srgb,var(--theme-bg-bottom) 68%,#07110e) 100%)!important;border-color:color-mix(in srgb,var(--accent) 18%,rgba(255,255,255,.08))!important;box-shadow:0 26px 60px color-mix(in srgb,var(--theme-bg-bottom) 58%,rgba(0,0,0,.34))!important}.premiumHero .premiumHeroGlow{background:radial-gradient(circle,color-mix(in srgb,var(--accent-2) 28%,transparent),transparent 70%)!important}
 .card,.row,.reportPanel,.settingRow,.budgetCard,.recurringCard,.detailHero,.resultCard,.premiumPulse,.premiumTimelineItem,.premiumCreditCard,.emptyCenter,.softEmpty,.emptyState,.empty,body.dark .card,body.dark .row,body.dark .reportPanel,body.dark .settingRow,body.dark .budgetCard,body.dark .recurringCard,body.dark .detailHero,body.dark .resultCard,body.dark .premiumPulse,body.dark .premiumTimelineItem,body.dark .premiumCreditCard{background:linear-gradient(145deg,color-mix(in srgb,var(--card) 94%,var(--theme-bg-top)),var(--card))!important;border-color:color-mix(in srgb,var(--accent) 16%,var(--line))!important}
 .ccStat,.statBox,.paySummary,.premiumCreditMain,.premiumCreditSide div,.insightItem,.recNote,.pulseGrid div,.premiumSummaryChips button,.statementMini,.ccStatementMini,.expenseStat,.expenseBarRow,.expenseEmpty,body.dark .ccStat,body.dark .statBox,body.dark .paySummary,body.dark .premiumCreditMain,body.dark .premiumCreditSide div,body.dark .insightItem,body.dark .pulseGrid div,body.dark .premiumSummaryChips button,body.dark .statementMini,body.dark .ccStatementMini{background:var(--card-inset)!important;border-color:color-mix(in srgb,var(--accent) 14%,var(--line))!important}
@@ -837,7 +817,7 @@ body{
 .nav,body.dark .nav{background:color-mix(in srgb,var(--theme-nav) 92%,transparent)!important;border-color:color-mix(in srgb,var(--accent) 16%,transparent)!important}.premiumProgress i,.expenseTrack i{background:linear-gradient(90deg,var(--accent),var(--accent-2))!important}
 .save,.fab,.backupBtn.primary,.reportTabs button.active,.seg button.active,.chip.active,.payMode.active,.premiumCreditActions button.primary,body.dark .save,body.dark .fab,body.dark .backupBtn.primary,body.dark .reportTabs button.active,body.dark .seg button.active,body.dark .chip.active,body.dark .payMode.active{background:linear-gradient(135deg,var(--accent),var(--accent-2))!important;color:#fff!important;border-color:transparent!important}.nav button.active{color:var(--accent-2)!important;background:color-mix(in srgb,var(--accent) 18%,transparent)!important}.premiumIconBtn,.settingsHomeBtn{color:var(--accent)!important}.appVersionPill{color:var(--accent-2)!important;border-color:color-mix(in srgb,var(--accent-2) 28%,var(--line))!important}.premiumHero .premiumSummaryChips button,.pulseGrid div,.expenseStat,.ccStat,.statBox{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 10%,transparent)!important}
 
-/* Home cards were still using the older blue readability variables. */
+
 body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card)!important;--pt-dark-border:var(--line)!important;--pt-dark-muted:var(--muted)!important;--pt-dark-text:var(--text)!important}
 #dashboard .premiumPulse,#dashboard .premiumTimelineItem,#dashboard .softEmpty,#dashboard .row,#dashboard .txnRow,#dashboard .premiumRecent .row{background:linear-gradient(145deg,color-mix(in srgb,var(--theme-surface) 82%,var(--theme-bg-top)),color-mix(in srgb,var(--theme-surface) 94%,#07110e))!important;border-color:color-mix(in srgb,var(--accent) 28%,var(--line))!important;box-shadow:0 14px 34px color-mix(in srgb,var(--theme-bg-bottom) 42%,rgba(0,0,0,.18))!important}
 #dashboard .pulseGrid div,#dashboard .upcomingDateBadge,#dashboard .premiumSummaryChips button{background:color-mix(in srgb,var(--theme-surface-inset) 65%,var(--accent) 8%)!important;border-color:color-mix(in srgb,var(--accent) 26%,var(--line))!important}
@@ -845,7 +825,7 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 #dashboard .premiumTimelineItem:before{background:var(--accent)!important;box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 28%,transparent)!important}
 #dashboard .upcomingKind{background:color-mix(in srgb,var(--accent) 18%,transparent)!important;color:var(--accent-2)!important}
 
-/* Theme polish: keep cards separated and make chooser sheets readable above modals. */
+
 .card,.row,.reportPanel,.settingRow,.budgetCard,.recurringCard,.detailHero,.resultCard,.premiumPulse,.premiumTimelineItem,.premiumCreditCard,.emptyCenter,.softEmpty,.emptyState,.empty,.acctRow,body.dark .card,body.dark .row,body.dark .reportPanel,body.dark .settingRow,body.dark .budgetCard,body.dark .recurringCard,body.dark .detailHero,body.dark .resultCard,body.dark .premiumPulse,body.dark .premiumTimelineItem,body.dark .premiumCreditCard,body.dark .acctRow{border:1px solid color-mix(in srgb,var(--accent) 30%,rgba(255,255,255,.18))!important;box-shadow:0 14px 32px color-mix(in srgb,var(--theme-bg-bottom) 48%,rgba(0,0,0,.22)),inset 0 1px 0 rgba(255,255,255,.05)!important}
 #accounts .acctRow{background:linear-gradient(145deg,color-mix(in srgb,var(--card) 90%,var(--theme-bg-top)),color-mix(in srgb,var(--card) 98%,#07110e))!important}
 #pickerSheet{z-index:72!important;background:linear-gradient(180deg,color-mix(in srgb,var(--theme-bg-top) 88%,var(--card)),color-mix(in srgb,var(--card) 96%,#07110e))!important;border:1px solid color-mix(in srgb,var(--accent) 34%,rgba(255,255,255,.18))!important;box-shadow:0 -26px 70px rgba(0,0,0,.42)!important;backdrop-filter:none!important}
@@ -853,7 +833,7 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 #pickerSheet .option,#pickerSheet .categoryCompactChip,#pickerSheet .search{background:color-mix(in srgb,var(--theme-surface) 92%,#07110e)!important;border-color:color-mix(in srgb,var(--accent) 28%,var(--line))!important;box-shadow:0 8px 18px rgba(0,0,0,.16)!important}
 @media(max-width:370px){#accounts .acctRow{grid-template-columns:auto minmax(0,1fr);padding:10px}#accounts .acctRight{grid-column:2;text-align:left;min-width:0}#accounts .acctAmount{font-size:15px}#accounts .acctHint{display:inline-block;margin-right:8px}}
 
-/* Theme polish: icons and primary controls should follow the selected palette. */
+
 .nav .fab,body.dark .nav .fab{background:linear-gradient(145deg,var(--accent),color-mix(in srgb,var(--accent) 52%,var(--theme-bg-top)))!important;color:#fff!important;box-shadow:0 16px 34px color-mix(in srgb,var(--accent) 42%,rgba(0,0,0,.28))!important}
 .nav .fab svg{color:currentColor!important;stroke:currentColor!important}
 .nav button.active,body.dark .nav button.active{background:color-mix(in srgb,var(--accent) 22%,var(--theme-nav))!important;color:var(--accent)!important;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)!important}
@@ -861,11 +841,11 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 .save,.backupBtn.primary,.billSetupCard button,.premiumCreditActions button.primary,.sheetActions button.primary,.payMode.active,.seg button.active,.reportTabs button.active,.chip.active,body.dark .save,body.dark .backupBtn.primary,body.dark .premiumCreditActions button.primary,body.dark .sheetActions button.primary,body.dark .payMode.active,body.dark .seg button.active,body.dark .reportTabs button.active,body.dark .chip.active{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 58%,var(--theme-bg-top)))!important;color:#fff!important;border-color:transparent!important;box-shadow:0 12px 26px color-mix(in srgb,var(--accent) 32%,rgba(0,0,0,.18))!important}
 #txnSheet .seg button.active{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 58%,var(--theme-bg-top)))!important}
 
-/* Theme-visible header icons: themed surface, high-contrast themed stroke. */
+
 .premiumIconBtn,.settingsGearBtn,.settingsHomeBtn,.iconbtn.settingsHomeBtn,body.dark .premiumIconBtn,body.dark .settingsGearBtn,body.dark .settingsHomeBtn,body.dark .iconbtn.settingsHomeBtn{background:linear-gradient(145deg,color-mix(in srgb,#fff 88%,var(--theme-bg-top)),color-mix(in srgb,#fff 78%,var(--accent)))!important;color:color-mix(in srgb,var(--theme-nav) 82%,var(--accent))!important;border:1px solid color-mix(in srgb,var(--accent) 42%,rgba(255,255,255,.62))!important;box-shadow:0 16px 34px color-mix(in srgb,var(--theme-bg-bottom) 38%,rgba(0,0,0,.20)),inset 0 0 0 1px rgba(255,255,255,.55)!important}
 .premiumIconBtn svg,.settingsGearBtn svg,.settingsHomeBtn svg,.iconbtn.settingsHomeBtn svg{color:currentColor!important;stroke:currentColor!important;filter:drop-shadow(0 1px 0 rgba(255,255,255,.22))}
 
-/* Bills and reports should carry the same deeper themed surface as Home/Accounts. */
+
 #bills #bills #bills .recurringCard,#bills .billSetupCard,#bills .statementMini,#bills .premiumCreditCard,#bills .ccFallback,#reports .reportPanel,#reports .budgetCard,#reports .expenseBarRow,#reports .expenseStat,#reports .txnRow,#reports .insightItem,#reports .emptyState{background:linear-gradient(145deg,color-mix(in srgb,var(--theme-surface) 88%,var(--theme-bg-top)),color-mix(in srgb,var(--theme-surface) 97%,#07110e))!important;border:1px solid color-mix(in srgb,var(--accent) 31%,rgba(255,255,255,.16))!important;box-shadow:0 14px 32px color-mix(in srgb,var(--theme-bg-bottom) 48%,rgba(0,0,0,.22)),inset 0 1px 0 rgba(255,255,255,.05)!important}
 #bills .ccStat,#bills #bills .paySummary,#bills .recNote,#reports .reportTabs,#reports .txnSearch,#reports #reports .budgetBar,#reports #reports .expenseTrack,#reports .search,#reports .field{background:color-mix(in srgb,var(--theme-surface-inset) 70%,var(--theme-surface))!important;border-color:color-mix(in srgb,var(--accent) 24%,var(--line))!important}
 #reports .reportTabs button{color:color-mix(in srgb,var(--text) 74%,var(--muted))!important}
@@ -873,7 +853,7 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 #bills .section .sub,#reports .sub,#reports .expenseBarMeta,#reports .reportEmpty{color:color-mix(in srgb,var(--text) 68%,var(--muted))!important}
 .accountBaseNote{margin-top:4px;font-size:12px;font-weight:800;opacity:.72}
 
-/* Readable status/version pills after theme overrides. */
+
 #dashboard .appVersionPill,.appVersionPill,body.dark .appVersionPill{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-2) 18%,var(--theme-surface)),color-mix(in srgb,var(--accent) 10%,var(--theme-surface)))!important;color:color-mix(in srgb,var(--accent-2) 86%,#fff)!important;border:1px solid color-mix(in srgb,var(--accent-2) 48%,rgba(255,255,255,.22))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px color-mix(in srgb,var(--theme-bg-bottom) 34%,rgba(0,0,0,.18))!important}
 #bills .premiumDuePill,#bills .statusPill{background:color-mix(in srgb,var(--accent) 18%,var(--theme-surface))!important;color:color-mix(in srgb,var(--accent) 82%,#fff)!important;border:1px solid color-mix(in srgb,var(--accent) 36%,rgba(255,255,255,.16))!important}
 #bills .premiumDuePill.warn,#bills .statusPill.partial{background:color-mix(in srgb,var(--orange) 18%,var(--theme-surface))!important;color:#ffd38a!important;border-color:color-mix(in srgb,var(--orange) 42%,rgba(255,255,255,.16))!important}
