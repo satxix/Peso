@@ -11,12 +11,81 @@ function accountSubtitleLine(a){
   if(a.type==='Investment')return 'Investment';
   return a.institution||a.type||'Account';
 }
-function accountGroupLabel(type){return type==='Savings'?'Banks':type==='Credit Card'?'Cards':type==='Wallet'?'E-Wallets':type==='Cash'?'Cash':type==='Investment'?'Investments':'Other'}
-function accountGlimpseAmount(a){return a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0)}
-function accountGlimpseHint(a){if(a.type==='Credit Card'){let limit=Number(a.limit||0),out=Number(a.outstanding||0);return limit?`${Math.round(out/limit*100)}% used`:'Outstanding'}return ''}
-function accountLogoSafe(a){try{return typeof logo==='function'?logo(a):''}catch(e){console.warn('Account logo failed',e,a)}let label=String(a?.institution||a?.name||'AC').trim().slice(0,3).toUpperCase()||'AC';return `<div class="bank otherbank"><span class="bankLogoMark"><b>${htmlText(label)}</b></span></div>`}
-function accountRow(a){let amount=accountGlimpseAmount(a);let limit=Number(a.limit||0),out=Number(a.outstanding||0);let util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;let utilClass=util>=80?'danger':util>=50?'warn':'';let utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';let hint=accountGlimpseHint(a);return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">${accountLogoSafe(a)}<span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span><span class="acctRight"><b class="acctAmount">${peso(amount)}</b>${hint?`<span class="acctHint">${htmlText(hint)}</span>`:''}${utilBar}</span></button>`}
-function renderAccounts(){let grid=document.getElementById('accountGrid');if(!grid)return;let arr=(data.accounts||[]).filter(a=>a&&typeof a==='object'&&(acctFilter==='All'||a.type===acctFilter));let order=['Savings','Cash','Wallet','Credit Card','Investment'];let groups={};arr.forEach(a=>{let key=order.includes(a.type)?a.type:'Other';(groups[key]||(groups[key]=[])).push(a)});let sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>{let total=groups[k].reduce((sum,a)=>sum+accountGlimpseAmount(a),0);return `<section class="acctGroup" data-acct-group="${htmlText(k)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(k)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(k)}</span></span><span class="acctGroupMeta">${groups[k].length} account${groups[k].length===1?'':'s'} &middot; ${peso(total)}</span></button><div class="acctList">${groups[k].map(accountRow).join('')}</div></section>`}).join('');grid.innerHTML=(sections||'<div class="gm4-empty"><b>No accounts yet.</b><span>Tap + to add banks, cash on hand, wallets, cards, or investments.</span></div>')+`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;((data.settings&&data.settings.collapsedAccountGroups)||[]).forEach(k=>{let sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);if(sec)sec.classList.add('collapsed')})}
+function accountGroupLabel(type){
+  if(type==='Savings')return 'Banks';
+  if(type==='Credit Card')return 'Cards';
+  if(type==='Wallet')return 'E-Wallets';
+  if(type==='Cash')return 'Cash';
+  if(type==='Investment')return 'Investments';
+  return 'Other';
+}
+
+function accountGlimpseAmount(a){
+  return a.type==='Credit Card'?Number(a.outstanding||0):Number(a.balance||0);
+}
+
+function accountGlimpseHint(a){
+  if(a.type!=='Credit Card')return '';
+  let limit=Number(a.limit||0);
+  let out=Number(a.outstanding||0);
+  return limit?`${Math.round(out/limit*100)}% used`:'Outstanding';
+}
+
+function accountLogoSafe(a){
+  try{
+    return typeof logo==='function'?logo(a):'';
+  }catch(e){
+    console.warn('Account logo failed',e,a);
+  }
+  let label=String(a?.institution||a?.name||'AC').trim().slice(0,3).toUpperCase()||'AC';
+  return `<div class="bank otherbank"><span class="bankLogoMark"><b>${htmlText(label)}</b></span></div>`;
+}
+
+function accountRow(a){
+  let amount=accountGlimpseAmount(a);
+  let limit=Number(a.limit||0);
+  let out=Number(a.outstanding||0);
+  let util=a.type==='Credit Card'&&limit?Math.min(100,Math.round(out/limit*100)):0;
+  let utilClass=util>=80?'danger':util>=50?'warn':'';
+  let utilBar=a.type==='Credit Card'&&limit?`<div class="acctUtil ${utilClass}"><i style="width:${util}%"></i></div>`:'';
+  let hint=accountGlimpseHint(a);
+  return `<button type="button" class="acctRow" onclick="openAccountDetail('${jsString(a.id)}')">${accountLogoSafe(a)}<span class="acctMain"><b class="acctName">${htmlText(a.name,'Unnamed Account')}</b><span class="acctMeta"><span class="acctInst">${htmlText(a.institution||a.type||'Account')}</span></span></span><span class="acctRight"><b class="acctAmount">${peso(amount)}</b>${hint?`<span class="acctHint">${htmlText(hint)}</span>`:''}${utilBar}</span></button>`;
+}
+
+function accountGroups(accounts){
+  let order=['Savings','Cash','Wallet','Credit Card','Investment'];
+  let groups={};
+  accounts.forEach(a=>{
+    let key=order.includes(a.type)?a.type:'Other';
+    (groups[key]||(groups[key]=[])).push(a);
+  });
+  return {order,groups};
+}
+
+function accountGroupSection(key,items){
+  let total=items.reduce((sum,a)=>sum+accountGlimpseAmount(a),0);
+  let count=items.length;
+  return `<section class="acctGroup" data-acct-group="${htmlText(key)}"><button type="button" class="acctGroupHead" onclick="toggleAcctGroup('${jsString(key)}')"><span class="acctGroupTitle"><span class="acctGroupName">${accountGroupLabel(key)}</span></span><span class="acctGroupMeta">${count} account${count===1?'':'s'} &middot; ${peso(total)}</span></button><div class="acctList">${items.map(accountRow).join('')}</div></section>`;
+}
+
+function applyCollapsedAccountGroups(grid){
+  ((data.settings&&data.settings.collapsedAccountGroups)||[]).forEach(k=>{
+    let sec=[...grid.querySelectorAll('[data-acct-group]')].find(x=>x.dataset.acctGroup===k);
+    if(sec)sec.classList.add('collapsed');
+  });
+}
+
+function renderAccounts(){
+  let grid=document.getElementById('accountGrid');
+  if(!grid)return;
+  let accounts=(data.accounts||[]).filter(a=>a&&typeof a==='object'&&(acctFilter==='All'||a.type===acctFilter));
+  let {order,groups}=accountGroups(accounts);
+  let sections=order.concat('Other').filter(k=>groups[k]?.length).map(k=>accountGroupSection(k,groups[k])).join('');
+  let empty='<div class="gm4-empty"><b>No accounts yet.</b><span>Tap + to add banks, cash on hand, wallets, cards, or investments.</span></div>';
+  let addRow=`<button type="button" class="acctRow acctAddRow" onclick="openAddAccount()"><span class="acctAddIcon">+</span><span class="acctMain"><b class="acctName">Add Account</b><span class="acctInst">Bank, cash, wallet, card, or investment</span></span></button>`;
+  grid.innerHTML=(sections||empty)+addRow;
+  applyCollapsedAccountGroups(grid);
+}
 function toggleAcctGroup(k){data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];let set=new Set(data.settings.collapsedAccountGroups);if(set.has(k))set.delete(k);else set.add(k);data.settings.collapsedAccountGroups=[...set];try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}renderAccounts()}
 function filterAccounts(f,el){acctFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');renderAccounts()}
 
@@ -36,7 +105,65 @@ function openTxnFromDetail(){accountDetailSheet.classList.remove('show');openTxn
 
 let searchFilter='All';
 
-function openAddAccount(){editingAccount=null;acctTitle.textContent='Add Account';atype.value='Savings';inst.value='';aname.value='';let lf=document.getElementById('instLogo');if(lf){lf.value='otherbank';lf.dataset.manual=''}renderAccountFields();renderLogoPicker('otherbank');showModal();accountSheet.classList.add('show')}function editAccount(id){let a=data.accounts.find(x=>x.id===id); if(!a)return; editingAccount=id; acctTitle.textContent='Edit Account';atype.value=a.type;inst.value=a.institution||'';aname.value=a.name;let key=a.logoKey||banks[a.institution]||'otherbank';let lf=document.getElementById('instLogo');if(lf){lf.value=key;lf.dataset.manual='1'}renderAccountFields(a);renderLogoPicker(key);showModal();accountSheet.classList.add('show')}function renderAccountFields(a={}){let t=atype.value;if(document.getElementById('inst')){inst.style.display=t==='Cash'?'none':''; if(t==='Cash') inst.value='';} if(t==='Cash' && document.getElementById('aname') && !aname.value) aname.value='Cash on Hand';dynamicFields.innerHTML=t==='Credit Card'?`<input class="field" id="limit" type="number" placeholder="Credit limit" value="${a.limit||''}"><input class="field" id="statementDay" type="number" placeholder="Statement day, e.g. 15" value="${a.statementDay||''}"><input class="field" id="dueDay" type="number" placeholder="Due day, e.g. 5" value="${a.dueDay||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`:`<input class="field" id="balance" type="number" placeholder="${t==='Investment'?'Current value':'Opening balance'}" value="${a.balance||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`}function saveAccount(){
+function setLogoField(key,manual){
+  let lf=document.getElementById('instLogo');
+  if(!lf)return;
+  lf.value=key||'otherbank';
+  lf.dataset.manual=manual?'1':'';
+}
+
+function openAccountSheet(){
+  showModal();
+  accountSheet.classList.add('show');
+}
+
+function openAddAccount(){
+  editingAccount=null;
+  acctTitle.textContent='Add Account';
+  atype.value='Savings';
+  inst.value='';
+  aname.value='';
+  setLogoField('otherbank',false);
+  renderAccountFields();
+  renderLogoPicker('otherbank');
+  openAccountSheet();
+}
+
+function editAccount(id){
+  let a=data.accounts.find(x=>x.id===id);
+  if(!a)return;
+  editingAccount=id;
+  acctTitle.textContent='Edit Account';
+  atype.value=a.type;
+  inst.value=a.institution||'';
+  aname.value=a.name;
+  let key=a.logoKey||banks[a.institution]||'otherbank';
+  setLogoField(key,true);
+  renderAccountFields(a);
+  renderLogoPicker(key);
+  openAccountSheet();
+}
+
+function renderCreditCardAccountFields(a){
+  return `<input class="field" id="limit" type="number" placeholder="Credit limit" value="${a.limit||''}"><input class="field" id="statementDay" type="number" placeholder="Statement day, e.g. 15" value="${a.statementDay||''}"><input class="field" id="dueDay" type="number" placeholder="Due day, e.g. 5" value="${a.dueDay||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`;
+}
+
+function renderBalanceAccountFields(a,type){
+  let placeholder=type==='Investment'?'Current value':'Opening balance';
+  return `<input class="field" id="balance" type="number" placeholder="${placeholder}" value="${a.balance||''}"><button class="ghost" onclick="deleteAccount()">Delete</button>`;
+}
+
+function renderAccountFields(a={}){
+  let t=atype.value;
+  if(document.getElementById('inst')){
+    inst.style.display=t==='Cash'?'none':'';
+    if(t==='Cash')inst.value='';
+  }
+  if(t==='Cash'&&document.getElementById('aname')&&!aname.value)aname.value='Cash on Hand';
+  dynamicFields.innerHTML=t==='Credit Card'?renderCreditCardAccountFields(a):renderBalanceAccountFields(a,t);
+}
+
+function saveAccount(){
   try{
     const typeEl=document.getElementById('atype'), instEl=document.getElementById('inst'), nameEl=document.getElementById('aname');
     if(!typeEl) throw new Error('Account type field is missing');

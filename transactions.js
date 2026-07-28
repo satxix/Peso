@@ -23,29 +23,126 @@ function deleteEditingTxn(){
   closeSheets();
 }
 
-function openTxn(id){editingTxn=id||null;let old=editingTxn?data.txns.find(t=>t.id===editingTxn):null;if(old&&old.type==='Card Payment'){alert('Card payments are edited from the bill settlement flow. You can delete it from the transaction list if needed.');editingTxn=null;return}amount=old?String(old.amount||0):'0';txnType=old?old.type:'Expense';txn={from:old?.from||null,to:old?.to||null,category:old?.category||'Food',fee:Number(old?.fee||0),note:old?.note||''};txnTitle.textContent=old?'Edit Transaction':'Add Transaction';txnSaveBtn.textContent=old?'Update Transaction':'Save Transaction';txnDeleteBtn.classList.toggle('hide',!old);document.querySelectorAll('#txnSheet .seg button').forEach(b=>b.classList.toggle('active',b.textContent.trim()===txnType));renderTxn();if(document.getElementById('txnNote')){txnNote.value=txn.note||'';toggleTxnNote(!!txn.note)}let dateEl=document.getElementById('txnDate');if(dateEl)dateEl.value=txnInputDateValue(old?.date||Date.now());showModal();txnSheet.classList.add('show')}
+function openTxn(id){
+  editingTxn=id||null;
+  let old=editingTxn?data.txns.find(t=>t.id===editingTxn):null;
+  if(old&&old.type==='Card Payment'){
+    alert('Card payments are edited from the bill settlement flow. You can delete it from the transaction list if needed.');
+    editingTxn=null;
+    return;
+  }
+  amount=old?String(old.amount||0):'0';
+  txnType=old?old.type:'Expense';
+  txn={from:old?.from||null,to:old?.to||null,category:old?.category||'Food',fee:Number(old?.fee||0),note:old?.note||''};
+  txnTitle.textContent=old?'Edit Transaction':'Add Transaction';
+  txnSaveBtn.textContent=old?'Update Transaction':'Save Transaction';
+  txnDeleteBtn.classList.toggle('hide',!old);
+  document.querySelectorAll('#txnSheet .seg button').forEach(b=>b.classList.toggle('active',b.textContent.trim()===txnType));
+  renderTxn();
+  if(document.getElementById('txnNote')){
+    txnNote.value=txn.note||'';
+    toggleTxnNote(!!txn.note);
+  }
+  let dateEl=document.getElementById('txnDate');
+  if(dateEl)dateEl.value=txnInputDateValue(old?.date||Date.now());
+  showModal();
+  txnSheet.classList.add('show');
+}
 
-function setTxnType(t,el){txnType=t;document.querySelectorAll('#txnSheet .seg button').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');if(t==='Income'&&(!txn.category||txn.category==='Food'))txn.category='Salary';if(t==='Expense'&&(!txn.category||txn.category==='Salary'))txn.category='Food';if(t==='Transfer')txn.category='';renderTxn()}
+function setTxnType(t,el){
+  txnType=t;
+  document.querySelectorAll('#txnSheet .seg button').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(t==='Income'&&(!txn.category||txn.category==='Food'))txn.category='Salary';
+  if(t==='Expense'&&(!txn.category||txn.category==='Salary'))txn.category='Food';
+  if(t==='Transfer')txn.category='';
+  renderTxn();
+}
 
-function accountPickButton(field,label,wide=false){let a=accountById(txn[field]);if(!a)return `<button class="txnPickBtn ${wide?'wide':''}" onclick="chooseAcct('${field}')"><div class="catCircle">+</div><div class="txnPickText"><b>${label}</b><span>Choose account</span><em>Pick from accounts you added</em></div></button>`;let main=a.name||a.institution||a.type,sub=`${a.institution||a.type} - ${a.type==='Credit Card'?'Outstanding '+peso(a.outstanding||0):'Balance '+peso(a.balance||0)}`;return `<button class="txnPickBtn ${wide?'wide':''}" onclick="chooseAcct('${field}')">${logo(a)}<div class="txnPickText"><b>${label}</b><span>${main}</span><em>${sub}</em></div></button>`}
+function accountPickButton(field,label,wide=false){
+  let a=accountById(txn[field]);
+  if(!a){
+    return `<button class="txnPickBtn ${wide?'wide':''}" onclick="chooseAcct('${field}')"><div class="catCircle">+</div><div class="txnPickText"><b>${label}</b><span>Choose account</span><em>Pick from accounts you added</em></div></button>`;
+  }
+  let main=a.name||a.institution||a.type;
+  let sub=`${a.institution||a.type} - ${a.type==='Credit Card'?'Outstanding '+peso(a.outstanding||0):'Balance '+peso(a.balance||0)}`;
+  return `<button class="txnPickBtn ${wide?'wide':''}" onclick="chooseAcct('${field}')">${logo(a)}<div class="txnPickText"><b>${label}</b><span>${main}</span><em>${sub}</em></div></button>`;
+}
 
-function categoryPickButton(label,wide=false){let c=txn.category||'Choose category';return `<button class="txnPickBtn ${wide?'wide':''}" onclick="chooseCat()"><div class="catCircle">${catIcon(c)}</div><div class="txnPickText"><b>${label}</b><span>${c}</span><em>${txnType==='Income'?'Income source':'Expense category'}</em></div></button>`}
+function categoryPickButton(label,wide=false){
+  let c=txn.category||'Choose category';
+  return `<button class="txnPickBtn ${wide?'wide':''}" onclick="chooseCat()"><div class="catCircle">${catIcon(c)}</div><div class="txnPickText"><b>${label}</b><span>${c}</span><em>${txnType==='Income'?'Income source':'Expense category'}</em></div></button>`;
+}
 
-function renderTxn(){if(txnType==='Transfer')txnPick.innerHTML=accountPickButton('from','From Account')+accountPickButton('to','To Account')+feeInput();else if(txnType==='Income')txnPick.innerHTML=accountPickButton('from','Deposit To')+categoryPickButton('Source');else txnPick.innerHTML=accountPickButton('from','Account')+categoryPickButton('Category');updateAmountDisplay();pad.innerHTML=['7','8','9','4','5','6','1','2','3','.','0','backspace'].map(x=>`<button type="button" class="${x==='backspace'?'backspace':''}" aria-label="${x==='backspace'?'Delete last digit':x==='.'?'Decimal point':'Number '+x}" onclick="tap('${x}')">${x==='backspace'?'<span aria-hidden="true">Del</span>':x}</button>`).join('')}
+function renderTxn(){
+  if(txnType==='Transfer')txnPick.innerHTML=accountPickButton('from','From Account')+accountPickButton('to','To Account')+feeInput();
+  else if(txnType==='Income')txnPick.innerHTML=accountPickButton('from','Deposit To')+categoryPickButton('Source');
+  else txnPick.innerHTML=accountPickButton('from','Account')+categoryPickButton('Category');
+  updateAmountDisplay();
+  pad.innerHTML=['7','8','9','4','5','6','1','2','3','.','0','backspace'].map(keypadButtonHtml).join('');
+}
 
-function feeInput(){return `<label class="feeBox"><div><b>Transfer Fee</b><span>Optional fee charged by bank/wallet</span></div><input id="transferFee" type="number" min="0" step="0.01" value="${Number(txn.fee||0)||''}" placeholder="0" oninput="txn.fee=Number(this.value||0)"></label>`}
+function keypadButtonHtml(x){
+  let label=x==='backspace'?'Delete last digit':x==='.'?'Decimal point':'Number '+x;
+  let text=x==='backspace'?'<span aria-hidden="true">Del</span>':x;
+  return `<button type="button" class="${x==='backspace'?'backspace':''}" aria-label="${label}" onclick="tap('${x}')">${text}</button>`;
+}
 
-function name(id){return (data.accounts.find(a=>a.id===id)||{}).name}
+function feeInput(){
+  return `<label class="feeBox"><div><b>Transfer Fee</b><span>Optional fee charged by bank/wallet</span></div><input id="transferFee" type="number" min="0" step="0.01" value="${Number(txn.fee||0)||''}" placeholder="0" oninput="txn.fee=Number(this.value||0)"></label>`;
+}
 
-function displayInputAmount(v){if(data.settings&&data.settings.privacy)return '\u2022\u2022\u2022\u2022';let s=String(v||'0');if(s.includes('.')){let parts=s.split('.'),whole=parts[0]||'0',dec=(parts[1]||'').slice(0,2);return '\u20b1'+Number(whole||0).toLocaleString('en-PH')+'.'+dec}return peso(s)}
+function name(id){
+  return (data.accounts.find(a=>a.id===id)||{}).name;
+}
 
-function updateAmountDisplay(){if(document.getElementById('amtDisplay'))amtDisplay.textContent=displayInputAmount(amount)}
+function displayInputAmount(v){
+  if(data.settings&&data.settings.privacy)return '\u2022\u2022\u2022\u2022';
+  let s=String(v||'0');
+  if(s.includes('.')){
+    let parts=s.split('.'),whole=parts[0]||'0',dec=(parts[1]||'').slice(0,2);
+    return '\u20b1'+Number(whole||0).toLocaleString('en-PH')+'.'+dec;
+  }
+  return peso(s);
+}
 
-function cleanAmountInput(v){let s=String(v||'0').replace(/[^\d.]/g,'');let firstDot=s.indexOf('.');if(firstDot>-1){s=s.slice(0,firstDot+1)+s.slice(firstDot+1).replace(/\./g,'');let parts=s.split('.');parts[1]=(parts[1]||'').slice(0,2);s=parts[0]+'.'+parts[1]}s=s.replace(/^0+(?=\d)/,'');return s||'0'}
+function updateAmountDisplay(){
+  if(document.getElementById('amtDisplay'))amtDisplay.textContent=displayInputAmount(amount);
+}
 
-function toggleTxnNote(force){let input=document.getElementById('txnNote'),btn=document.getElementById('txnNoteToggle');if(!input)return;let open=force===undefined?input.classList.contains('collapsed'):!!force;input.classList.toggle('collapsed',!open);if(btn)btn.textContent=open?'Hide Note':'+ Note';if(open)setTimeout(()=>input.focus(),0)}
+function cleanAmountInput(v){
+  let s=String(v||'0').replace(/[^\d.]/g,'');
+  let firstDot=s.indexOf('.');
+  if(firstDot>-1){
+    s=s.slice(0,firstDot+1)+s.slice(firstDot+1).replace(/\./g,'');
+    let parts=s.split('.');
+    parts[1]=(parts[1]||'').slice(0,2);
+    s=parts[0]+'.'+parts[1];
+  }
+  s=s.replace(/^0+(?=\d)/,'');
+  return s||'0';
+}
 
-function tap(x){if(x==='backspace')amount=amount.length>1?amount.slice(0,-1):'0';else if(x==='.'&&!amount.includes('.'))amount=amount==='0'?'0.':amount+'.';else if(x!=='.'){let parts=String(amount).split('.');if(parts.length>1&&parts[1].length>=2)return;amount=amount==='0'?x:amount+x}amount=cleanAmountInput(amount);updateAmountDisplay()}
+function toggleTxnNote(force){
+  let input=document.getElementById('txnNote'),btn=document.getElementById('txnNoteToggle');
+  if(!input)return;
+  let open=force===undefined?input.classList.contains('collapsed'):!!force;
+  input.classList.toggle('collapsed',!open);
+  if(btn)btn.textContent=open?'Hide Note':'+ Note';
+  if(open)setTimeout(()=>input.focus(),0);
+}
+
+function tap(x){
+  if(x==='backspace')amount=amount.length>1?amount.slice(0,-1):'0';
+  else if(x==='.'&&!amount.includes('.'))amount=amount==='0'?'0.':amount+'.';
+  else if(x!=='.'){
+    let parts=String(amount).split('.');
+    if(parts.length>1&&parts[1].length>=2)return;
+    amount=amount==='0'?x:amount+x;
+  }
+  amount=cleanAmountInput(amount);
+  updateAmountDisplay();
+}
 
 function accountSubtitle(a){
   if(!a)return '';
@@ -56,34 +153,74 @@ function accountSubtitle(a){
   return `${a.type} - Balance ${peso(a.balance||0)}`;
 }
 
-function closePicker(){pickerSheet.classList.remove('show');pickerSheet.classList.remove('compactCategoryPicker');pickerMode=null;pickerField=null;pickerSearch.value='';hideModalIfNone()}
+function closePicker(){
+  pickerSheet.classList.remove('show');
+  pickerSheet.classList.remove('compactCategoryPicker');
+  pickerMode=null;
+  pickerField=null;
+  pickerSearch.value='';
+  hideModalIfNone();
+}
 
 function chooseAcct(field){
-  pickerSheet.classList.remove('compactCategoryPicker');pickerMode='account';pickerField=field;pickerTitle.textContent=field==='to'?'Choose To Account':(txnType==='Income'?'Choose Deposit Account':'Choose Account');pickerSub.textContent='Only accounts you added are shown';pickerSearch.value='';renderPicker();showModal();pickerSheet.classList.add('show')
+  pickerSheet.classList.remove('compactCategoryPicker');
+  pickerMode='account';
+  pickerField=field;
+  pickerTitle.textContent=field==='to'?'Choose To Account':(txnType==='Income'?'Choose Deposit Account':'Choose Account');
+  pickerSub.textContent='Only accounts you added are shown';
+  pickerSearch.value='';
+  renderPicker();
+  showModal();
+  pickerSheet.classList.add('show');
 }
 
 function chooseCat(){
-  pickerSheet.classList.add('compactCategoryPicker');pickerMode='category';pickerField='category';pickerTitle.textContent=txnType==='Income'?'Choose Income Source':'Choose Category';pickerSub.textContent=txnType==='Income'?'Tap the source of income':'Tap a category';pickerSearch.value='';renderPicker();showModal();pickerSheet.classList.add('show')
+  pickerSheet.classList.add('compactCategoryPicker');
+  pickerMode='category';
+  pickerField='category';
+  pickerTitle.textContent=txnType==='Income'?'Choose Income Source':'Choose Category';
+  pickerSub.textContent=txnType==='Income'?'Tap the source of income':'Tap a category';
+  pickerSearch.value='';
+  renderPicker();
+  showModal();
+  pickerSheet.classList.add('show');
+}
+
+function accountPickerItems(q){
+  let accounts=data.accounts.slice();
+  if(txnType==='Income')accounts=accounts.filter(a=>a.type!=='Credit Card');
+  if(txnType==='Transfer'&&pickerField==='to'&&txn.from)accounts=accounts.filter(a=>a.id!==txn.from);
+  if(txnType==='Transfer'&&pickerField==='from'&&txn.to)accounts=accounts.filter(a=>a.id!==txn.to);
+  if(q)accounts=accounts.filter(a=>`${a.name} ${a.institution} ${a.type}`.toLowerCase().includes(q));
+  return accounts;
+}
+
+function accountPickerHtml(a){
+  return `<button class="option" onclick="selectAccount('${a.id}')">${logo(a)}<div style="flex:1"><b>${a.name}</b><div class="meta">${a.institution||a.type}</div><div class="minirow"><span>${a.type==='Credit Card'?'Card':'Account'}</span><span>${accountSubtitle(a)}</span></div></div></button>`;
+}
+
+function categoryPickerHtml(q){
+  let cats=categoryListForTxn();
+  if(q)cats=cats.filter(c=>c.toLowerCase().includes(q));
+  let exact=(data.categories||[]).some(c=>c.toLowerCase()===q);
+  let add=q&&!exact?`<button class="categoryCompactChip categoryCreate" onclick="selectCategory('${jsString(pickerSearch.value.trim())}')"><span class="catMiniIcon">+</span><b>Add "${htmlText(pickerSearch.value.trim())}"</b></button>`:'';
+  let chips=add+cats.map(c=>`<button class="categoryCompactChip" onclick="selectCategory('${jsString(c)}')"><span class="catMiniIcon">${catIcon(c)}</span><b>${htmlText(c)}</b></button>`).join('');
+  return chips?`<div class="categoryCompactGrid">${chips}</div>`:'<div class="empty">Type a category name to add it.</div>';
 }
 
 function renderPicker(){
   const q=(pickerSearch.value||'').toLowerCase().trim();
   if(pickerMode==='account'){
-    let accounts=data.accounts.slice();
-    if(txnType==='Income') accounts=accounts.filter(a=>a.type!=='Credit Card');
-    if(txnType==='Transfer' && pickerField==='to' && txn.from) accounts=accounts.filter(a=>a.id!==txn.from);
-    if(txnType==='Transfer' && pickerField==='from' && txn.to) accounts=accounts.filter(a=>a.id!==txn.to);
-    if(q) accounts=accounts.filter(a=>`${a.name} ${a.institution} ${a.type}`.toLowerCase().includes(q));
-    pickerList.innerHTML=accounts.length?accounts.map(a=>`<button class="option" onclick="selectAccount('${a.id}')">${logo(a)}<div style="flex:1"><b>${a.name}</b><div class="meta">${a.institution||a.type}</div><div class="minirow"><span>${a.type==='Credit Card'?'Card':'Account'}</span><span>${accountSubtitle(a)}</span></div></div></button>`).join(''):`<div class="empty">No accounts yet. Add an account first from the Accounts tab.</div>`;
-  }else if(pickerMode==='category'||pickerMode==='recurringCategory'){
-    let cats=categoryListForTxn();
-    if(q) cats=cats.filter(c=>c.toLowerCase().includes(q));
-    let exact=(data.categories||[]).some(c=>c.toLowerCase()===q);
-    let add=q&&!exact?`<button class="categoryCompactChip categoryCreate" onclick="selectCategory('${jsString(pickerSearch.value.trim())}')"><span class="catMiniIcon">+</span><b>Add "${htmlText(pickerSearch.value.trim())}"</b></button>`:'';
-    let chips=add+cats.map(c=>`<button class="categoryCompactChip" onclick="selectCategory('${jsString(c)}')"><span class="catMiniIcon">${catIcon(c)}</span><b>${htmlText(c)}</b></button>`).join('');
-    pickerList.innerHTML=chips?`<div class="categoryCompactGrid">${chips}</div>`:'<div class="empty">Type a category name to add it.</div>';  }
+    let accounts=accountPickerItems(q);
+    pickerList.innerHTML=accounts.length
+      ? accounts.map(accountPickerHtml).join('')
+      : '<div class="empty">No accounts yet. Add an account first from the Accounts tab.</div>';
+    return;
+  }
+  if(pickerMode==='category'||pickerMode==='recurringCategory'){
+    pickerList.innerHTML=categoryPickerHtml(q);
+  }
 }
-
 function catIcon(c){
   const key=String(c||'Other').trim();
   const rawIcon=key.startsWith('__icon:')?key.slice(7):'';
