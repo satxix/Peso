@@ -31,7 +31,7 @@ function closeSheets(){
 (function(){
   const motionValueIds=['safeSpendHero','netWorth','cashTotal','cardTotal','billsDue','todayIncome','todayExpense','todayTransfer','todayNet'];
   function addPressTargets(){
-    document.querySelectorAll('button,.card,.row,.option,.ccCard,.budgetCard').forEach(el=>el.classList.add('pressLift'));
+    document.querySelectorAll('button,.option').forEach(el=>el.classList.add('pressLift'));
   }
   function pulseChangedValues(){
     motionValueIds.forEach(id=>{

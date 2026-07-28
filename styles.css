@@ -54,7 +54,7 @@ body.dark{background:radial-gradient(circle at top left,rgba(108,99,255,.13),tra
 /* Premium Edition Phase 2: Motion & Interaction */
 :root{--motion-ease:cubic-bezier(.2,.8,.2,1);--motion-spring:cubic-bezier(.16,1,.3,1)}
 @media (prefers-reduced-motion:no-preference){
-  .premiumDashboard .premiumHero,.premiumDashboard .premiumPulse,.premiumDashboard .premiumSection,.premiumDashboard .premiumTimelineItem,.premiumDashboard .row,.card,.reportPanel,.ccCard,.budgetCard,.settingsCard{animation:premiumFadeUp .32s var(--motion-ease) both;will-change:transform,opacity}
+  .premiumDashboard .premiumHero,.premiumDashboard .premiumPulse,.reportPanel,.settingsCard{animation:premiumFadeUp .32s var(--motion-ease) both;will-change:transform,opacity}
   .premiumDashboard .premiumHero{animation-duration:.42s}
   .premiumDashboard .premiumPulse{animation-delay:.04s}  
   
