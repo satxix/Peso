@@ -160,3 +160,26 @@ function showModal(){modalBackdrop.classList.add('show');document.body.classList
   if(window.requestAnimationFrame)requestAnimationFrame(release);else setTimeout(release,0);
   setTimeout(release,600);
 })();
+
+(function notifyAppUpdated(){
+  if(!('serviceWorker' in navigator))return;
+  var key='pesotrack-sw-controller';
+  var versionText=function(){
+    return document.getElementById('homeVersionPill')?.textContent||
+      document.getElementById('appVersionPill')?.textContent||
+      'new version';
+  };
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(!navigator.serviceWorker.controller)return;
+    if(sessionStorage.getItem(key)==='1')return;
+    sessionStorage.setItem(key,'1');
+    setTimeout(function(){
+      if(typeof toastMsg==='function')toastMsg('App updated to '+versionText());
+    },700);
+  });
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.ready
+      .then(function(reg){return reg.update()})
+      .catch(function(){});
+  });
+})();
