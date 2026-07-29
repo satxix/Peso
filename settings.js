@@ -12,7 +12,7 @@ const DEFAULT_SETTINGS={
 };
 
 function exportBackup(){
-  let payload={app:'PesoTrack',version:'4.92',exportedAt:new Date().toISOString(),data};
+  let payload={app:'PesoTrack',version:'4.93',exportedAt:new Date().toISOString(),data};
   let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   let a=document.createElement('a');
   a.href=URL.createObjectURL(blob);

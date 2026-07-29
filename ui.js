@@ -29,7 +29,7 @@ function closeSheets(){
 
 /* Premium Edition Phase 2: Motion & Interaction */
 (function(){
-  const motionValueIds=['safeSpendHero','netWorth','cashTotal','cardTotal','billsDue','todayIncome','todayExpense','todayTransfer','todayNet'];
+  const motionValueIds=['safeSpendHero','netWorth','cashTotal','cardTotal','billsDue','todayNet'];
   function addPressTargets(){
     document.querySelectorAll('button,.option').forEach(el=>el.classList.add('pressLift'));
   }
