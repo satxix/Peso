@@ -424,6 +424,8 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 .trendSummary div{background:var(--card-inset);border:1px solid var(--line);border-radius:16px;padding:10px 8px;min-width:0}
 .trendSummary span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}
 .trendSummary b{display:block;margin-top:4px;font-size:14px;white-space:nowrap;overflow:visible;text-overflow:clip;font-variant-numeric:tabular-nums}
+.trendSummary b.green{color:var(--green)}
+.trendSummary b.red{color:var(--red)}
 .trendLegend{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin:-2px 0 8px;color:var(--muted);font-size:11px;font-weight:900}
 .trendLegend span{display:inline-flex;gap:5px;align-items:center}.trendLegend i{width:9px;height:9px;border-radius:99px;display:inline-block}
 .trendLegend .income,.periodTrendPair .income{background:var(--green)}.trendLegend .expense,.periodTrendPair .expense{background:var(--red)}
