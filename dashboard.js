@@ -24,9 +24,7 @@ function renderDash(){
   let set=(id,value)=>{let el=document.getElementById(id);if(el)el.textContent=value};
   set('netWorth',peso(nw));set('bankTotal',peso(totals.bank));set('cashHandTotal',peso(totals.cashHand));set('walletTotal',peso(totals.wallets));set('cashTotal',peso(cash));set('cardTotal',peso(cards));set('billsDue',peso(due));set('safeSpend',peso(safe));set('safeSpendHero',peso(safe));
   set('dashDate','Today, '+new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
-  let mr=monthRange(),monthSummary=summarizeTxns(txnsInRange(mr.start,mr.end));
-  let monthTransfers=(data.txns||[]).filter(t=>{let d=new Date(t&&t.date);return d>=mr.start&&d<mr.end&&t.type==='Transfer'}).reduce((s,t)=>s+Number(t.amount||0),0);
-  set('todayIncome',wholePeso(monthSummary.income));set('todayExpense',wholePeso(monthSummary.expense));set('todayTransfer',wholePeso(monthTransfers));set('todayNet',peso(due));
+  set('todayNet',peso(due));
   let focus=currentHeroAccount(),han=document.getElementById('heroAccountName'),haa=document.getElementById('heroAccountAmount');
   if(han&&haa){if(focus){han.textContent=focus.name||focus.institution||focus.type;haa.textContent=peso(accountAmount(focus))}else{han.textContent='Account';haa.textContent='Add one'}}
   let dueToday=unpaid.filter(b=>daysUntil(b.dueDate)<=0).length;set('todayBills',dueToday?`${dueToday} due today`:`${unpaid.length} due`);

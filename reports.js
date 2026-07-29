@@ -19,6 +19,14 @@ function renderReports(){
   try{if(typeof renderTransactionsList==='function')renderTransactionsList()}catch(e){console.warn('Report transactions skipped',e)}
 }
 
+function toggleReportContent(id,button){
+  const content=document.getElementById(id);
+  if(!content)return;
+  const hidden=content.classList.toggle('reportContentHidden');
+  button.textContent=hidden?'Show':'Hide';
+  button.setAttribute('aria-expanded',String(!hidden));
+}
+
 function currentMonthRange(){let now=new Date();return {start:new Date(now.getFullYear(),now.getMonth(),1),end:new Date(now.getFullYear(),now.getMonth()+1,1)}}
 
 function monthlyCategorySpend(){let {start,end}=currentMonthRange(),spend={};data.txns.filter(t=>txInPeriod(t,start,end)).forEach(t=>{if(t.type==='Expense')groupAdd(spend,t.category||'Other',Number(t.amount||0));if(t.type==='Transfer'&&Number(t.fee||0))groupAdd(spend,'Transfer Fees',Number(t.fee||0))});return spend}

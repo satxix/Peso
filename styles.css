@@ -420,6 +420,8 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #reports .budgetCollapsed #budgetReport{display:none}
 #reports .budgetCollapsed.budgetOpen #budgetReport{display:grid}
 #reports .budgetToggleBtn{margin-right:8px}
+#reports .reportContentHidden{display:none!important}
+#reports .reportPanelToggle{margin-left:auto}
 #cashFlowBars{--trend-income:#63e6aa;--trend-expense:#ff8b7e}
 .trendSummary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.18fr);gap:6px;margin-bottom:12px}
 .trendSummary div{background:var(--card-inset);border:1px solid var(--line);border-radius:16px;padding:10px 8px;min-width:0}
@@ -885,3 +887,26 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 #reports #transactionReport .txnActions .tiny.danger{color:#ffc0b7!important;-webkit-text-fill-color:#ffc0b7!important;background:rgba(255,154,140,.10)!important;border-color:rgba(255,154,140,.40)!important}
 #reports .txnSearch{color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:rgba(255,255,255,.26)!important}
 #reports .txnSearch::placeholder{color:rgba(255,255,255,.72)!important;-webkit-text-fill-color:rgba(255,255,255,.72)!important;opacity:1}
+
+/* Home recent activity remains readable across every selectable theme. */
+#dashboard .premiumRecent{--home-transfer:#7ddcff;--home-income:#6ee7b7;--home-expense:#ff9a8c;--home-payment:#f4d98a}
+#dashboard .premiumRecent .txnRow{border-color:rgba(255,255,255,.28)!important}
+#dashboard .premiumRecent .txnMeta,
+#dashboard .premiumRecent .txnNoteLine{color:#f5f7fa!important;-webkit-text-fill-color:#f5f7fa!important;font-weight:850!important}
+#dashboard .premiumRecent .txn-transfer:before{background:var(--home-transfer)!important}
+#dashboard .premiumRecent .txn-transfer .txnAmount,
+#dashboard .premiumRecent .txn-transfer .txnTypePill{color:var(--home-transfer)!important;-webkit-text-fill-color:var(--home-transfer)!important}
+#dashboard .premiumRecent .txn-transfer .txnTypePill{background:rgba(125,220,255,.13)!important;border-color:rgba(125,220,255,.48)!important}
+#dashboard .premiumRecent .txn-income:before{background:var(--home-income)!important}
+#dashboard .premiumRecent .txn-income .txnAmount,
+#dashboard .premiumRecent .txn-income .txnTypePill{color:var(--home-income)!important;-webkit-text-fill-color:var(--home-income)!important}
+#dashboard .premiumRecent .txn-income .txnTypePill{background:rgba(110,231,183,.13)!important;border-color:rgba(110,231,183,.46)!important}
+#dashboard .premiumRecent .txn-expense:before{background:var(--home-expense)!important}
+#dashboard .premiumRecent .txn-expense .txnAmount,
+#dashboard .premiumRecent .txn-expense .txnTypePill{color:var(--home-expense)!important;-webkit-text-fill-color:var(--home-expense)!important}
+#dashboard .premiumRecent .txn-expense .txnTypePill{background:rgba(255,154,140,.13)!important;border-color:rgba(255,154,140,.46)!important}
+#dashboard .premiumRecent .txn-payment:before{background:var(--home-payment)!important}
+#dashboard .premiumRecent .txn-payment .txnAmount,
+#dashboard .premiumRecent .txn-payment .txnTypePill{color:var(--home-payment)!important;-webkit-text-fill-color:var(--home-payment)!important}
+#dashboard .premiumRecent .txn-payment .txnTypePill{background:rgba(244,217,138,.13)!important;border-color:rgba(244,217,138,.46)!important}
+#dashboard .premiumRecent .row .sub{color:#f5f7fa!important;-webkit-text-fill-color:#f5f7fa!important}
