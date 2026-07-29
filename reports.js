@@ -83,17 +83,17 @@ function balanceTrendPoints(){
   const addPoint=(end,label)=>points.push({end,label,total:roundMoney(liquidTotalAt(end))});
   if(reportPeriod==='Year'){
     const y=range.start.getFullYear();
-    for(let i=5;i>=0;i--){
+    for(let i=4;i>=0;i--){
       const yr=y-i;
       addPoint(new Date(yr+1,0,1),String(yr));
     }
   }else if(reportPeriod==='Month'){
-    for(let i=5;i>=0;i--){
+    for(let i=4;i>=0;i--){
       const s=new Date(range.start.getFullYear(),range.start.getMonth()-i,1);
       addPoint(new Date(s.getFullYear(),s.getMonth()+1,1),s.toLocaleDateString('en-PH',{month:'short'}));
     }
   }else if(reportPeriod==='Week'){
-    for(let i=6;i>=0;i--){
+    for(let i=4;i>=0;i--){
       const s=new Date(range.start);
       s.setDate(s.getDate()-(i*7));
       const e=new Date(s);
@@ -101,7 +101,7 @@ function balanceTrendPoints(){
       addPoint(e,s.toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
     }
   }else{
-    const days=7;
+    const days=5;
     const base=new Date(range.end.getFullYear(),range.end.getMonth(),range.end.getDate()-days);
     for(let i=0;i<days;i++){
       const d=new Date(base);d.setDate(d.getDate()+i);
