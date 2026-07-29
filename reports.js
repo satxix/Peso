@@ -92,9 +92,17 @@ function balanceTrendPoints(){
       const s=new Date(range.start.getFullYear(),range.start.getMonth()-i,1);
       addPoint(new Date(s.getFullYear(),s.getMonth()+1,1),s.toLocaleDateString('en-PH',{month:'short'}));
     }
+  }else if(reportPeriod==='Week'){
+    for(let i=6;i>=0;i--){
+      const s=new Date(range.start);
+      s.setDate(s.getDate()-(i*7));
+      const e=new Date(s);
+      e.setDate(e.getDate()+7);
+      addPoint(e,s.toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
+    }
   }else{
-    const days=reportPeriod==='Week'?7:7;
-    const base=reportPeriod==='Week'?new Date(range.start):new Date(range.end.getFullYear(),range.end.getMonth(),range.end.getDate()-days);
+    const days=7;
+    const base=new Date(range.end.getFullYear(),range.end.getMonth(),range.end.getDate()-days);
     for(let i=0;i<days;i++){
       const d=new Date(base);d.setDate(d.getDate()+i);
       const end=new Date(d);end.setDate(end.getDate()+1);
@@ -155,8 +163,10 @@ function periodStartEnd(){
     start=new Date(now.getFullYear(),now.getMonth(),now.getDate()+reportOffset);
     end=new Date(start.getFullYear(),start.getMonth(),start.getDate()+1);
   }else if(reportPeriod==='Week'){
-    let mondayOffset=(now.getDay()+6)%7;
-    start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-mondayOffset+(reportOffset*7));
+    let weekStart=Number(data?.settings?.weekStart??1);
+    if(![0,1].includes(weekStart))weekStart=1;
+    let weekOffset=(now.getDay()-weekStart+7)%7;
+    start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-weekOffset+(reportOffset*7));
     end=new Date(start.getFullYear(),start.getMonth(),start.getDate()+7);
   }else if(reportPeriod==='Year'){
     start=new Date(now.getFullYear()+reportOffset,0,1);
