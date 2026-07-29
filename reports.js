@@ -12,6 +12,7 @@ function renderReports(){
     else if(t.type==='Transfer'&&Number(t.fee||0))expense+=Number(t.fee||0);
   });
   renderBars(income,expense,income-expense);
+  try{if(typeof renderBalanceTrend==='function')renderBalanceTrend()}catch(e){console.warn('Balance trend skipped',e)}
   try{if(typeof updateReportsScope==='function')updateReportsScope()}catch(e){console.warn('Report scope skipped',e)}
   try{if(typeof renderExpenseBreakdown==='function')renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}
   try{if(typeof renderInsights==='function')renderInsights()}catch(e){console.warn('Report insights skipped',e)}
@@ -49,6 +50,85 @@ function renderTransactionsList(){
     .slice(0,80);
   let periodLabel=reportPeriod==='Today'?'today':`this ${reportPeriod.toLowerCase()}`;
   el.innerHTML=arr.length?arr.map(t=>txnRow(t)).join(''):`<div class="reportEmpty">No transactions ${q?`match "${htmlText(q)}" `:''}for ${periodLabel}.</div>`;
+}
+
+function liquidAccountBalanceAt(account,cutoff){
+  if(!account||!['Savings','Cash','Wallet'].includes(account.type))return 0;
+  const txns=(data.txns||[]).filter(t=>t&&new Date(t.date||Date.now())<cutoff);
+  const fx=typeof accountTxnEffect==='function'?accountTxnEffect(account.id,txns):{balance:0};
+  return Number(account.ledgerBaseBalance||0)+Number(fx.balance||0);
+}
+
+function liquidTotalAt(cutoff){
+  return (data.accounts||[]).reduce((sum,a)=>sum+liquidAccountBalanceAt(a,cutoff),0);
+}
+
+function balanceTrendPoints(){
+  const range=periodStartEnd();
+  const points=[];
+  const addPoint=(end,label)=>points.push({end,label,total:roundMoney(liquidTotalAt(end))});
+  if(reportPeriod==='Year'){
+    const y=range.start.getFullYear();
+    for(let i=5;i>=0;i--){
+      const yr=y-i;
+      addPoint(new Date(yr+1,0,1),String(yr));
+    }
+  }else if(reportPeriod==='Month'){
+    for(let i=5;i>=0;i--){
+      const s=new Date(range.start.getFullYear(),range.start.getMonth()-i,1);
+      addPoint(new Date(s.getFullYear(),s.getMonth()+1,1),s.toLocaleDateString('en-PH',{month:'short'}));
+    }
+  }else{
+    const days=reportPeriod==='Week'?7:7;
+    const base=reportPeriod==='Week'?new Date(range.start):new Date(range.end.getFullYear(),range.end.getMonth(),range.end.getDate()-days);
+    for(let i=0;i<days;i++){
+      const d=new Date(base);d.setDate(d.getDate()+i);
+      const end=new Date(d);end.setDate(end.getDate()+1);
+      addPoint(end,d.toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
+    }
+  }
+  return points.filter((p,i,arr)=>i===0||p.end.getTime()!==arr[i-1].end.getTime());
+}
+
+function shortPeso(n){
+  n=Number(n||0);
+  const sign=n<0?'-':'';
+  n=Math.abs(n);
+  if(n>=1000000)return sign+'\u20b1'+(n/1000000).toFixed(n>=10000000?0:1).replace(/\.0$/,'')+'M';
+  if(n>=1000)return sign+'\u20b1'+(n/1000).toFixed(n>=100000?0:1).replace(/\.0$/,'')+'K';
+  return sign+peso(n);
+}
+
+function renderBalanceTrend(){
+  const el=document.getElementById('balanceTrendReport');
+  if(!el)return;
+  const accounts=(data.accounts||[]).filter(a=>['Savings','Cash','Wallet'].includes(a.type));
+  if(!accounts.length){
+    el.innerHTML='<div class="reportEmpty">Add cash, wallet, or savings accounts to see your balance trend.</div>';
+    return;
+  }
+  const points=balanceTrendPoints();
+  if(!points.length){
+    el.innerHTML='<div class="reportEmpty">No balance points available for this period.</div>';
+    return;
+  }
+  const values=points.map(p=>p.total);
+  const min=Math.min(...values),max=Math.max(...values),span=Math.max(1,max-min);
+  const plotted=points.map((p,i)=>{
+    const x=points.length===1?300:42+(i/(points.length-1))*516;
+    const y=110-((p.total-min)/span)*68;
+    return {point:p,x:Number(x.toFixed(2)),y:Number(y.toFixed(2))};
+  });
+  const coords=plotted.map(p=>`${p.x},${p.y}`).join(' ');
+  const latest=points[points.length-1],previous=points[points.length-2]||points[0];
+  const change=roundMoney(latest.total-previous.total);
+  const tone=change>=0?'green':'red';
+  const labels=plotted.map(p=>{
+    const x=Math.min(552,Math.max(48,p.x));
+    const valueY=Math.max(20,p.y-14);
+    return `<g><text x="${x}" y="${valueY}" class="balanceValueLabel" text-anchor="middle">${htmlText(shortPeso(p.point.total))}</text><circle cx="${p.x}" cy="${p.y}" r="5" class="balancePoint"></circle><text x="${x}" y="158" class="balanceDateLabel" text-anchor="middle">${htmlText(p.point.label)}</text></g>`;
+  }).join('');
+  el.innerHTML=`<div class="balanceTrendTop"><div><span>Ending balance</span><b>${peso(latest.total)}</b></div><div><span>Change</span><b class="${tone}">${change>=0?'+':'-'}${peso(Math.abs(change))}</b></div></div><svg class="balanceLineChart" viewBox="0 0 600 180" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Balance trend"><path d="M30 132H570" class="axis"></path><polyline points="${coords}" class="line"></polyline>${labels}</svg>`;
 }
 
 /* Reports period navigation: previous/next day, week, month, year. */
