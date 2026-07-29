@@ -420,10 +420,10 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #reports .budgetCollapsed #budgetReport{display:none}
 #reports .budgetCollapsed.budgetOpen #budgetReport{display:grid}
 #reports .budgetToggleBtn{margin-right:8px}
-.trendSummary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
-.trendSummary div{background:var(--card-inset);border:1px solid var(--line);border-radius:16px;padding:10px;min-width:0}
+.trendSummary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.18fr);gap:6px;margin-bottom:12px}
+.trendSummary div{background:var(--card-inset);border:1px solid var(--line);border-radius:16px;padding:10px 8px;min-width:0}
 .trendSummary span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}
-.trendSummary b{display:block;margin-top:4px;font-size:clamp(11px,3.1vw,14px);white-space:nowrap;overflow:visible;text-overflow:clip;font-variant-numeric:tabular-nums}
+.trendSummary b{display:block;margin-top:4px;font-size:14px;white-space:nowrap;overflow:visible;text-overflow:clip;font-variant-numeric:tabular-nums}
 .trendLegend{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin:-2px 0 8px;color:var(--muted);font-size:11px;font-weight:900}
 .trendLegend span{display:inline-flex;gap:5px;align-items:center}.trendLegend i{width:9px;height:9px;border-radius:99px;display:inline-block}
 .trendLegend .income,.periodTrendPair .income{background:var(--green)}.trendLegend .expense,.periodTrendPair .expense{background:var(--red)}
