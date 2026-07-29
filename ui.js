@@ -141,7 +141,7 @@ function closeSheets(){
   var previousGo=window.go;
   window.go=function(id,btn,skipHistory){
     if(typeof previousGo==='function')previousGo(id,btn);
-    if(!skipHistory&&!internalNav)pushScreen(id,false);
+    if(!skipHistory&&!internalNav)pushScreen(id,true);
   };
   try{go=window.go}catch(e){}
 
@@ -163,6 +163,7 @@ function closeSheets(){
     }
     internalNav=true;
     try{window.go(target,navButtonFor(target),true)}finally{internalNav=false}
+    if(target==='dashboard')pushScreen('dashboard',false);
   });
 
   window.addEventListener('load',function(){
