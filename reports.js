@@ -63,6 +63,20 @@ function liquidTotalAt(cutoff){
   return (data.accounts||[]).reduce((sum,a)=>sum+liquidAccountBalanceAt(a,cutoff),0);
 }
 
+function firstLiquidActivityDate(){
+  const ids=new Set((data.accounts||[]).filter(a=>['Savings','Cash','Wallet'].includes(a.type)).map(a=>a.id));
+  let first=null;
+  (data.txns||[]).forEach(t=>{
+    if(!t||!ids.size)return;
+    const touches=ids.has(t.from)||ids.has(t.to);
+    if(!touches)return;
+    const d=new Date(t.date||Date.now());
+    if(isNaN(d.getTime()))return;
+    if(!first||d<first)first=d;
+  });
+  return first;
+}
+
 function balanceTrendPoints(){
   const range=periodStartEnd();
   const points=[];
@@ -87,14 +101,16 @@ function balanceTrendPoints(){
       addPoint(end,d.toLocaleDateString('en-PH',{month:'short',day:'numeric'}));
     }
   }
-  return points.filter((p,i,arr)=>i===0||p.end.getTime()!==arr[i-1].end.getTime());
+  const first=firstLiquidActivityDate();
+  const clean=points.filter((p,i,arr)=>i===0||p.end.getTime()!==arr[i-1].end.getTime());
+  return first?clean.filter(p=>p.end>first):clean;
 }
 
 function shortPeso(n){
   n=Number(n||0);
   const sign=n<0?'-':'';
   n=Math.abs(n);
-  if(n>=1000000)return sign+'\u20b1'+(n/1000000).toFixed(n>=10000000?0:1).replace(/\.0$/,'')+'M';
+  if(n>=1000000)return sign+'\u20b1'+(n/1000000).toFixed(3).replace(/\.?0+$/,'')+'M';
   if(n>=1000)return sign+'\u20b1'+(n/1000).toFixed(n>=100000?0:1).replace(/\.0$/,'')+'K';
   return sign+peso(n);
 }
