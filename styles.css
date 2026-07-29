@@ -863,3 +863,25 @@ body,body.dark{--pt-dark-surface:var(--card)!important;--pt-dark-card:var(--card
 #bills .premiumDuePill.danger,#bills .statusPill.unpaid{background:color-mix(in srgb,var(--red) 16%,var(--theme-surface))!important;color:#ffb4ad!important;border-color:color-mix(in srgb,var(--red) 42%,rgba(255,255,255,.16))!important}
 #bills .statusPill.paid{background:color-mix(in srgb,var(--green) 18%,var(--theme-surface))!important;color:#9df0bf!important;border-color:color-mix(in srgb,var(--green) 42%,rgba(255,255,255,.16))!important}
 .balanceTrendSub{margin:-6px 0 12px}.balanceTrendTop{display:grid;grid-template-columns:1.25fr .9fr;gap:8px;margin-bottom:10px}.balanceTrendTop>div{background:var(--card-inset);border:1px solid var(--line);border-radius:16px;padding:10px;min-width:0}.balanceTrendTop span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}.balanceTrendTop b{display:block;margin-top:4px;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.balanceLineChart{width:100%;height:190px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--line);padding:6px;overflow:visible}.balanceLineChart .axis{stroke:rgba(255,255,255,.16);stroke-width:1}.balanceLineChart .line{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 6px 10px color-mix(in srgb,var(--accent) 28%,transparent))}.balanceLineChart .balancePoint{fill:color-mix(in srgb,var(--accent) 65%,#fff);stroke:var(--card);stroke-width:3}.balanceValueLabel{fill:var(--text);font-size:24px;font-weight:950;font-family:Manrope,Arial,sans-serif}.balanceDateLabel{fill:var(--muted);font-size:20px;font-weight:950;font-family:Manrope,Arial,sans-serif}@media(max-width:370px){.balanceTrendTop{grid-template-columns:1fr}.balanceLineChart{height:176px}.balanceValueLabel{font-size:22px}.balanceDateLabel{font-size:18px}}
+
+/* Reports transactions keep strong contrast across every selectable theme. */
+#reports #transactionReport{--report-transfer:#7ddcff;--report-income:#6ee7b7;--report-expense:#ff9a8c}
+#reports #transactionReport .txnRow{border-color:rgba(255,255,255,.28)!important}
+#reports #transactionReport .txnMeta,
+#reports #transactionReport .txnNoteLine{color:#f5f7fa!important;-webkit-text-fill-color:#f5f7fa!important;font-weight:850!important}
+#reports #transactionReport .txn-transfer:before{background:var(--report-transfer)!important}
+#reports #transactionReport .txn-transfer .txnAmount,
+#reports #transactionReport .txn-transfer .txnTypePill{color:var(--report-transfer)!important;-webkit-text-fill-color:var(--report-transfer)!important}
+#reports #transactionReport .txn-transfer .txnTypePill{background:rgba(125,220,255,.13)!important;border-color:rgba(125,220,255,.48)!important}
+#reports #transactionReport .txn-income:before{background:var(--report-income)!important}
+#reports #transactionReport .txn-income .txnAmount,
+#reports #transactionReport .txn-income .txnTypePill{color:var(--report-income)!important;-webkit-text-fill-color:var(--report-income)!important}
+#reports #transactionReport .txn-income .txnTypePill{background:rgba(110,231,183,.13)!important;border-color:rgba(110,231,183,.46)!important}
+#reports #transactionReport .txn-expense:before{background:var(--report-expense)!important}
+#reports #transactionReport .txn-expense .txnAmount,
+#reports #transactionReport .txn-expense .txnTypePill{color:var(--report-expense)!important;-webkit-text-fill-color:var(--report-expense)!important}
+#reports #transactionReport .txn-expense .txnTypePill{background:rgba(255,154,140,.13)!important;border-color:rgba(255,154,140,.46)!important}
+#reports #transactionReport .txnActions .tiny{color:#f5f7fa!important;-webkit-text-fill-color:#f5f7fa!important;background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.28)!important}
+#reports #transactionReport .txnActions .tiny.danger{color:#ffc0b7!important;-webkit-text-fill-color:#ffc0b7!important;background:rgba(255,154,140,.10)!important;border-color:rgba(255,154,140,.40)!important}
+#reports .txnSearch{color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:rgba(255,255,255,.26)!important}
+#reports .txnSearch::placeholder{color:rgba(255,255,255,.72)!important;-webkit-text-fill-color:rgba(255,255,255,.72)!important;opacity:1}
