@@ -176,10 +176,18 @@ function closeSheets(){
 })();
 
 (function finishBootWithoutOldHomeFlash(){
-  try{if(typeof render==='function')render();}catch(e){console.warn('Final boot render skipped',e)}
   var release=function(){try{document.body.classList.remove('booting')}catch(e){}};
-  if(window.requestAnimationFrame)requestAnimationFrame(release);else setTimeout(release,0);
-  setTimeout(release,600);
+  var ready=window.pesoStorageReady&&typeof window.pesoStorageReady.then==='function'
+    ? window.pesoStorageReady
+    : Promise.resolve();
+  ready.then(function(){
+    try{if(typeof render==='function')render()}catch(e){console.warn('Final boot render skipped',e)}
+    if(window.requestAnimationFrame)requestAnimationFrame(release);else setTimeout(release,0);
+  }).catch(function(error){
+    console.warn('Boot storage wait failed',error);
+    release();
+  });
+  setTimeout(release,1800);
 })();
 
 (function notifyAppUpdated(){

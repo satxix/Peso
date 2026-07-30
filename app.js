@@ -140,20 +140,29 @@ function roundMoney(n){
 ensureLedgerBaselines();
 recalculateBalancesFromLedger();
 
+window.pesoStorageReady=initializeIndexedStorage(data).then(stored=>{
+  data=normalizeData(stored);
+  repairLoadedData();
+  ensureLedgerBaselines();
+  recalculateBalancesFromLedger();
+  return data;
+}).catch(error=>{
+  console.warn('IndexedDB startup failed. PesoTrack is using its local fallback.',error);
+  return data;
+});
+
 function peso(n){
   if(data.settings&&data.settings.privacy)return '\u2022\u2022\u2022\u2022';
   return '\u20b1'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:2});
 }
 
 function persist(){
-  try{
-    ensureLedgerBaselines();
-    recalculateBalancesFromLedger();
-    localStorage.setItem(KEY,JSON.stringify(data));
-  }catch(e){
-    console.warn('PesoTrack could not persist to localStorage. Changes will remain for this session only.',e);
+  ensureLedgerBaselines();
+  recalculateBalancesFromLedger();
+  saveDataSnapshot(data).catch(e=>{
+    console.warn('PesoTrack could not persist to IndexedDB. A local fallback was attempted.',e);
     if(typeof showToast==='function')showToast('Saved for this session. Use installed PWA for permanent storage.');
-  }
+  });
   render();
 }
 
@@ -268,7 +277,7 @@ function selectCategory(c){
   if(!c)return;
   if(!data.categories.some(x=>x.toLowerCase()===c.toLowerCase())){
     data.categories.push(c);
-    try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
+    saveDataSnapshot(data).catch(e=>console.warn('Category save failed',e));
   }
   if(pickerMode==='recurringCategory'){
     recurringDraftCategory=c;
@@ -293,8 +302,10 @@ function ordinal(n){
   return {1:'st',2:'nd',3:'rd'}[n%10]||'th';
 }
 function startApp(){
-  applySettings();
-  render();
+  Promise.resolve(window.pesoStorageReady).then(()=>{
+    applySettings();
+    render();
+  });
 }
 
 function registerServiceWorker(){

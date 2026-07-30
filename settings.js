@@ -12,7 +12,7 @@ const DEFAULT_SETTINGS={
 };
 
 function exportBackup(){
-  let payload={app:'PesoTrack',version:'4.96',exportedAt:new Date().toISOString(),data};
+  let payload={app:'PesoTrack',version:'4.97',exportedAt:new Date().toISOString(),data};
   let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   let a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -282,7 +282,7 @@ function resetAllData(){
     categoryIcons:{},
     settings:Object.assign({},DEFAULT_SETTINGS)
   };
-  localStorage.setItem(KEY,JSON.stringify(data));
+  resetStoredData(data).catch(e=>console.warn('Data reset persistence failed',e));
   applySettings();
   render();
   toastMsg('All data reset');

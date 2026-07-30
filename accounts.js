@@ -86,7 +86,7 @@ function renderAccounts(){
   grid.innerHTML=(sections||empty)+addRow;
   applyCollapsedAccountGroups(grid);
 }
-function toggleAcctGroup(k){data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];let set=new Set(data.settings.collapsedAccountGroups);if(set.has(k))set.delete(k);else set.add(k);data.settings.collapsedAccountGroups=[...set];try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}renderAccounts()}
+function toggleAcctGroup(k){data.settings.collapsedAccountGroups=Array.isArray(data.settings.collapsedAccountGroups)?data.settings.collapsedAccountGroups:[];let set=new Set(data.settings.collapsedAccountGroups);if(set.has(k))set.delete(k);else set.add(k);data.settings.collapsedAccountGroups=[...set];saveDataSnapshot(data).catch(e=>console.warn('Account group preference save failed',e));renderAccounts()}
 function filterAccounts(f,el){acctFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');renderAccounts()}
 
 function txnTimestamp(t){let d=new Date(t&&t.date);return isNaN(d.getTime())?0:d.getTime()}
@@ -211,8 +211,9 @@ function saveAccount(){
     }
 
     if(!existing)data.accounts.push(a);
-    try{ localStorage.setItem(KEY,JSON.stringify(data)); }
-    catch(storageErr){ console.warn('LocalStorage save failed; keeping session data only.',storageErr); }
+    saveDataSnapshot(data).catch(storageErr=>{
+      console.warn('Account save failed; keeping session data only.',storageErr);
+    });
 
     acctFilter='All';
     document.querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('active',i===0));
