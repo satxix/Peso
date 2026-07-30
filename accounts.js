@@ -170,6 +170,15 @@ function renderAccountFields(a={}){
   dynamicFields.innerHTML=t==='Credit Card'?renderCreditCardAccountFields(a):renderBalanceAccountFields(a,t);
 }
 
+function updateOpenCardDueDates(card){
+  (data.bills||[]).filter(b=>b.cardId===card.id&&billStatus(b)!=='Paid').forEach(b=>{
+    let raw=String(b.statementDate||b.periodEnd||'').slice(0,10);
+    let statement=new Date(raw+'T12:00:00');
+    if(isNaN(statement.getTime()))return;
+    b.dueDate=billDateKey(dueFromStatement(card,statement));
+  });
+}
+
 function saveAccount(){
   try{
     const typeEl=document.getElementById('atype'), instEl=document.getElementById('inst'), nameEl=document.getElementById('aname');
@@ -192,12 +201,13 @@ function saveAccount(){
       if(!Number.isFinite(sd) || sd < 1 || sd > 31) throw new Error('Statement day must be 1 to 31');
       if(!Number.isFinite(dd) || dd < 1 || dd > 31) throw new Error('Due day must be 1 to 31');
       a.limit=lim;
-      a.statementDay=Math.min(28,Math.max(1,sd));
-      a.dueDay=Math.min(28,Math.max(1,dd));
+      a.statementDay=Math.min(31,Math.max(1,sd));
+      a.dueDay=Math.min(31,Math.max(1,dd));
       a.balance=0;
       a.outstanding=Number(a.outstanding||0);
       if(!Number.isFinite(Number(a.ledgerBaseOutstanding))){const fx=accountTxnEffect(a.id);a.ledgerBaseOutstanding=Number(a.outstanding||0)-fx.outstanding}
       a.ledgerBaseBalance=0;
+      if(existing)updateOpenCardDueDates(a);
     }else{
       const balEl=document.getElementById('balance');
       const bal=Number(balEl&&balEl.value!==''?balEl.value:0);

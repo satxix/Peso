@@ -9,13 +9,16 @@ function compactBillPeriod(b){let start=b.periodStart,end=b.periodEnd||b.stateme
 
 function billPayments(b){return data.txns.filter(t=>t.type==='Card Payment'&&t.billId===b.id).sort((a,b)=>new Date(b.date)-new Date(a.date))}
 
-function isoDate(d){return new Date(d).toISOString().slice(0,10)}
+function billDateKey(d){let x=d instanceof Date?d:new Date(d);if(isNaN(x.getTime()))return '';return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
+function isoDate(d){return billDateKey(d)}
 
 function displayDate(d){return new Date(d).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}
 
-function nextStatementDate(card){let now=new Date();now.setHours(0,0,0,0);let day=Math.min(28,Math.max(1,Number(card.statementDay||1)));let st=new Date(now.getFullYear(),now.getMonth(),day);if(st<now)st=new Date(now.getFullYear(),now.getMonth()+1,day);return st}
+function cardMonthDate(year,month,day){let wanted=Math.min(31,Math.max(1,Number(day||1)));return new Date(year,month,Math.min(wanted,daysInMonth(year,month)))}
 
-function dueFromStatement(card,st){let dd=Math.min(28,Math.max(1,Number(card.dueDay||1)));return new Date(st.getFullYear(),st.getMonth()+(dd<=Number(card.statementDay||1)?1:0),dd)}
+function nextStatementDate(card){let now=new Date();now.setHours(0,0,0,0);let day=Math.min(31,Math.max(1,Number(card.statementDay||1)));let st=cardMonthDate(now.getFullYear(),now.getMonth(),day);if(st<now)st=cardMonthDate(now.getFullYear(),now.getMonth()+1,day);return st}
+
+function dueFromStatement(card,st){let dd=Math.min(31,Math.max(1,Number(card.dueDay||1))),monthOffset=dd<=Number(card.statementDay||1)?1:0;return cardMonthDate(st.getFullYear(),st.getMonth()+monthOffset,dd)}
 
 function daysUntilDate(d){let today=new Date();today.setHours(0,0,0,0);let x=new Date(d);x.setHours(0,0,0,0);return Math.ceil((x-today)/86400000)}
 
@@ -99,7 +102,7 @@ function adjustBill(id,delta){
   b.status=b.remaining<=0?'Paid':(b.remaining<b.amount?'Partial':'Unpaid');
 }
 
-function generateBill(card,amt,forDate){let now=forDate?new Date(forDate):new Date();if(isNaN(now.getTime()))now=new Date();let y=now.getFullYear(),m=now.getMonth(),sd=card.statementDay||1,dd=card.dueDay||1;let st=new Date(y,m,sd);if(now>st)st=new Date(y,m+1,sd);let due=new Date(st.getFullYear(),st.getMonth()+(dd<=sd?1:0),dd);let prev=new Date(st.getFullYear(),st.getMonth()-1,sd+1);let id=card.id+'-'+st.toISOString().slice(0,10);let b=data.bills.find(x=>x.id===id);if(!b){b={id,cardId:card.id,cardName:card.name,periodStart:prev.toISOString().slice(0,10),periodEnd:st.toISOString().slice(0,10),statementDate:st.toISOString().slice(0,10),dueDate:due.toISOString().slice(0,10),amount:0,remaining:0,status:'Unpaid'};data.bills.push(b)}b.cardName=card.name;b.amount+=amt;b.remaining+=amt;b.status=billStatus(b);return id}
+function generateBill(card,amt,forDate){let now=forDate?new Date(forDate):new Date();if(isNaN(now.getTime()))now=new Date();let y=now.getFullYear(),m=now.getMonth(),sd=Math.min(31,Math.max(1,Number(card.statementDay||1)));let st=cardMonthDate(y,m,sd);if(now>st)st=cardMonthDate(y,m+1,sd);let due=dueFromStatement(card,st),previousStatement=cardMonthDate(st.getFullYear(),st.getMonth()-1,sd),prev=new Date(previousStatement);prev.setDate(prev.getDate()+1);let statementKey=billDateKey(st),id=card.id+'-'+statementKey;let b=data.bills.find(x=>x.id===id);if(!b){b={id,cardId:card.id,cardName:card.name,periodStart:billDateKey(prev),periodEnd:statementKey,statementDate:statementKey,dueDate:billDateKey(due),amount:0,remaining:0,status:'Unpaid'};data.bills.push(b)}b.cardName=card.name;b.amount+=amt;b.remaining+=amt;b.status=billStatus(b);return id}
 
 function setPayAmount(mode){
   if(!settling)return;
