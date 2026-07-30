@@ -85,7 +85,19 @@ function renderBills(){
   renderCreditCenter();
 }
 
-function adjustBill(id,delta){if(!id)return;let b=data.bills.find(x=>x.id===id);if(!b)return;b.amount=Math.max(0,(b.amount||0)+delta);b.remaining=Math.max(0,(b.remaining||0)+delta);b.status=b.remaining<=0?'Paid':(b.remaining<b.amount?'Partial':'Unpaid')}
+function adjustBill(id,delta){
+  if(!id)return;
+  let b=data.bills.find(x=>x.id===id);
+  if(!b)return;
+  b.amount=Math.max(0,Number(b.amount||0)+delta);
+  b.remaining=Math.max(0,Number(b.remaining||0)+delta);
+  let hasPayment=(data.txns||[]).some(t=>t.type==='Card Payment'&&t.billId===id);
+  if(b.amount<=0&&b.remaining<=0&&!hasPayment){
+    data.bills=data.bills.filter(x=>x.id!==id);
+    return;
+  }
+  b.status=b.remaining<=0?'Paid':(b.remaining<b.amount?'Partial':'Unpaid');
+}
 
 function generateBill(card,amt,forDate){let now=forDate?new Date(forDate):new Date();if(isNaN(now.getTime()))now=new Date();let y=now.getFullYear(),m=now.getMonth(),sd=card.statementDay||1,dd=card.dueDay||1;let st=new Date(y,m,sd);if(now>st)st=new Date(y,m+1,sd);let due=new Date(st.getFullYear(),st.getMonth()+(dd<=sd?1:0),dd);let prev=new Date(st.getFullYear(),st.getMonth()-1,sd+1);let id=card.id+'-'+st.toISOString().slice(0,10);let b=data.bills.find(x=>x.id===id);if(!b){b={id,cardId:card.id,cardName:card.name,periodStart:prev.toISOString().slice(0,10),periodEnd:st.toISOString().slice(0,10),statementDate:st.toISOString().slice(0,10),dueDate:due.toISOString().slice(0,10),amount:0,remaining:0,status:'Unpaid'};data.bills.push(b)}b.cardName=card.name;b.amount+=amt;b.remaining+=amt;b.status=billStatus(b);return id}
 

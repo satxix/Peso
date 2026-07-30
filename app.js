@@ -65,6 +65,8 @@ function repairLoadedData(){
     b.amount=Number(b.amount||b.remaining||0);
     b.remaining=Number(b.remaining??b.amount??0);
   });
+  const paidBillIds=new Set(data.txns.filter(t=>t.type==='Card Payment'&&t.billId).map(t=>t.billId));
+  data.bills=data.bills.filter(b=>Number(b.amount||0)>0||Number(b.remaining||0)>0||paidBillIds.has(b.id));
   data.recurring.forEach(r=>{
     if(!r.id)r.id=uid();
     if(!r.type)r.type='Expense';
