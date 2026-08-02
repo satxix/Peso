@@ -110,8 +110,6 @@ function editAccountFromDetail(id){accountDetailSheet.classList.remove('show');e
 function openTxnFromDetail(){accountDetailSheet.classList.remove('show');openTxn()}
 
 
-let searchFilter='All';
-
 function setLogoField(key,manual){
   let lf=document.getElementById('instLogo');
   if(!lf)return;

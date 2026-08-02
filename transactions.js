@@ -39,6 +39,12 @@ function openTxn(id){
   txnDeleteBtn.classList.toggle('hide',!old);
   document.querySelectorAll('#txnSheet .seg button').forEach(b=>b.classList.toggle('active',b.textContent.trim()===txnType));
   renderTxn();
+  let installToggle=document.getElementById('installmentToggle');
+  if(installToggle)installToggle.checked=false;
+  let installMonthsRow=document.getElementById('installmentMonthsRow');
+  if(installMonthsRow)installMonthsRow.classList.add('hide');
+  let installMonthsSel=document.getElementById('installmentMonths');
+  if(installMonthsSel)installMonthsSel.value='3';
   if(document.getElementById('txnNote')){
     txnNote.value=txn.note||'';
     toggleTxnNote(!!txn.note);
@@ -80,6 +86,7 @@ function renderTxn(){
   else txnPick.innerHTML=accountPickButton('from','Account')+categoryPickButton('Category');
   updateAmountDisplay();
   pad.innerHTML=['7','8','9','4','5','6','1','2','3','.','0','backspace'].map(keypadButtonHtml).join('');
+  updateInstallmentVisibility();
 }
 
 function keypadButtonHtml(x){
@@ -108,6 +115,62 @@ function displayInputAmount(v){
 
 function updateAmountDisplay(){
   if(document.getElementById('amtDisplay'))amtDisplay.textContent=displayInputAmount(amount);
+  renderInstallmentPreview();
+}
+
+function installmentSplit(total,months){
+  months=Math.max(1,Math.round(months));
+  let cents=Math.round(Number(total||0)*100);
+  let base=Math.floor(cents/months);
+  let remainder=cents-base*months;
+  let parts=[];
+  for(let i=0;i<months;i++)parts.push((base+(i===0?remainder:0))/100);
+  return parts;
+}
+
+function installmentDate(baseDate,monthOffset){
+  let day=baseDate.getDate();
+  let d=cardMonthDate(baseDate.getFullYear(),baseDate.getMonth()+monthOffset,day);
+  d.setHours(12,0,0,0);
+  return d;
+}
+
+function installmentEligible(){
+  let fromAcct=accountById(txn.from);
+  return !editingTxn&&txnType==='Expense'&&!!fromAcct&&fromAcct.type==='Credit Card';
+}
+
+function updateInstallmentVisibility(){
+  let box=document.getElementById('installmentBox');
+  if(!box)return;
+  let eligible=installmentEligible();
+  box.classList.toggle('hide',!eligible);
+  if(!eligible){
+    let toggleEl=document.getElementById('installmentToggle');
+    if(toggleEl)toggleEl.checked=false;
+    let monthsRow=document.getElementById('installmentMonthsRow');
+    if(monthsRow)monthsRow.classList.add('hide');
+  }
+}
+
+function toggleInstallment(){
+  let on=document.getElementById('installmentToggle').checked;
+  document.getElementById('installmentMonthsRow').classList.toggle('hide',!on);
+  renderInstallmentPreview();
+}
+
+function renderInstallmentPreview(){
+  let row=document.getElementById('installmentMonthsRow');
+  let preview=document.getElementById('installmentPreview');
+  if(!row||!preview||row.classList.contains('hide')){if(preview)preview.textContent='';return;}
+  let total=Number(amount||0);
+  let months=Number(document.getElementById('installmentMonths').value||1);
+  if(!total||months<2){preview.textContent='Enter an amount to preview the schedule.';return;}
+  let parts=installmentSplit(total,months);
+  let first=parts[0],rest=parts[1]!==undefined?parts[1]:parts[0];
+  preview.textContent=first===rest
+    ? `${months}x ${peso(first)} monthly, starting this statement (total ${peso(total)})`
+    : `First charge ${peso(first)}, then ${months-1}x ${peso(rest)} monthly (total ${peso(total)})`;
 }
 
 function cleanAmountInput(v){
@@ -245,14 +308,52 @@ function saveTxn(){
       if(txn.from===txn.to) return alert('From and To account cannot be the same.');
     }
     let old=editingTxn?data.txns.find(t=>t.id===editingTxn):null;
+    let note=(document.getElementById('txnNote')?.value||'').trim();
+    let baseIso=txnIsoFromInput(document.getElementById('txnDate')?.value, old?.date);
+
+    let installToggle=document.getElementById('installmentToggle');
+    let installOn=installmentEligible()&&installToggle&&installToggle.checked;
+
+    if(installOn){
+      let months=Math.max(2,Math.round(Number(document.getElementById('installmentMonths')?.value||1)));
+      let parts=installmentSplit(amt,months);
+      let baseDate=new Date(baseIso);
+      let groupId=uid();
+      for(let i=0;i<months;i++){
+        let legDate=installmentDate(baseDate,i);
+        let legNote=note?`${note} (${i+1}/${months})`:`Installment ${i+1}/${months}`;
+        let legTxn={
+          id:uid(),
+          type:'Expense',
+          amount:parts[i],
+          fee:0,
+          category:txn.category||'Other',
+          note:legNote,
+          date:legDate.toISOString(),
+          from:txn.from,
+          to:null,
+          installmentGroupId:groupId,
+          installmentIndex:i+1,
+          installmentTotal:months
+        };
+        if(!applyTxn(legTxn)) return alert('Unable to save installment plan. Check the account.');
+        data.txns.push(legTxn);
+      }
+      editingTxn=null;
+      closeSheets();
+      persist();
+      if(typeof showToast==='function') showToast(`Split into ${months} monthly installments`);
+      return;
+    }
+
     let newTxn={
       id:editingTxn||uid(),
       type:txnType,
       amount:amt,
       fee:txnType==='Transfer'?Number(txn.fee||0):0,
       category:txnType==='Transfer'?'':(txn.category||'Other'),
-      note:(document.getElementById('txnNote')?.value||'').trim(),
-      date:txnIsoFromInput(document.getElementById('txnDate')?.value, old?.date),
+      note,
+      date:baseIso,
       from:txn.from,
       to:txn.to
     };
@@ -279,6 +380,6 @@ function saveTxn(){
 
 function txnDate(t){return new Date(t.date||Date.now()).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}
 
-function txnRow(t,compact=false){let s=txnSummary(t),canEdit=['Income','Expense','Transfer'].includes(t.type),note=t.note?`<div class="txnNoteLine">${escapeHtml(t.note)}</div>`:'';return `<div class="row txnRow txn-${s.tone}"><div class="txnMain"><div class="txnTitleLine"><span class="txnTypePill">${htmlText(s.label)}</span></div><div class="txnMeta">${txnDate(t)} - ${s.left}</div>${note}${compact?'':`<div class="txnActions">${canEdit?`<button class="tiny" onclick="openTxn('${jsString(t.id)}')">Edit</button>`:''}<button class="tiny danger" onclick="deleteTxn('${jsString(t.id)}')">Delete</button></div>`}</div><b class="txnAmount">${s.right}</b></div>`}
+function txnRow(t,compact=false){let s=txnSummary(t),canEdit=['Income','Expense','Transfer'].includes(t.type),note=t.note?`<div class="txnNoteLine">${escapeHtml(t.note)}</div>`:'';return `<div class="row txnRow txn-${s.tone}"><div class="txnMain"><div class="txnTitleLine"><span class="txnTypePill${t.installmentTotal?' installmentPill':''}">${htmlText(s.label)}</span></div><div class="txnMeta">${txnDate(t)} - ${s.left}</div>${note}${compact?'':`<div class="txnActions">${canEdit?`<button class="tiny" onclick="openTxn('${jsString(t.id)}')">Edit</button>`:''}<button class="tiny danger" onclick="deleteTxn('${jsString(t.id)}')">Delete</button></div>`}</div><b class="txnAmount">${s.right}</b></div>`}
 
-function txnSummary(t){let left='',right='',tone='neutral',label=t.type||'Entry';if(t.type==='Income'){left=htmlText(t.category||'Income')+' - Deposit to '+safeAccountLabel(t.from);right='+'+peso(t.amount);tone='income';label='Income'}else if(t.type==='Expense'){left=htmlText(t.category||'Expense')+' - '+safeAccountLabel(t.from);right='-'+peso(t.amount);tone='expense';label='Expense'}else if(t.type==='Transfer'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to)+(Number(t.fee||0)?' - Fee '+peso(t.fee):'');right=peso(t.amount);tone='transfer';label='Transfer'}else if(t.type==='Card Payment'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to);right='Paid '+peso(t.amount);tone='payment';label='Payment'}return {left,right,tone,label}}
+function txnSummary(t){let left='',right='',tone='neutral',label=t.type||'Entry';if(t.type==='Income'){left=htmlText(t.category||'Income')+' - Deposit to '+safeAccountLabel(t.from);right='+'+peso(t.amount);tone='income';label='Income'}else if(t.type==='Expense'){left=htmlText(t.category||'Expense')+' - '+safeAccountLabel(t.from);if(t.installmentTotal)left+=' &middot; '+t.installmentIndex+'/'+t.installmentTotal;right='-'+peso(t.amount);tone='expense';label=t.installmentTotal?'Installment':'Expense'}else if(t.type==='Transfer'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to)+(Number(t.fee||0)?' - Fee '+peso(t.fee):'');right=peso(t.amount);tone='transfer';label='Transfer'}else if(t.type==='Card Payment'){left=safeAccountLabel(t.from)+' to '+safeAccountLabel(t.to);right='Paid '+peso(t.amount);tone='payment';label='Payment'}return {left,right,tone,label}}
