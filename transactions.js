@@ -81,6 +81,7 @@ function categoryPickButton(label,wide=false){
 }
 
 function renderTxn(){
+  txnSheet.dataset.txnType=txnType.toLowerCase();
   if(txnType==='Transfer')txnPick.innerHTML=accountPickButton('from','From Account')+accountPickButton('to','To Account')+feeInput();
   else if(txnType==='Income')txnPick.innerHTML=accountPickButton('from','Deposit To')+categoryPickButton('Source');
   else txnPick.innerHTML=accountPickButton('from','Account')+categoryPickButton('Category');
@@ -92,7 +93,8 @@ function renderTxn(){
 function keypadButtonHtml(x){
   let label=x==='backspace'?'Delete last digit':x==='.'?'Decimal point':'Number '+x;
   let text=x==='backspace'?'<span aria-hidden="true">Del</span>':x;
-  return `<button type="button" class="${x==='backspace'?'backspace':''}" aria-label="${label}" onclick="tap('${x}')">${text}</button>`;
+  let kind=x==='backspace'?'backspace keypadDelete':x==='.'?'keypadDecimal':'keypadNumber';
+  return `<button type="button" class="keypadKey ${kind}" aria-label="${label}" onclick="tap('${x}')">${text}</button>`;
 }
 
 function feeInput(){

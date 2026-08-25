@@ -516,22 +516,25 @@ body.dark .expenseStat,body.dark .expenseBarRow,body.dark .expenseEmpty{backgrou
 #txnSheet .feeBox input{padding:7px 8px!important;font-size:14px!important}
 #txnSheet .txnUtilityRow{margin:0!important}
 #txnSheet #txnNote{padding:10px!important;margin:0!important}
-#txnSheet .display{font-size:28px!important;min-height:52px!important;margin:0!important;padding:8px 10px!important;border-radius:18px!important}
-#txnSheet .pad{gap:7px!important;margin:0!important}
-#txnSheet .pad button{height:44px!important;border-radius:16px!important;font-size:18px!important;font-variant-numeric:tabular-nums;box-shadow:none!important}
-#txnSheet .pad button.backspace{font-size:13px!important;text-transform:uppercase;letter-spacing:.04em;background:color-mix(in srgb,var(--accent) 12%,var(--card-inset))!important}
+#txnSheet .display{font-size:30px!important;min-height:56px!important;margin:0!important;padding:9px 15px!important;border-radius:15px!important;text-align:right!important;font-family:Manrope,system-ui,sans-serif!important;font-weight:800!important;font-variant-numeric:tabular-nums;letter-spacing:0!important}
+#txnSheet .pad{gap:7px!important;margin:0!important;padding:7px!important;border:1px solid rgba(255,255,255,.10);border-radius:18px;background:rgba(4,18,25,.20);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+#txnSheet .pad button{height:45px!important;border-radius:12px!important;font-size:18px!important;font-family:Manrope,system-ui,sans-serif!important;font-weight:800!important;font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 4px rgba(0,0,0,.12)!important}
+#txnSheet .pad button.backspace{font-size:12px!important;text-transform:uppercase;letter-spacing:.04em}
 #txnSheet .save{height:46px!important;margin-top:0!important}
 @media(max-height:740px){#txnSheet{gap:6px!important}#txnSheet .display{min-height:46px!important;font-size:25px!important}#txnSheet .pad button{height:41px!important}}
 
 
 
 #txnSheet .seg button.active{background:linear-gradient(135deg,var(--accent),#d8b867)!important;color:#fff!important;border-color:transparent!important}
-#txnSheet .display{background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035))!important;border:1px solid rgba(216,184,103,.22)!important;color:var(--pt-dark-text,#f3efe4)!important}
-#txnSheet .pad button{background:rgba(255,255,255,.065)!important;color:#f3efe4!important;border:1px solid rgba(255,255,255,.12)!important}
-#txnSheet .pad button:active{background:rgba(216,184,103,.18)!important}
-#txnSheet .pad button.backspace{background:rgba(216,184,103,.14)!important;color:#f7d98a!important;border-color:rgba(216,184,103,.30)!important}
-#txnSheet .pad button[aria-label="Decimal point"]{color:var(--pt-dark-muted,rgba(243,239,228,.66))!important}
-#txnSheet .pad button{transition:background .08s ease,border-color .08s ease,color .08s ease!important;transform:none!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important}
+#txnSheet{--txn-mode:#ff7c70}
+#txnSheet[data-txn-type="income"]{--txn-mode:#35d39a}
+#txnSheet[data-txn-type="transfer"]{--txn-mode:#49c7ff}
+#txnSheet .display{background:linear-gradient(145deg,rgba(2,16,22,.34),rgba(255,255,255,.035))!important;border:1px solid color-mix(in srgb,var(--txn-mode) 42%,rgba(255,255,255,.10))!important;color:#fffaf0!important;box-shadow:inset 3px 0 0 var(--txn-mode),inset 0 1px 0 rgba(255,255,255,.05)!important}
+#txnSheet .pad button{background:linear-gradient(180deg,rgba(255,255,255,.105),rgba(255,255,255,.052))!important;color:#fffaf0!important;border:1px solid rgba(255,255,255,.13)!important}
+#txnSheet .pad button:active{background:color-mix(in srgb,var(--txn-mode) 20%,rgba(255,255,255,.06))!important;border-color:color-mix(in srgb,var(--txn-mode) 54%,transparent)!important;box-shadow:inset 0 2px 5px rgba(0,0,0,.24)!important}
+#txnSheet .pad button.backspace{background:rgba(255,124,112,.12)!important;color:#ffb1aa!important;border-color:rgba(255,124,112,.32)!important}
+#txnSheet .pad button.keypadDecimal{color:var(--txn-mode)!important;font-size:22px!important}
+#txnSheet .pad button{transition:background .08s ease,border-color .08s ease,color .08s ease,box-shadow .08s ease!important;transform:none!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important}
 #txnSheet .pad button:active,#txnSheet .pad button:focus{transform:none!important;outline:0!important}
 
 
