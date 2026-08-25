@@ -252,6 +252,7 @@ function chooseCat(){
 function accountPickerItems(q){
   let accounts=data.accounts.slice();
   if(txnType==='Income')accounts=accounts.filter(a=>a.type!=='Credit Card');
+  if(txnType==='Transfer')accounts=accounts.filter(a=>a.type!=='Credit Card');
   if(txnType==='Transfer'&&pickerField==='to'&&txn.from)accounts=accounts.filter(a=>a.id!==txn.from);
   if(txnType==='Transfer'&&pickerField==='from'&&txn.to)accounts=accounts.filter(a=>a.id!==txn.to);
   if(q)accounts=accounts.filter(a=>`${a.name} ${a.institution} ${a.type}`.toLowerCase().includes(q));
@@ -306,6 +307,10 @@ function saveTxn(){
     if(txnType==='Transfer'){
       if(!txn.from||!txn.to) return alert('Choose both accounts');
       if(txn.from===txn.to) return alert('From and To account cannot be the same.');
+      let transferFrom=accountById(txn.from),transferTo=accountById(txn.to);
+      if(transferFrom?.type==='Credit Card'||transferTo?.type==='Credit Card'){
+        return alert('Use Expense for card purchases or Settle Bill for credit-card payments.');
+      }
     }
     let old=editingTxn?data.txns.find(t=>t.id===editingTxn):null;
     let note=(document.getElementById('txnNote')?.value||'').trim();

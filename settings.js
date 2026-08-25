@@ -12,7 +12,10 @@ const DEFAULT_SETTINGS={
 };
 
 function exportBackup(){
-  let payload={app:'PesoTrack',version:'4.99',exportedAt:new Date().toISOString(),data};
+  let visibleVersion=document.getElementById('appVersionPill')?.textContent;
+  let titleVersion=(document.title.match(/PesoTrack\s+(\d+\.\d+)/i)||[])[1];
+  let version=String(visibleVersion||titleVersion||'unknown').replace(/^v/i,'');
+  let payload={app:'PesoTrack',version,exportedAt:new Date().toISOString(),data};
   let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   let a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -29,22 +32,36 @@ function handleRestore(input){
   let file=input.files&&input.files[0];
   if(!file)return;
   let reader=new FileReader();
-  reader.onload=()=>{
+  reader.onload=async()=>{
+    let previous;
     try{
       let payload=JSON.parse(reader.result);
       let incoming=payload.data||payload;
-      if(!incoming||!Array.isArray(incoming.accounts)||!Array.isArray(incoming.txns)||!Array.isArray(incoming.bills)){
+      if(!validPesoTrackData(incoming)){
         throw new Error('Invalid backup');
       }
       if(!confirm('Restore this backup? Current local data will be replaced.'))return;
+      previous=clonePesoTrackData(data);
       data=normalizeData(incoming);
-      persist();
+      repairLoadedData();
+      ensureLedgerBaselines();
+      recalculateBalancesFromLedger();
+      await saveDataSnapshot(data);
+      render();
       alert('Backup restored.');
     }catch(e){
+      if(previous){
+        data=previous;
+        render();
+      }
       alert('Could not restore backup: '+e.message);
     }finally{
       input.value='';
     }
+  };
+  reader.onerror=()=>{
+    input.value='';
+    alert('Could not read that backup file.');
   };
   reader.readAsText(file);
 }

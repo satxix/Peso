@@ -152,8 +152,9 @@ function settleBill(){
   let a=data.accounts.find(x=>x.id===payFrom.value);
   let card=data.accounts.find(x=>x.id===settling.cardId);
   let amt=Number(payAmount.value||0);
-  if(!a||!card||!amt)return alert('Choose account and amount');
-  if(amt>Number(settling.remaining||0)&&!confirm('Payment is higher than the remaining bill. Continue?'))return;
+  let remaining=Number(settling.remaining||0);
+  if(!a||!card||!Number.isFinite(amt)||amt<=0)return alert('Choose an account and enter a valid payment amount.');
+  if(amt>remaining)return alert('Payment cannot be higher than the remaining bill of '+peso(remaining)+'.');
   let t={id:uid(),type:'Card Payment',amount:amt,date:new Date().toISOString(),from:a.id,to:card.id,billId:settling.id};
   applyTxn(t);
   data.txns.push(t);
