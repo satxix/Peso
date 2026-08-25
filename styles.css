@@ -921,6 +921,69 @@ body{
 }
 .premiumProgress i,.expenseTrack i{background:linear-gradient(90deg,var(--accent),var(--accent-2))!important}
 
+/* Unified tactile controls: one interaction language across every screen. */
+:where(button,input,select,textarea){font-family:Manrope,system-ui,sans-serif;letter-spacing:0}
+:where(.ghost,.tiny,.backupBtn,.txnNoteToggle,.reportPanelToggle,.categoryIconChoice){
+  border-radius:12px!important;
+  border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 3px 8px rgba(0,0,0,.10)!important;
+  font-weight:850!important;
+}
+:where(.ghost,.tiny,.backupBtn,.txnNoteToggle,.reportPanelToggle,.categoryIconChoice):active{
+  transform:translateY(1px) scale(.985)!important;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.22)!important;
+}
+.tiny,.recActions button,.budgetActions button{min-height:36px;padding:0 14px!important}
+.recActions,.budgetActions{gap:10px!important}
+.recActions button,.budgetActions button{flex:1}
+
+.field,.search,.txnSearch,.searchInputBig,.accountFilter{
+  border-radius:13px!important;
+  border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line))!important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+.field:focus,.search:focus,.txnSearch:focus,.searchInputBig:focus,.accountFilter:focus{
+  border-color:color-mix(in srgb,var(--accent) 70%,#fff)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 3px rgba(0,0,0,.15)!important;
+  outline:0!important;
+}
+
+.seg,.reportTabs,.searchTabs,.paymentModes{
+  padding:5px!important;
+  gap:5px!important;
+  border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line))!important;
+  border-radius:16px!important;
+  box-shadow:inset 0 1px 4px rgba(0,0,0,.16)!important;
+}
+.seg button,.reportTabs button,.searchTabs button,.payMode{
+  min-height:38px;
+  border-radius:11px!important;
+  font-weight:850!important;
+}
+.seg button.active,.reportTabs button.active,.searchTabs button.active,.payMode.active{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 10px color-mix(in srgb,var(--accent) 24%,rgba(0,0,0,.18))!important;
+}
+
+#accounts .acctRow,#accounts .acctAddRow,#bills .recurringCard,
+#reports .budgetCard,#reports .expenseBarRow,#settings .settingRow{
+  border-radius:16px!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--theme-bg-bottom) 34%,rgba(0,0,0,.16)),inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+#accounts .acctRow:active,#accounts .acctAddRow:active{
+  transform:translateY(1px) scale(.995);
+  border-color:color-mix(in srgb,var(--accent) 52%,var(--line))!important;
+}
+#settings .settingRow{padding:13px 14px!important}
+#settings .settingRow select{min-height:42px;border-radius:12px!important}
+
+@media(hover:hover){
+  :where(.ghost,.tiny,.backupBtn,.txnNoteToggle,.reportPanelToggle,.categoryIconChoice):hover,
+  #accounts .acctRow:hover,#accounts .acctAddRow:hover{
+    border-color:color-mix(in srgb,var(--accent) 48%,var(--line))!important;
+    filter:brightness(1.05);
+  }
+}
+
 .premiumIconBtn,.settingsGearBtn,.settingsHomeBtn,.iconbtn.settingsHomeBtn{
   background:linear-gradient(145deg,color-mix(in srgb,#fff 88%,var(--theme-bg-top)),color-mix(in srgb,#fff 78%,var(--accent)))!important;
   color:color-mix(in srgb,var(--theme-nav) 82%,var(--accent))!important;
