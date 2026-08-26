@@ -276,7 +276,47 @@ function selectedPickerAccountId(){
 
 function accountPickerHtml(a){
   let selected=a.id===selectedPickerAccountId();
-  return `<button class="option accountPickerOption${selected?' selected':''}" aria-pressed="${selected}" onclick="selectAccount('${jsString(a.id)}')">${logo(a)}<div style="flex:1"><b>${htmlText(a.name)}</b><div class="meta">${htmlText(a.institution||a.type)}</div><div class="minirow"><span>${a.type==='Credit Card'?'Card':'Account'}</span><span>${accountSubtitle(a)}</span></div></div>${selected?'<span class="pickerSelectedMark">Selected</span>':''}</button>`;
+  return `<button class="option accountPickerOption${selected?' selected':''}" aria-pressed="${selected}" onclick="selectAccount('${jsString(a.id)}')">${logo(a)}<div class="pickerAccountCopy"><b>${htmlText(a.name)}</b><div class="meta">${htmlText(a.institution||a.type)}</div><div class="pickerAccountDetail">${accountSubtitle(a)}</div></div>${selected?'<span class="pickerSelectedMark" aria-label="Selected"></span>':''}</button>`;
+}
+
+function recentPickerAccountId(){
+  if(pickerMode!=='settleAccount'||!settling)return '';
+  let recent=data.txns
+    .filter(t=>t.type==='Card Payment'&&t.to===settling.cardId)
+    .sort((a,b)=>new Date(b.date||0)-new Date(a.date||0))[0];
+  return recent?.from||'';
+}
+
+function accountPickerSection(title,accounts){
+  if(!accounts.length)return '';
+  return `<section class="accountPickerGroup"><div class="accountPickerGroupTitle"><span>${title}</span><small>${accounts.length}</small></div>${accounts.map(accountPickerHtml).join('')}</section>`;
+}
+
+function groupedAccountPickerHtml(accounts){
+  let used=new Set();
+  let sections=[];
+  let recentId=recentPickerAccountId();
+  let selectedId=selectedPickerAccountId();
+  let addSpecial=(title,id)=>{
+    let account=accounts.find(a=>a.id===id&&!used.has(a.id));
+    if(account){used.add(account.id);sections.push(accountPickerSection(title,[account]))}
+  };
+  addSpecial('Recently used',recentId);
+  addSpecial('Selected account',selectedId);
+  let remaining=accounts.filter(a=>!used.has(a.id));
+  let groups=[
+    ['Banks',a=>a.type==='Savings'],
+    ['Cash & Wallets',a=>a.type==='Cash'||a.type==='Wallet'],
+    ['Investments',a=>a.type==='Investment'],
+    ['Credit Cards',a=>a.type==='Credit Card'],
+    ['Other Accounts',a=>!['Savings','Cash','Wallet','Investment','Credit Card'].includes(a.type)]
+  ];
+  groups.forEach(([title,test])=>{
+    let matches=remaining.filter(test);
+    matches.forEach(a=>used.add(a.id));
+    sections.push(accountPickerSection(title,matches));
+  });
+  return sections.join('');
 }
 
 function categoryPickerHtml(q){
@@ -293,7 +333,7 @@ function renderPicker(){
   if(pickerMode==='account'||pickerMode==='settleAccount'||pickerMode==='recurringAccount'){
     let accounts=accountPickerItems(q);
     pickerList.innerHTML=accounts.length
-      ? accounts.map(accountPickerHtml).join('')
+      ? (pickerMode==='account'?accounts.map(accountPickerHtml).join(''):groupedAccountPickerHtml(accounts))
       : '<div class="empty">No accounts yet. Add an account first from the Accounts tab.</div>';
     return;
   }

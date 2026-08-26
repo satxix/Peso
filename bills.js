@@ -122,7 +122,7 @@ function billAccountPickerContent(account,label){
     return `<span class="billAccountEmpty"><b>Choose an account</b><small>Tap to see your saved accounts</small></span>`;
   }
   let isCard=account.type==='Credit Card';
-  let balanceLabel=isCard?'Outstanding':'Available';
+  let balanceLabel=isCard?'Outstanding':'Balance';
   let balance=isCard?Number(account.outstanding||0):Number(account.balance||0);
   return `${logo(account)}<span class="billAccountIdentity"><small>${htmlText(label||'Account')}</small><b>${htmlText(account.name)}</b><em>${htmlText(account.institution||account.type)}</em></span><span class="billAccountBalance"><small>${balanceLabel}</small><b>${peso(balance)}</b></span>`;
 }
@@ -136,6 +136,7 @@ function openBillAccountPicker(mode){
     ? 'Select where this card payment will come from'
     : 'Select the account used by this recurring item';
   pickerSearch.value='';
+  pickerSearch.placeholder='Search accounts';
   renderPicker();
   showModal();
   pickerSheet.classList.add('show');
@@ -191,7 +192,8 @@ function openSettle(id){
   let detail=document.getElementById('accountDetailSheet');
   if(detail)detail.classList.remove('show');
   let banks=data.accounts.filter(a=>a.type!=='Credit Card');
-  settleBody.innerHTML=`<div class="paySummary"><div class="small">${settling.cardName}</div><h3 style="margin:6px 0 2px">${peso(settling.remaining)}</h3><div class="sub">Due ${settling.dueDate} - ${billPeriod(settling)}</div></div>${settlePaymentControls(banks)}<div class="payHistory"><div class="small">Previous payments</div>${settlePaymentHistory(settling)}</div>`;
+  let status=billStatus(settling);
+  settleBody.innerHTML=`<div class="paySummary premiumSettleSummary"><div class="settleSummaryHead"><div><span>Amount due</span><strong>${peso(settling.remaining)}</strong></div><span class="statusPill ${statusClass(status)}">${status}</span></div><div class="settleSummaryDetails"><div><span>Card</span><b>${htmlText(settling.cardName)}</b></div><div><span>Due date</span><b>${htmlText(displayDate(settling.dueDate))}</b></div></div><div class="settleSummaryPeriod">Statement ${htmlText(compactBillPeriod(settling))}</div></div>${settlePaymentControls(banks)}<div class="payHistory"><div class="small">Previous payments</div>${settlePaymentHistory(settling)}</div>`;
   showModal();
   settleSheet.classList.add('show');
 }
