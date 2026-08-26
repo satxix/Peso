@@ -1208,7 +1208,7 @@ body.picker-layer-open .sheet.show:not(#pickerSheet){
 .reportsHubSummary>div:last-child{border-right:0}
 .reportsHubSummary span{display:block;color:var(--muted);font-size:9px;font-weight:950;text-transform:uppercase}
 .reportsHubSummary b{display:block;margin-top:4px;color:var(--text);font-size:13px;font-weight:950;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.reportsHubSummary b.green{color:var(--green)}.reportsHubSummary b.red{color:var(--red)}
+.reportsHubSummary b.green{color:#8df0c1}.reportsHubSummary b.red{color:#ffc4bd}
 .reportsHubSectionLabel{margin:15px 2px 7px;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase}
 .reportsHubList{overflow:hidden;border:1px solid color-mix(in srgb,var(--accent) 22%,var(--line));border-radius:8px;background:var(--theme-surface);box-shadow:0 10px 24px rgba(0,0,0,.14)}
 .reportsHubList>button{
@@ -1231,7 +1231,7 @@ body.picker-layer-open .sheet.show:not(#pickerSheet){
 .reportHubIcon svg{width:18px;height:18px}
 .reportHubCopy{min-width:0}.reportHubCopy b{display:block;font-size:13px;font-weight:950}.reportHubCopy small{display:block;margin-top:2px;color:var(--muted);font-size:9.5px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .reportHubValue{max-width:96px;color:var(--text);font-size:11px;font-weight:950;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}
-.reportHubValue.green{color:var(--green)}.reportHubValue.red{color:var(--red)}
+.reportHubValue.green{color:#8df0c1}.reportHubValue.red{color:#ffc4bd}
 .reportHubArrow{color:var(--muted);font-size:17px;font-weight:700;text-align:right}
 .reportsHubInsight{margin-top:10px;padding:10px 12px;border-left:3px solid var(--green);background:color-mix(in srgb,var(--theme-surface) 78%,var(--theme-bg));color:color-mix(in srgb,var(--text) 82%,var(--muted));font-size:10.5px;font-weight:800;line-height:1.35}
 .reportsHubInsight.negative{border-left-color:var(--red)}
@@ -1296,3 +1296,5 @@ body.picker-layer-open .sheet.show:not(#pickerSheet){
 .appMaintenanceRow>div{min-width:0}.appMaintenanceRow b{display:block;color:var(--text);font-size:13px;font-weight:950}.appMaintenanceRow span{display:block;margin-top:3px;color:var(--muted);font-size:11px;font-weight:750;line-height:1.35}
 .appMaintenanceRow .backupBtn{margin:0;white-space:nowrap;min-height:42px}.appMaintenanceRow .backupBtn:disabled{opacity:.62;cursor:wait}
 @media(max-width:370px){.appMaintenanceRow{grid-template-columns:1fr}.appMaintenanceRow .backupBtn{width:100%}}
+.commitmentList .commitmentRemainder{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.commitmentList .commitmentRemainder b,.commitmentList .commitmentRemainder strong{color:var(--accent)}

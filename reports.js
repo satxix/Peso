@@ -139,8 +139,13 @@ function renderCommitmentReport(income=0){
   const openBills=(data.bills||[]).filter(b=>billStatus(b)!=='Paid'&&Number(b.remaining||0)>0);
   const unpaidTotal=openBills.reduce((sum,b)=>sum+Number(b.remaining||0),0);
   const fixedRate=income>0?Math.round((recurringTotal/income)*100):0;
-  const upcoming=recurring.slice().sort((a,b)=>Number(a.day||0)-Number(b.day||0)).slice(0,4);
-  el.innerHTML=`<div class="commitmentSummary"><div><span>Recurring</span><b>${peso(recurringTotal)}</b></div><div><span>Card dues</span><b>${peso(unpaidTotal)}</b></div><div><span>Fixed / income</span><b>${income>0?fixedRate+'%':'-'}</b></div></div><div class="commitmentList">${upcoming.length?upcoming.map(r=>`<div><span><b>${htmlText(r.name||r.category||'Recurring')}</b><small>Day ${Number(r.day||1)} - ${htmlText(accountLabel(r.accountId))}</small></span><strong>${peso(r.amount||0)}</strong></div>`).join(''):'<div class="reportEmpty">No enabled recurring expenses.</div>'}</div>`;
+  const sorted=recurring.slice().sort((a,b)=>Number(a.day||0)-Number(b.day||0));
+  const upcoming=sorted.slice(0,4);
+  const remaining=sorted.slice(4);
+  const remainingTotal=remaining.reduce((sum,r)=>sum+Math.abs(Number(r.amount||0)),0);
+  const rows=upcoming.map(r=>`<div><span><b>${htmlText(r.name||r.category||'Recurring')}</b><small>Day ${Number(r.day||1)} - ${htmlText(accountLabel(r.accountId))}</small></span><strong>${peso(Math.abs(Number(r.amount||0)))}</strong></div>`).join('');
+  const remainder=remaining.length?`<div class="commitmentRemainder"><span><b>Other recurring</b><small>${remaining.length} more monthly item${remaining.length===1?'':'s'}</small></span><strong>${peso(remainingTotal)}</strong></div>`:'';
+  el.innerHTML=`<div class="commitmentSummary"><div><span>Recurring</span><b>${peso(recurringTotal)}</b></div><div><span>Card dues</span><b>${peso(unpaidTotal)}</b></div><div><span>Fixed / income</span><b>${income>0?fixedRate+'%':'-'}</b></div></div><div class="commitmentList">${upcoming.length?rows+remainder:'<div class="reportEmpty">No enabled recurring expenses.</div>'}</div>`;
 }
 
 function updateReportsHub(income,expense,txns){
