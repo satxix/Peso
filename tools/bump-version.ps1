@@ -7,7 +7,6 @@ $ErrorActionPreference = 'Stop'
 
 $root = Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')
 $indexPath = Join-Path $root 'index.html'
-$appPath = Join-Path $root 'app.js'
 $swPath = Join-Path $root 'sw.js'
 
 function Read-Utf8($Path) {
@@ -20,7 +19,6 @@ function Write-Utf8($Path, $Text) {
 }
 
 $index = Read-Utf8 $indexPath
-$app = Read-Utf8 $appPath
 $sw = Read-Utf8 $swPath
 
 $currentAppMatch = [regex]::Match($index, 'PesoTrack\s+(\d+\.\d+)')
@@ -45,21 +43,26 @@ if (!$CacheVersion) {
   $CacheVersion = $currentCacheVersion + 1
 }
 
-$files = @(
-  @{ Path = $indexPath; Text = $index },
-  @{ Path = $appPath; Text = $app },
-  @{ Path = $swPath; Text = $sw }
+$index = [regex]::Replace(
+  $index,
+  '<title>PesoTrack\s+\d+\.\d+</title>',
+  "<title>PesoTrack $AppVersion</title>"
 )
+$index = [regex]::Replace(
+  $index,
+  '(<div class="appVersionPill[^"]*" id="(?:homeVersionPill|appVersionPill)">)v\d+\.\d+(</div>)',
+  "`$1v$AppVersion`$2"
+)
+$index = $index.Replace("v=$currentCacheVersion", "v=$CacheVersion")
+$sw = $sw.Replace("gold-master-v$currentCacheVersion", "gold-master-v$CacheVersion")
 
-foreach ($file in $files) {
-  $text = $file.Text
-  $text = $text.Replace($currentAppVersion, $AppVersion)
-  $text = $text.Replace("v=$currentCacheVersion", "v=$CacheVersion")
-  $text = $text.Replace("v$currentCacheVersion", "v$CacheVersion")
-  $text = $text.Replace("gold-master-v$currentCacheVersion", "gold-master-v$CacheVersion")
-  Write-Utf8 $file.Path $text
-}
+# Repair coordinates altered by the former global version-number replacement.
+$index = $index.Replace('M12 15.7a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z', 'M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z')
+$index = $index.Replace('M7.5 9h9M7.5 12.5h9M7.5 16h5.7', 'M7.5 9h9M7.5 12.5h9M7.5 16h5.5')
+
+Write-Utf8 $indexPath $index
+Write-Utf8 $swPath $sw
 
 Write-Host "Updated PesoTrack $currentAppVersion -> $AppVersion"
 Write-Host "Updated cache v$currentCacheVersion -> v$CacheVersion"
-Write-Host 'Changed: index.html, app.js, sw.js'
+Write-Host 'Changed: index.html, sw.js'
