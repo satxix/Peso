@@ -938,7 +938,7 @@ body{
 }
 #accountDetailSheet .section h2{color:#fffaf0!important}
 #accountDetailSheet .detailList,
-#accountDetailSheet .statementList{gap:9px!important}
+#accountDetailSheet .statementList{display:grid!important;gap:9px!important}
 
 .nav{
   background:color-mix(in srgb,var(--theme-nav) 92%,transparent)!important;
@@ -1123,3 +1123,38 @@ body{
 .installmentPreview{font-size:12px;color:var(--muted);font-weight:700;margin-top:2px;line-height:1.4}
 .txn-expense .txnTypePill.installmentPill{background:rgba(216,184,103,.16);color:#b88a25;border-color:rgba(216,184,103,.32)}
 .txn-expense .txnTypePill.installmentPill{color:#e5c879}
+
+/* Searchable account selectors for bill settlement and recurring items. */
+.billAccountPicker{
+  width:100%;
+  min-height:76px;
+  margin:6px 0 12px;
+  padding:11px 12px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  border:1px solid color-mix(in srgb,var(--accent) 34%,var(--line));
+  border-radius:16px;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--theme-surface-inset) 76%,var(--theme-surface)),color-mix(in srgb,var(--theme-surface) 94%,var(--theme-bg-top)));
+  color:var(--text);
+  text-align:left;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 18px rgba(0,0,0,.14);
+  transition:transform .12s ease,border-color .12s ease,filter .12s ease;
+}
+.billAccountPicker:active{transform:translateY(1px) scale(.992)}
+.billAccountPicker:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 25%,transparent);outline-offset:2px}
+.billAccountPicker .bank{width:46px!important;height:46px!important;flex-basis:46px!important;margin:0!important;border-radius:15px!important}
+.billAccountIdentity{min-width:0;display:block}
+.billAccountIdentity small,.billAccountBalance small{display:block;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase}
+.billAccountIdentity b{display:block;margin-top:2px;font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.billAccountIdentity em{display:block;margin-top:2px;color:color-mix(in srgb,var(--text) 70%,var(--muted));font-size:11px;font-style:normal;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.billAccountBalance{min-width:92px;text-align:right}
+.billAccountBalance b{display:block;margin-top:4px;color:color-mix(in srgb,var(--accent) 78%,#fff);font-size:13px;font-weight:950;font-variant-numeric:tabular-nums;white-space:nowrap}
+.billAccountEmpty{grid-column:1/-1;display:grid;gap:3px;padding:5px 2px}
+.billAccountEmpty b{font-size:14px}.billAccountEmpty small{color:var(--muted);font-size:11px}
+#pickerSheet .option{min-height:72px;background:linear-gradient(145deg,color-mix(in srgb,var(--theme-surface-inset) 74%,var(--theme-surface)),color-mix(in srgb,var(--theme-surface) 96%,var(--theme-bg-top)))!important}
+#pickerSheet .option:active{border-color:color-mix(in srgb,var(--accent) 58%,var(--line))!important}
+#pickerSheet .accountPickerOption.selected{border-color:color-mix(in srgb,var(--accent) 68%,#fff)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 34%,transparent),0 8px 20px rgba(0,0,0,.16)!important}
+.pickerSelectedMark{align-self:flex-start;flex:0 0 auto;padding:5px 7px;border-radius:999px;background:color-mix(in srgb,var(--accent) 18%,var(--theme-surface));border:1px solid color-mix(in srgb,var(--accent) 38%,var(--line));color:color-mix(in srgb,var(--accent) 76%,#fff);font-size:9px;font-weight:950;text-transform:uppercase}
+@media(max-width:350px){.billAccountPicker{grid-template-columns:auto minmax(0,1fr);}.billAccountBalance{grid-column:2;min-width:0;text-align:left}.billAccountBalance small,.billAccountBalance b{display:inline}.billAccountBalance b{margin-left:5px}}

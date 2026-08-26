@@ -253,16 +253,30 @@ function chooseCat(){
 
 function accountPickerItems(q){
   let accounts=data.accounts.slice();
-  if(txnType==='Income')accounts=accounts.filter(a=>a.type!=='Credit Card');
-  if(txnType==='Transfer')accounts=accounts.filter(a=>a.type!=='Credit Card');
-  if(txnType==='Transfer'&&pickerField==='to'&&txn.from)accounts=accounts.filter(a=>a.id!==txn.from);
-  if(txnType==='Transfer'&&pickerField==='from'&&txn.to)accounts=accounts.filter(a=>a.id!==txn.to);
+  if(pickerMode==='settleAccount'){
+    accounts=accounts.filter(a=>a.type!=='Credit Card');
+  }else if(pickerMode==='recurringAccount'){
+    let type=document.getElementById('recType')?.value||'Expense';
+    if(type==='Income')accounts=accounts.filter(a=>a.type!=='Credit Card');
+  }else{
+    if(txnType==='Income')accounts=accounts.filter(a=>a.type!=='Credit Card');
+    if(txnType==='Transfer')accounts=accounts.filter(a=>a.type!=='Credit Card');
+    if(txnType==='Transfer'&&pickerField==='to'&&txn.from)accounts=accounts.filter(a=>a.id!==txn.from);
+    if(txnType==='Transfer'&&pickerField==='from'&&txn.to)accounts=accounts.filter(a=>a.id!==txn.to);
+  }
   if(q)accounts=accounts.filter(a=>`${a.name} ${a.institution} ${a.type}`.toLowerCase().includes(q));
   return accounts;
 }
 
+function selectedPickerAccountId(){
+  if(pickerMode==='settleAccount')return document.getElementById('payFrom')?.value||'';
+  if(pickerMode==='recurringAccount')return document.getElementById('recAccount')?.value||'';
+  return txn[pickerField]||'';
+}
+
 function accountPickerHtml(a){
-  return `<button class="option" onclick="selectAccount('${a.id}')">${logo(a)}<div style="flex:1"><b>${a.name}</b><div class="meta">${a.institution||a.type}</div><div class="minirow"><span>${a.type==='Credit Card'?'Card':'Account'}</span><span>${accountSubtitle(a)}</span></div></div></button>`;
+  let selected=a.id===selectedPickerAccountId();
+  return `<button class="option accountPickerOption${selected?' selected':''}" aria-pressed="${selected}" onclick="selectAccount('${jsString(a.id)}')">${logo(a)}<div style="flex:1"><b>${htmlText(a.name)}</b><div class="meta">${htmlText(a.institution||a.type)}</div><div class="minirow"><span>${a.type==='Credit Card'?'Card':'Account'}</span><span>${accountSubtitle(a)}</span></div></div>${selected?'<span class="pickerSelectedMark">Selected</span>':''}</button>`;
 }
 
 function categoryPickerHtml(q){
@@ -276,7 +290,7 @@ function categoryPickerHtml(q){
 
 function renderPicker(){
   const q=(pickerSearch.value||'').toLowerCase().trim();
-  if(pickerMode==='account'){
+  if(pickerMode==='account'||pickerMode==='settleAccount'||pickerMode==='recurringAccount'){
     let accounts=accountPickerItems(q);
     pickerList.innerHTML=accounts.length
       ? accounts.map(accountPickerHtml).join('')

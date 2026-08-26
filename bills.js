@@ -117,15 +117,63 @@ function setPayAmount(mode){
   }
 }
 
-function settleAccountOptions(accounts){
-  return accounts.map(a=>`<option value="${a.id}">${a.name} (${a.institution}) - ${peso(a.balance||0)}</option>`).join('');
+function billAccountPickerContent(account,label){
+  if(!account){
+    return `<span class="billAccountEmpty"><b>Choose an account</b><small>Tap to see your saved accounts</small></span>`;
+  }
+  let isCard=account.type==='Credit Card';
+  let balanceLabel=isCard?'Outstanding':'Available';
+  let balance=isCard?Number(account.outstanding||0):Number(account.balance||0);
+  return `${logo(account)}<span class="billAccountIdentity"><small>${htmlText(label||'Account')}</small><b>${htmlText(account.name)}</b><em>${htmlText(account.institution||account.type)}</em></span><span class="billAccountBalance"><small>${balanceLabel}</small><b>${peso(balance)}</b></span>`;
+}
+
+function openBillAccountPicker(mode){
+  pickerSheet.classList.remove('compactCategoryPicker');
+  pickerMode=mode;
+  pickerField=mode==='settleAccount'?'payFrom':'recAccount';
+  pickerTitle.textContent=mode==='settleAccount'?'Choose Payment Account':'Choose Account';
+  pickerSub.textContent=mode==='settleAccount'
+    ? 'Select where this card payment will come from'
+    : 'Select the account used by this recurring item';
+  pickerSearch.value='';
+  renderPicker();
+  showModal();
+  pickerSheet.classList.add('show');
+}
+
+function chooseSettleAccount(){openBillAccountPicker('settleAccount')}
+function chooseRecurringAccount(){openBillAccountPicker('recurringAccount')}
+
+function selectBillPaymentAccount(id){
+  let account=data.accounts.find(a=>a.id===id&&a.type!=='Credit Card');
+  if(!account)return;
+  let input=document.getElementById('payFrom');
+  let button=document.getElementById('settleAccountPick');
+  if(input)input.value=account.id;
+  if(button)button.innerHTML=billAccountPickerContent(account,'Pay from');
+  closePicker();
+}
+
+function selectRecurringAccount(id){
+  let type=document.getElementById('recType')?.value||'Expense';
+  let account=data.accounts.find(a=>a.id===id&&(type!=='Income'||a.type!=='Credit Card'));
+  if(!account)return;
+  let input=document.getElementById('recAccount');
+  let button=document.getElementById('recAccountPick');
+  if(input)input.value=account.id;
+  if(button)button.innerHTML=billAccountPickerContent(account,type==='Income'?'Deposit to':'Pay from');
+  closePicker();
 }
 
 function settlePaymentControls(accounts){
   if(!accounts.length){
     return '<div class="empty">Add a Savings, Wallet, Cash, or Investment account first so you can choose where the payment comes from.</div>';
   }
-  return `<label class="small">Pay from</label><select class="field" id="payFrom">${settleAccountOptions(accounts)}</select><div class="paymentModes"><button class="payMode active" data-paymode="full" onclick="setPayAmount('full')">Full remaining</button><button class="payMode" data-paymode="half" onclick="setPayAmount('half')">Half</button></div><label class="small">Payment amount</label><input class="field" id="payAmount" type="number" value="${settling.remaining}"><button class="save" onclick="settleBill()">Record Payment</button>`;
+  let recentPayment=data.txns
+    .filter(t=>t.type==='Card Payment'&&t.to===settling.cardId)
+    .sort((a,b)=>new Date(b.date||0)-new Date(a.date||0))[0];
+  let selected=accounts.find(a=>a.id===recentPayment?.from)||accounts[0];
+  return `<label class="small">Pay from</label><input type="hidden" id="payFrom" value="${htmlText(selected.id)}"><button type="button" class="billAccountPicker" id="settleAccountPick" onclick="chooseSettleAccount()">${billAccountPickerContent(selected,'Pay from')}</button><div class="paymentModes"><button class="payMode active" data-paymode="full" onclick="setPayAmount('full')">Full remaining</button><button class="payMode" data-paymode="half" onclick="setPayAmount('half')">Half</button></div><label class="small">Payment amount</label><input class="field" id="payAmount" type="number" value="${settling.remaining}"><button class="save" onclick="settleBill()">Record Payment</button>`;
 }
 
 function settlePaymentHistory(bill){
@@ -149,7 +197,8 @@ function openSettle(id){
 }
 
 function settleBill(){
-  let a=data.accounts.find(x=>x.id===payFrom.value);
+  let accountId=document.getElementById('payFrom')?.value;
+  let a=data.accounts.find(x=>x.id===accountId);
   let card=data.accounts.find(x=>x.id===settling.cardId);
   let amt=Number(payAmount.value||0);
   let remaining=Number(settling.remaining||0);
@@ -162,18 +211,19 @@ function settleBill(){
   closeSheets();
 }
 
-function accountOptionsForRecurring(type,selected=''){let arr=data.accounts.filter(a=>type==='Income'?a.type!=='Credit Card':true);return arr.map(a=>`<option value="${a.id}" ${a.id===selected?'selected':''}>${a.name} (${a.institution||a.type}) - ${a.type==='Credit Card'?'Outstanding '+peso(a.outstanding||0):'Balance '+peso(a.balance||0)}</option>`).join('')}
-
 function renderRecurringFields(r={}){
   let type=recType.value;
   let selected=recurringDraftCategory||r.category||(type==='Income'?'Salary':'Food');
+  let previousAccountId=r.accountId||document.getElementById('recAccount')?.value||'';
+  let accounts=data.accounts.filter(a=>type!=='Income'||a.type!=='Credit Card');
+  let selectedAccount=accounts.find(a=>a.id===previousAccountId)||accounts[0]||null;
   recurringDraftCategory=selected;
-  recDynamic.innerHTML='<label class="small">'+(type==='Income'?'Deposit to':'Pay from')+'</label><select class="field" id="recAccount">'+accountOptionsForRecurring(type,r.accountId||'')+'</select><input type="hidden" id="recCategory" value="'+htmlText(selected)+'"><button type="button" id="recCategoryPick" class="txnPickBtn wide" onclick="chooseRecurringCat()"><div class="catCircle">'+catIcon(selected)+'</div><div class="txnPickText"><b>'+(type==='Income'?'Source':'Category')+'</b><span>'+htmlText(selected)+'</span><em>Recurring '+(type==='Income'?'income source':'expense category')+'</em></div></button>';
+  recDynamic.innerHTML='<label class="small">'+(type==='Income'?'Deposit to':'Pay from')+'</label><input type="hidden" id="recAccount" value="'+htmlText(selectedAccount?.id||'')+'"><button type="button" id="recAccountPick" class="billAccountPicker" onclick="chooseRecurringAccount()">'+billAccountPickerContent(selectedAccount,type==='Income'?'Deposit to':'Pay from')+'</button><input type="hidden" id="recCategory" value="'+htmlText(selected)+'"><button type="button" id="recCategoryPick" class="txnPickBtn wide" onclick="chooseRecurringCat()"><div class="catCircle">'+catIcon(selected)+'</div><div class="txnPickText"><b>'+(type==='Income'?'Source':'Category')+'</b><span>'+htmlText(selected)+'</span><em>Recurring '+(type==='Income'?'income source':'expense category')+'</em></div></button>';
 }
 
 function openRecurring(id){editingRecurring=id||null;let r=editingRecurring?data.recurring.find(x=>x.id===editingRecurring):null;recTitle.textContent=r?'Edit Recurring':'Add Recurring';recType.value=r?.type||'Income';recName.value=r?.name||'';recAmount.value=r?.amount||'';recDay.value=r?.day||'';recEnabled.checked=r? r.enabled!==false:true;recurringDraftCategory=r?.category||(recType.value==='Income'?'Salary':'Food');renderRecurringFields(r||{});recDeleteBtn.classList.toggle('hide',!r);showModal();recurringSheet.classList.add('show')}
 
-function saveRecurring(){let type=recType.value,accountId=recAccount.value,amount=Number(recAmount.value||0),day=Math.max(1,Math.min(31,Number(recDay.value||0))),category=(document.getElementById('recCategory')?.value||recurringDraftCategory||'Other').trim();if(!accountId)return alert('Choose an account');if(!category)return alert('Choose a category');if(!amount)return alert('Enter amount');if(!day)return alert('Enter day of month');let r=data.recurring.find(x=>x.id===editingRecurring)||{id:uid(),createdAt:new Date().toISOString()};r.type=type;r.name=recName.value||category||type;r.accountId=accountId;r.category=category;r.amount=amount;r.day=day;r.enabled=recEnabled.checked;if(!editingRecurring)data.recurring.push(r);persist();closeSheets();toastMsg('Recurring item saved')}
+function saveRecurring(){let type=recType.value,accountId=document.getElementById('recAccount')?.value||'',amount=Number(recAmount.value||0),day=Math.max(1,Math.min(31,Number(recDay.value||0))),category=(document.getElementById('recCategory')?.value||recurringDraftCategory||'Other').trim();if(!accountId)return alert('Choose an account');if(!category)return alert('Choose a category');if(!amount)return alert('Enter amount');if(!day)return alert('Enter day of month');let r=data.recurring.find(x=>x.id===editingRecurring)||{id:uid(),createdAt:new Date().toISOString()};r.type=type;r.name=recName.value||category||type;r.accountId=accountId;r.category=category;r.amount=amount;r.day=day;r.enabled=recEnabled.checked;if(!editingRecurring)data.recurring.push(r);persist();closeSheets();toastMsg('Recurring item saved')}
 
 function deleteRecurring(){if(!editingRecurring)return closeSheets();if(!confirm('Delete this recurring rule? Already generated transactions will remain.'))return;data.recurring=data.recurring.filter(r=>r.id!==editingRecurring);editingRecurring=null;persist();closeSheets()}
 

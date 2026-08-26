@@ -263,6 +263,14 @@ function categoryCode(c){
 }
 
 function selectAccount(id){
+  if(pickerMode==='settleAccount'){
+    selectBillPaymentAccount(id);
+    return;
+  }
+  if(pickerMode==='recurringAccount'){
+    selectRecurringAccount(id);
+    return;
+  }
   if(txnType==='Transfer'){
     if(pickerField==='from'&&id===txn.to)return alert('From and To cannot be the same account.');
     if(pickerField==='to'&&id===txn.from)return alert('From and To cannot be the same account.');
