@@ -139,6 +139,7 @@ function openBillAccountPicker(mode){
   pickerSearch.placeholder='Search accounts';
   renderPicker();
   showModal();
+  document.body.classList.add('picker-layer-open');
   pickerSheet.classList.add('show');
 }
 

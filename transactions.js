@@ -221,6 +221,7 @@ function accountSubtitle(a){
 function closePicker(){
   pickerSheet.classList.remove('show');
   pickerSheet.classList.remove('compactCategoryPicker');
+  document.body.classList.remove('picker-layer-open');
   pickerMode=null;
   pickerField=null;
   pickerSearch.value='';
@@ -236,6 +237,7 @@ function chooseAcct(field){
   pickerSearch.value='';
   renderPicker();
   showModal();
+  document.body.classList.add('picker-layer-open');
   pickerSheet.classList.add('show');
 }
 
@@ -248,6 +250,7 @@ function chooseCat(){
   pickerSearch.value='';
   renderPicker();
   showModal();
+  document.body.classList.add('picker-layer-open');
   pickerSheet.classList.add('show');
 }
 

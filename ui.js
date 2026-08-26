@@ -18,11 +18,13 @@ function closeTopModal(){
   if(!sheets.length)return;
   let top=sheets[sheets.length-1];
   top.classList.remove('show');
+  if(top.id==='pickerSheet')document.body.classList.remove('picker-layer-open');
   hideModalIfNone();
 }
 
 function closeSheets(){
   document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));
+  document.body.classList.remove('picker-layer-open');
   modalBackdrop.classList.remove('show');
   document.body.classList.remove('modal-open');
 }
@@ -124,6 +126,13 @@ function closeSheets(){
   function restoreCurrentState(){
     pushScreen(activeScreen(),false);
   }
+  function returnHomeAfterTransaction(){
+    lastHomeBack=0;
+    internalNav=true;
+    try{window.go('dashboard',navButtonFor('dashboard'),true)}finally{internalNav=false}
+    pushScreen('dashboard',true);
+    pushScreen('dashboard',false);
+  }
   function stateFor(id){
     return {pesoTrack:true,screen:screenIds.includes(id)?id:'dashboard'};
   }
@@ -147,7 +156,14 @@ function closeSheets(){
 
   window.addEventListener('popstate',function(e){
     if(hasOpenSheet()){
+      var openSheets=[...document.querySelectorAll('.sheet.show')];
+      var topSheet=openSheets[openSheets.length-1];
+      var closingTransaction=topSheet&&topSheet.id==='txnSheet';
       closeTopModal();
+      if(closingTransaction&&!hasOpenSheet()){
+        returnHomeAfterTransaction();
+        return;
+      }
       restoreCurrentState();
       return;
     }

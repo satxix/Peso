@@ -1163,3 +1163,30 @@ body{
 #pickerSheet .search{position:sticky;top:0;z-index:5;margin-top:10px!important;box-shadow:0 10px 24px color-mix(in srgb,var(--theme-bg-bottom) 48%,rgba(0,0,0,.28))!important}
 .premiumSettleSummary{padding:16px!important;border-radius:18px!important}.settleSummaryHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.settleSummaryHead>div>span{display:block;color:var(--muted);font-size:10px;font-weight:950;text-transform:uppercase}.settleSummaryHead strong{display:block;margin-top:3px;color:var(--text);font-size:25px;font-weight:950;font-variant-numeric:tabular-nums}.settleSummaryDetails{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid color-mix(in srgb,var(--accent) 18%,var(--line))}.settleSummaryDetails span{display:block;color:var(--muted);font-size:9px;font-weight:950;text-transform:uppercase}.settleSummaryDetails b{display:block;margin-top:3px;color:var(--text);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.settleSummaryPeriod{margin-top:10px;color:color-mix(in srgb,var(--text) 68%,var(--muted));font-size:10px;font-weight:800}
 @media(max-width:350px){.billAccountPicker{grid-template-columns:auto minmax(0,1fr);}.billAccountBalance{grid-column:2;min-width:0;text-align:left}.billAccountBalance small,.billAccountBalance b{display:inline}.billAccountBalance b{margin-left:5px}}
+
+/* A chooser is a foreground workspace, never a second glass layer. */
+body.picker-layer-open .sheet.show:not(#pickerSheet){
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#pickerSheet{
+  opacity:1!important;
+  isolation:isolate;
+  background-color:var(--theme-surface)!important;
+  background-image:linear-gradient(180deg,var(--theme-surface),color-mix(in srgb,var(--theme-surface) 94%,#07110e))!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+#pickerSheet:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  border-radius:inherit;
+  background:var(--theme-surface);
+  opacity:1;
+}
+#pickerSheet .sheetHead,#pickerSheet .search,#pickerSheet .option,#pickerSheet .categoryCompactChip{
+  opacity:1!important;
+}

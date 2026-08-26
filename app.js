@@ -242,6 +242,7 @@ function chooseRecurringCat(){
   pickerSearch.value='';
   renderPicker();
   showModal();
+  document.body.classList.add('picker-layer-open');
   pickerSheet.classList.add('show');
 }
 
