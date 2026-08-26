@@ -1298,3 +1298,137 @@ body.picker-layer-open .sheet.show:not(#pickerSheet){
 @media(max-width:370px){.appMaintenanceRow{grid-template-columns:1fr}.appMaintenanceRow .backupBtn{width:100%}}
 .commitmentList .commitmentRemainder{background:color-mix(in srgb,var(--accent) 8%,transparent)}
 .commitmentList .commitmentRemainder b,.commitmentList .commitmentRemainder strong{color:var(--accent)}
+
+/* Unified typography and contrast system. Keep this final so older screen rules cannot drift. */
+:root{
+  --font-body:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-display:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ui-positive:#8df0c1;
+  --ui-negative:#ffc4bd;
+  --ui-warning:#f4d58d;
+}
+body{
+  --text:var(--theme-text)!important;
+  --muted:color-mix(in srgb,var(--theme-text) 76%,var(--theme-bg))!important;
+  --green:var(--ui-positive)!important;
+  --red:var(--ui-negative)!important;
+  --orange:var(--ui-warning)!important;
+  font-family:var(--font-body)!important;
+  font-size:14px;
+  line-height:1.4;
+  color:var(--text);
+}
+body,body *{letter-spacing:0!important}
+button,input,select,textarea{font-family:var(--font-body)!important;font-size:14px;font-weight:700}
+.softEmpty,.premiumTimelineItem,.settingRow{
+  --text:var(--theme-text)!important;
+  --muted:color-mix(in srgb,var(--theme-text) 76%,var(--theme-bg))!important;
+}
+.amount,.premiumCash,.value,.bal,.display,.detailAmount,.acctAmount,.txnAmount,
+.premiumCreditMain b,.trendSummary b,.balanceTrendTop b,.reportsHubSummary b,.reportHubValue{
+  font-family:var(--font-display)!important;font-variant-numeric:tabular-nums;font-weight:800!important
+}
+
+/* Page and section hierarchy. */
+.screen>.top .title{font-size:27px!important;line-height:1.15;font-weight:800!important}
+.screen>.top .sub{margin-top:3px;font-size:13px!important;line-height:1.4;font-weight:600!important}
+.section h2{font-size:19px!important;line-height:1.25;font-weight:800!important}
+.reportPanel h3{font-size:18px!important;line-height:1.3;font-weight:800!important}
+.sheet .title,.sheetHead .title{font-size:24px!important;line-height:1.2;font-weight:800!important}
+.reportDetailHeader .title{font-size:24px!important;font-weight:800!important}
+.reportDetailHeader .sub{font-size:12px!important;font-weight:600!important}
+.label,.small,.sub,.mutedNote,.empty,.emptyState,.reportEmpty{color:var(--muted)!important}
+.sub,.mutedNote,.empty,.emptyState,.reportEmpty{font-size:12px;font-weight:600!important;line-height:1.45}
+.label,.small{font-size:11px!important;font-weight:700!important;line-height:1.35}
+
+/* Common controls. */
+.ghost,.save,.backupBtn,.dangerBtn,.tiny,.seg button,.reportTabs button,.searchTabs button,.chip{
+  font-size:13px!important;font-weight:800!important
+}
+.seg button,.reportTabs button,.searchTabs button,.chip{color:var(--muted)!important}
+.field,.search,.txnSearch,.searchInputBig,.accountFilter{font-size:14px!important;color:var(--text)!important}
+.field::placeholder,.search::placeholder,.txnSearch::placeholder,.searchInputBig::placeholder{color:var(--muted)!important;opacity:.82}
+.nav button{font-size:11px!important;font-weight:700!important;color:color-mix(in srgb,#fff 66%,var(--theme-nav))!important}
+.nav button.active{color:color-mix(in srgb,var(--accent) 74%,#fff)!important}
+
+/* Home. */
+#dashboard .premiumKicker{font-size:16px!important;line-height:1.25;font-weight:800!important;text-transform:none!important}
+#dashboard .homeVersionPill{font-size:10px!important;font-weight:800!important}
+#dashboard .premiumHero .label{font-size:13px!important;color:color-mix(in srgb,#fff 78%,var(--theme-surface))!important}
+#dashboard .premiumCash{font-size:36px!important;line-height:1.05;font-weight:800!important}
+#dashboard .heroSub{font-size:14px!important;color:color-mix(in srgb,#fff 78%,var(--theme-surface))!important;font-weight:600!important}
+#dashboard .premiumSummaryChips span{font-size:11px!important;color:var(--muted)!important;font-weight:700!important}
+#dashboard .premiumSummaryChips b{font-size:13px!important;color:var(--text)!important;font-weight:800!important}
+#dashboard .premiumTimelineMain b{font-size:14px!important;line-height:1.25;font-weight:800!important}
+#dashboard .premiumTimelineMain span{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+#dashboard .premiumTimelineAmt b{font-size:14px!important;font-weight:800!important}
+#dashboard .upcomingKind{font-size:10px!important;font-weight:800!important}
+#dashboard .upcomingDateBadge span{font-size:10.5px!important;color:var(--muted)!important;font-weight:700!important}
+
+/* Accounts. */
+#accounts .acctGroupName{font-size:14px!important;font-weight:800!important}
+#accounts .acctGroupMeta{font-size:12px!important;color:var(--muted)!important;font-weight:700!important}
+#accounts .acctName{font-size:14px!important;line-height:1.25;font-weight:800!important}
+#accounts .acctInst,#accounts .acctHint{font-size:11px!important;color:var(--muted)!important;font-weight:600!important}
+#accounts .acctAmount{font-size:15px!important;line-height:1.2;font-weight:800!important}
+
+/* Bills and credit cards. */
+#bills .premiumCreditTitle{font-size:18px!important;line-height:1.25;font-weight:800!important}
+#bills .premiumCreditSub{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+#bills .premiumCreditMain>span,#bills .premiumCreditSide span{font-size:11px!important;color:var(--muted)!important;font-weight:700!important}
+#bills .premiumCreditMain>b{font-size:24px!important;font-weight:800!important}
+#bills .premiumCreditSide b{font-size:13px!important;font-weight:800!important}
+#bills .premiumMetaRow{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+#bills .recIdentity>b{font-size:14px!important;font-weight:800!important}
+#bills .recMeta{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+#bills .minirow{font-size:12px!important;color:var(--muted)!important}
+#bills .minirow b{color:var(--text)!important;font-weight:800!important}
+#bills .recPill,#bills .premiumDuePill,#bills .statusPill{font-size:11px!important;font-weight:800!important}
+
+/* Reports, charts, and report subviews. */
+.reportsHubSummary span,.trendSummary span,.balanceTrendTop span,.expenseStat span,.commitmentSummary span{
+  font-size:10.5px!important;color:var(--muted)!important;font-weight:800!important
+}
+.reportsHubSummary b{font-size:14px!important}
+.reportsHubSummary b.green,.reportHubValue.green,.trendSummary b.green{color:var(--ui-positive)!important}
+.reportsHubSummary b.red,.reportHubValue.red,.trendSummary b.red{color:var(--ui-negative)!important}
+.reportsHubSectionLabel{font-size:11px!important;color:var(--muted)!important;font-weight:800!important}
+.reportHubCopy b{font-size:14px!important;line-height:1.25;font-weight:800!important}
+.reportHubCopy small{font-size:11px!important;line-height:1.35;color:var(--muted)!important;font-weight:600!important}
+.reportHubValue{font-size:13px!important;font-weight:800!important}
+.reportsHubInsight{font-size:12px!important;line-height:1.45;color:var(--text)!important;font-weight:700!important}
+.trendSummary b,.balanceTrendTop b{font-size:15px!important}
+.trendLegend,.periodTrendBucket span{font-size:11px!important;color:var(--muted)!important;font-weight:700!important}
+.commitmentSummary b{font-size:13px!important;font-weight:800!important}
+.commitmentList span b{font-size:13px!important;font-weight:800!important}
+.commitmentList span small{font-size:11px!important;line-height:1.35;color:var(--muted)!important;font-weight:600!important}
+.commitmentList strong{font-size:13px!important;font-weight:800!important}
+.expenseBarRow,.budgetCard,.insightItem{font-size:13px}
+#reports #transactionReport .txnActions .tiny{min-height:32px!important;font-size:11px!important;font-weight:800!important}
+
+/* Transactions and details. */
+.txnTitleLine>b,.txnMain>b{font-size:14px!important;line-height:1.3;font-weight:800!important}
+.txnMeta,.txnNoteLine{font-size:12px!important;line-height:1.4!important;color:var(--muted)!important;font-weight:600!important}
+.txnTypePill{font-size:10.5px!important;font-weight:800!important}
+.txnAmount{font-size:14px!important;font-weight:800!important}
+.detailTop .name{font-size:18px!important;font-weight:800!important}
+.detailTop .inst{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+.detailAmount{font-size:30px!important;font-weight:800!important}
+.statBox .small{font-size:11px!important}.statBox b{font-size:15px!important;font-weight:800!important}
+.statementPeriod{font-size:14px!important;font-weight:800!important}.statementAmt>b{font-size:14px!important;font-weight:800!important}
+
+/* Settings and pickers. */
+#settings .settingRow label{font-size:14px!important;font-weight:800!important}
+#settings .settingRow .sub{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+#settings .categoryPill{font-size:12px!important;font-weight:700!important}
+#settings .categoryHint{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+.appMaintenanceRow b{font-size:14px!important;font-weight:800!important}.appMaintenanceRow span{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+#pickerSheet .title{font-size:24px!important}.pickerAccountCopy>b,.option>b{font-size:14px!important;font-weight:800!important}
+#pickerSheet .meta,.pickerAccountDetail,.billAccountIdentity em{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
+.accountPickerGroupTitle{font-size:11px!important;color:var(--muted)!important;font-weight:800!important}
+
+@media(max-width:360px){
+  .screen>.top .title{font-size:25px!important}
+  #dashboard .premiumCash{font-size:32px!important}
+  .reportHubValue{font-size:12px!important;max-width:86px}
+}
