@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pesotrack-1-0-gold-master-v336';
+const CACHE_NAME = 'pesotrack-1-0-gold-master-v337';
 const APP_SHELL = './index.html';
 const ASSETS = [
   './',
@@ -127,6 +127,10 @@ self.addEventListener('activate', event => {
       .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
       .then(() => self.clients.claim())
   );
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('fetch', event => {

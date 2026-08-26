@@ -220,6 +220,11 @@ function closeSheets(){
   };
   navigator.serviceWorker.addEventListener('controllerchange',function(){
     if(!navigator.serviceWorker.controller)return;
+    if(window.pesoReloadRequested){
+      window.pesoReloadRequested=false;
+      window.location.reload();
+      return;
+    }
     if(sessionStorage.getItem(key)==='1')return;
     sessionStorage.setItem(key,'1');
     setTimeout(function(){
@@ -232,3 +237,41 @@ function closeSheets(){
       .catch(function(){});
   });
 })();
+
+function reloadAppForUpdate(){
+  var button=document.getElementById('reloadAppBtn');
+  var status=document.getElementById('appUpdateStatus');
+  var finish=function(message){
+    if(status)status.textContent=message;
+    if(button){button.disabled=false;button.textContent='Check & Reload'}
+  };
+  var reload=function(){
+    if(status)status.textContent='Reopening the latest version...';
+    window.location.reload();
+  };
+  if(button){button.disabled=true;button.textContent='Checking...'}
+  if(status)status.textContent='Checking for an update...';
+  if(!('serviceWorker' in navigator)){reload();return}
+  navigator.serviceWorker.ready.then(function(reg){
+    window.pesoReloadRequested=true;
+    return reg.update().then(function(){
+      if(reg.waiting){
+        reg.waiting.postMessage({type:'SKIP_WAITING'});
+        setTimeout(reload,1200);
+        return;
+      }
+      if(reg.installing){
+        reg.installing.addEventListener('statechange',function(){
+          if(this.state==='activated')reload();
+        });
+        setTimeout(reload,2600);
+        return;
+      }
+      setTimeout(reload,250);
+    });
+  }).catch(function(){
+    window.pesoReloadRequested=false;
+    finish('Could not check online. Reloading this version...');
+    setTimeout(reload,500);
+  });
+}

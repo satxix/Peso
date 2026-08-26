@@ -305,10 +305,22 @@ function resetAllData(){
   toastMsg('All data reset');
 }
 
+function ensureAppMaintenancePanel(){
+  let screen=document.getElementById('settings');
+  if(!screen||document.getElementById('appMaintenancePanel'))return;
+  let panel=document.createElement('section');
+  panel.id='appMaintenancePanel';
+  panel.className='reportPanel appMaintenancePanel';
+  panel.innerHTML=`<h3>App Update</h3><div class="appMaintenanceRow"><div><b id="appUpdateStatus">Current ${htmlText(document.getElementById('appVersionPill')?.textContent||'version')}</b><span>Check for a newer version and reopen the app.</span></div><button id="reloadAppBtn" class="backupBtn primary" type="button" onclick="reloadAppForUpdate()">Check &amp; Reload</button></div>`;
+  let backup=[...screen.querySelectorAll('.reportPanel')].find(x=>x.querySelector('h3')?.textContent.trim()==='Backup / Restore');
+  screen.insertBefore(panel,backup||screen.querySelector('.dangerZone'));
+}
+
 function renderSettings(){
   let ws=document.getElementById('weekStart'),cur=document.getElementById('currencySetting');
   if(ws)ws.value=String(data.settings.weekStart??'1');
   if(cur)cur.value=data.settings.currency||'PHP';
+  ensureAppMaintenancePanel();
   renderThemePicker();
   renderCategoryManager();
 }
