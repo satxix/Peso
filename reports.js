@@ -1,6 +1,174 @@
 /* PesoTrack reports, budgets, insights, period controls, and expense breakdown views. Loaded before app.js. */
+let reportView='hub';
+
+function reportHubViewDefinitions(){
+  return {
+    cashflow:{title:'Cash Flow',sub:'Income, expenses, and net performance',panels:['cashFlowBars']},
+    balance:{title:'Balance',sub:'Ending balances and liquid-account trend',panels:['balanceTrendReport']},
+    spending:{title:'Spending',sub:'Categories and monthly budget performance',panels:['categoryReport','budgetReport']},
+    commitments:{title:'Commitments',sub:'Recurring expenses, card dues, and alerts',panels:['commitmentReport','insightReport']},
+    transactions:{title:'Transactions',sub:'Search and review activity for this period',panels:['transactionReport']}
+  };
+}
+
+function reportHubIcon(kind){
+  const icons={cashflow:'trend',balance:'bank',spending:'receipt',commitments:'repeat',transactions:'swap'};
+  return `<span class="reportHubIcon">${catIcon('__icon:'+(icons[kind]||'tag'))}</span>`;
+}
+
+function ensureReportsHub(){
+  const reports=document.getElementById('reports');
+  if(!reports||document.getElementById('reportsHub'))return;
+  const top=reports.querySelector('.top');
+  const tabs=reports.querySelector('.reportTabs');
+  const periodNav=document.getElementById('reportPeriodNav');
+  const panels=[...reports.querySelectorAll(':scope > .reportPanel')];
+
+  const detailHeader=document.createElement('div');
+  detailHeader.id='reportDetailHeader';
+  detailHeader.className='reportDetailHeader hide';
+  detailHeader.innerHTML='<button type="button" class="reportBackBtn" onclick="backFromReportView()" aria-label="Back to Reports">&lt;</button><div><div class="title" id="reportDetailTitle">Report</div><div class="sub" id="reportDetailSub"></div></div>';
+
+  const controls=document.createElement('div');
+  controls.id='reportsHubControls';
+  controls.className='reportsHubControls';
+
+  const hub=document.createElement('div');
+  hub.id='reportsHub';
+  hub.innerHTML=`<div class="reportsHubSummary"><div><span>Income</span><b id="hubIncome">${peso(0)}</b></div><div><span>Expense</span><b id="hubExpense">${peso(0)}</b></div><div><span>Net</span><b id="hubNet">${peso(0)}</b></div></div><div class="reportsHubSectionLabel">Explore</div><div class="reportsHubList">${Object.entries(reportHubViewDefinitions()).map(([key,item])=>`<button type="button" onclick="openReportView('${key}')">${reportHubIcon(key)}<span class="reportHubCopy"><b>${item.title}</b><small>${item.sub}</small></span><span class="reportHubValue" id="hubValue-${key}"></span><span class="reportHubArrow">&gt;</span></button>`).join('')}</div><div class="reportsHubInsight" id="reportsHubInsight"></div>`;
+
+  const detailBody=document.createElement('div');
+  detailBody.id='reportDetailBody';
+  detailBody.className='reportDetailBody hide';
+
+  const store=document.createElement('div');
+  store.id='reportPanelStore';
+  store.className='reportPanelStore hide';
+
+  const commitment=document.createElement('section');
+  commitment.className='reportPanel commitmentReportPanel';
+  commitment.innerHTML='<h3>Monthly Commitments</h3><div id="commitmentReport"></div>';
+  panels.push(commitment);
+  panels.forEach(panel=>store.appendChild(panel));
+
+  if(top)top.insertAdjacentElement('afterend',detailHeader);
+  else reports.prepend(detailHeader);
+  detailHeader.insertAdjacentElement('afterend',controls);
+  if(tabs)controls.appendChild(tabs);
+  if(periodNav)controls.appendChild(periodNav);
+  controls.insertAdjacentElement('afterend',hub);
+  hub.insertAdjacentElement('afterend',detailBody);
+  reports.appendChild(store);
+}
+
+function reportPanelForContent(id){
+  const content=document.getElementById(id);
+  return content?.closest('.reportPanel')||null;
+}
+
+function restoreReportPanels(){
+  const store=document.getElementById('reportPanelStore');
+  const body=document.getElementById('reportDetailBody');
+  if(!store||!body)return;
+  [...body.querySelectorAll(':scope > .reportPanel')].forEach(panel=>store.appendChild(panel));
+}
+
+function showReportView(view){
+  const definitions=reportHubViewDefinitions();
+  const item=definitions[view];
+  const reports=document.getElementById('reports');
+  if(!item||!reports)return;
+  ensureReportsHub();
+  restoreReportPanels();
+  const body=document.getElementById('reportDetailBody');
+  item.panels.forEach(id=>{
+    const panel=reportPanelForContent(id);
+    if(panel)body.appendChild(panel);
+  });
+  reportView=view;
+  reports.classList.add('reports-detail-open');
+  document.getElementById('reportsHub')?.classList.add('hide');
+  document.getElementById('reportDetailHeader')?.classList.remove('hide');
+  body?.classList.remove('hide');
+  const title=document.getElementById('reportDetailTitle');
+  const sub=document.getElementById('reportDetailSub');
+  if(title)title.textContent=item.title;
+  if(sub)sub.textContent=item.sub;
+  if(view==='spending'){
+    document.getElementById('categoryReport')?.classList.remove('reportContentHidden');
+  }
+  if(view==='commitments'){
+    document.getElementById('insightReport')?.classList.remove('reportContentHidden');
+  }
+  window.scrollTo?.({top:0,behavior:'auto'});
+}
+
+function openReportView(view){
+  if(!reportHubViewDefinitions()[view])return;
+  showReportView(view);
+  try{history.pushState({pesoTrack:true,screen:'reports',reportView:view},'','#reports-'+view)}catch(e){}
+}
+
+function closeReportView(skipHistory=false){
+  const reports=document.getElementById('reports');
+  if(!reports||reportView==='hub')return;
+  restoreReportPanels();
+  reportView='hub';
+  reports.classList.remove('reports-detail-open');
+  document.getElementById('reportsHub')?.classList.remove('hide');
+  document.getElementById('reportDetailHeader')?.classList.add('hide');
+  document.getElementById('reportDetailBody')?.classList.add('hide');
+  if(!skipHistory){
+    try{history.replaceState({pesoTrack:true,screen:'reports'},'','#reports')}catch(e){}
+  }
+  window.scrollTo?.({top:0,behavior:'auto'});
+}
+
+function backFromReportView(){
+  if(reportView==='hub')return;
+  try{history.back()}catch(e){closeReportView(true)}
+}
+
+function reportSubviewActive(){return reportView!=='hub'}
+
+function renderCommitmentReport(income=0){
+  const el=document.getElementById('commitmentReport');
+  if(!el)return;
+  const recurring=(data.recurring||[]).filter(r=>r.enabled!==false&&r.type==='Expense');
+  const recurringTotal=recurring.reduce((sum,r)=>sum+Math.abs(Number(r.amount||0)),0);
+  const openBills=(data.bills||[]).filter(b=>billStatus(b)!=='Paid'&&Number(b.remaining||0)>0);
+  const unpaidTotal=openBills.reduce((sum,b)=>sum+Number(b.remaining||0),0);
+  const fixedRate=income>0?Math.round((recurringTotal/income)*100):0;
+  const upcoming=recurring.slice().sort((a,b)=>Number(a.day||0)-Number(b.day||0)).slice(0,4);
+  el.innerHTML=`<div class="commitmentSummary"><div><span>Recurring</span><b>${peso(recurringTotal)}</b></div><div><span>Card dues</span><b>${peso(unpaidTotal)}</b></div><div><span>Fixed / income</span><b>${income>0?fixedRate+'%':'-'}</b></div></div><div class="commitmentList">${upcoming.length?upcoming.map(r=>`<div><span><b>${htmlText(r.name||r.category||'Recurring')}</b><small>Day ${Number(r.day||1)} - ${htmlText(accountLabel(r.accountId))}</small></span><strong>${peso(r.amount||0)}</strong></div>`).join(''):'<div class="reportEmpty">No enabled recurring expenses.</div>'}</div>`;
+}
+
+function updateReportsHub(income,expense,txns){
+  const net=income-expense;
+  const set=(id,value,tone)=>{const el=document.getElementById(id);if(el){el.textContent=value;el.className=tone||''}};
+  set('hubIncome',peso(income),'green');
+  set('hubExpense',peso(expense),'red');
+  set('hubNet',peso(Math.abs(net)),net>=0?'green':'red');
+  const liquid=(data.accounts||[]).filter(a=>['Savings','Cash','Wallet'].includes(a.type)).reduce((sum,a)=>sum+Number(a.balance||0),0);
+  const recurring=(data.recurring||[]).filter(r=>r.enabled!==false&&r.type==='Expense').reduce((sum,r)=>sum+Math.abs(Number(r.amount||0)),0);
+  set('hubValue-cashflow',peso(Math.abs(net)),net>=0?'green':'red');
+  set('hubValue-balance',peso(liquid));
+  set('hubValue-spending',peso(expense),'red');
+  set('hubValue-commitments',peso(recurring));
+  set('hubValue-transactions',`${txns.length} ${txns.length===1?'entry':'entries'}`);
+  const insight=document.getElementById('reportsHubInsight');
+  if(insight){
+    insight.textContent=income>0
+      ? `You kept ${Math.round((net/income)*100)}% of income for ${reportPeriodTitle()}.`
+      : `No income recorded for ${reportPeriodTitle()}.`;
+    insight.classList.toggle('negative',net<0);
+  }
+  renderCommitmentReport(income);
+}
+
 function renderReports(){
   ensureReportPeriodNav();
+  ensureReportsHub();
   updateReportPeriodLabel();
   const {start,end}=periodStartEnd();
   const txns=(data.txns||[]).filter(t=>txInPeriod(t,start,end));
@@ -17,6 +185,7 @@ function renderReports(){
   try{if(typeof renderExpenseBreakdown==='function')renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}
   try{if(typeof renderInsights==='function')renderInsights()}catch(e){console.warn('Report insights skipped',e)}
   try{if(typeof renderTransactionsList==='function')renderTransactionsList()}catch(e){console.warn('Report transactions skipped',e)}
+  try{updateReportsHub(income,expense,txns)}catch(e){console.warn('Reports hub skipped',e)}
 }
 
 function toggleReportContent(id,button){
@@ -247,9 +416,9 @@ function moveTransactionsToReportEnd(){
     const periodTabs=document.querySelector('#reports .reportTabs');
     const nav=document.getElementById('reportPeriodNav');
     if(!reports||!periodTabs)return;
-    const anchor=reports.querySelector('.accountFilter')||reports.querySelector('.reportPanel');
-    reports.insertBefore(periodTabs,anchor||reports.firstElementChild);
-    if(nav)reports.insertBefore(nav,periodTabs.nextSibling);
+    const controls=document.getElementById('reportsHubControls')||reports;
+    if(periodTabs.parentNode!==controls)controls.appendChild(periodTabs);
+    if(nav&&nav.parentNode!==controls)controls.appendChild(nav);
   }
   function monthLabelForSelectedPeriod(){
     const {start}=periodStartEnd();

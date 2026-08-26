@@ -167,6 +167,10 @@ function closeSheets(){
       restoreCurrentState();
       return;
     }
+    if(activeScreen()==='reports'&&typeof reportSubviewActive==='function'&&reportSubviewActive()){
+      closeReportView(true);
+      return;
+    }
     var target=e.state&&e.state.pesoTrack?e.state.screen:'dashboard';
     if(!screenIds.includes(target))target='dashboard';
     if(canExitFromHome(target)){

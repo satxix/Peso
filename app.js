@@ -167,6 +167,11 @@ function persist(){
 }
 
 function go(id,btn){
+  if(id==='reports'&&screen===id&&typeof reportSubviewActive==='function'&&reportSubviewActive()){
+    closeReportView();
+    return;
+  }
+  if(id!=='reports'&&typeof reportSubviewActive==='function'&&reportSubviewActive())closeReportView(true);
   document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
   if(btn&&!btn.classList.contains('fab'))btn.classList.add('active');
   const target=document.getElementById(id);
