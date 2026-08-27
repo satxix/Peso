@@ -1432,3 +1432,11 @@ button,input,select,textarea{font-family:var(--font-body)!important;font-size:14
   #dashboard .premiumCash{font-size:32px!important}
   .reportHubValue{font-size:12px!important;max-width:86px}
 }
+
+/* Clear row separators for the two dense overview lists. */
+#accounts .acctRow+.acctRow{
+  border-top:1px solid color-mix(in srgb,var(--theme-text) 24%,transparent)!important;
+}
+#reports .reportsHubList>button:not(:last-child){
+  border-bottom:1px solid color-mix(in srgb,var(--theme-text) 24%,transparent)!important;
+}
