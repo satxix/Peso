@@ -36,7 +36,7 @@ function ensureReportsHub(){
 
   const hub=document.createElement('div');
   hub.id='reportsHub';
-  hub.innerHTML=`<div class="reportsHubSummary"><div><span>Income</span><b id="hubIncome">${peso(0)}</b></div><div><span>Expense</span><b id="hubExpense">${peso(0)}</b></div><div><span>Net</span><b id="hubNet">${peso(0)}</b></div></div><div class="reportsHubSectionLabel">Explore</div><div class="reportsHubList">${Object.entries(reportHubViewDefinitions()).map(([key,item])=>`<button type="button" onclick="openReportView('${key}')">${reportHubIcon(key)}<span class="reportHubCopy"><b>${item.title}</b><small>${item.sub}</small></span><span class="reportHubValue" id="hubValue-${key}"></span><span class="reportHubArrow">&gt;</span></button>`).join('')}</div><div class="reportsHubInsight" id="reportsHubInsight"></div>`;
+  hub.innerHTML=`<div class="reportsHubSummary"><div><span>Income</span><b id="hubIncome">${peso(0)}</b><small id="hubIncomeCompare" class="reportCompare"></small></div><div><span>Expense</span><b id="hubExpense">${peso(0)}</b><small id="hubExpenseCompare" class="reportCompare"></small></div><div><span>Net</span><b id="hubNet">${peso(0)}</b><small id="hubNetCompare" class="reportCompare"></small></div></div><div class="reportsHubSectionLabel">Explore</div><div class="reportsHubList">${Object.entries(reportHubViewDefinitions()).map(([key,item])=>`<button type="button" onclick="openReportView('${key}')">${reportHubIcon(key)}<span class="reportHubCopy"><b>${item.title}</b><small>${item.sub}</small></span><span class="reportHubValue" id="hubValue-${key}"></span><span class="reportHubArrow">&gt;</span></button>`).join('')}</div><div class="reportsHubInsight" id="reportsHubInsight"></div>`;
 
   const detailBody=document.createElement('div');
   detailBody.id='reportDetailBody';
@@ -286,6 +286,74 @@ function renderCommitmentReport(income=0){
   el.innerHTML=`<div class="commitmentSummary"><div><span>Recurring</span><b>${peso(recurringTotal)}</b></div><div><span>Card dues</span><b>${peso(unpaidTotal)}</b></div><div><span>Fixed / income</span><b>${income>0?fixedRate+'%':'-'}</b></div></div><div class="commitmentList">${upcoming.length?rows+remainder:'<div class="reportEmpty">No enabled recurring expenses.</div>'}</div>`;
 }
 
+function previousReportPeriodRange(){
+  const {start}=periodStartEnd();
+  if(reportPeriod==='Today'){
+    const previousStart=new Date(start.getFullYear(),start.getMonth(),start.getDate()-1);
+    return {start:previousStart,end:new Date(start)};
+  }
+  if(reportPeriod==='Week'){
+    const previousStart=new Date(start.getFullYear(),start.getMonth(),start.getDate()-7);
+    return {start:previousStart,end:new Date(start)};
+  }
+  if(reportPeriod==='Year'){
+    return {start:new Date(start.getFullYear()-1,0,1),end:new Date(start.getFullYear(),0,1)};
+  }
+  return {start:new Date(start.getFullYear(),start.getMonth()-1,1),end:new Date(start.getFullYear(),start.getMonth(),1)};
+}
+
+function reportTotalsForRange(range){
+  const totals={income:0,expense:0,net:0};
+  (data.txns||[]).filter(t=>txInPeriod(t,range.start,range.end)).forEach(t=>{
+    const amount=Number(t.amount||0);
+    if(t.type==='Income')totals.income+=amount;
+    else if(t.type==='Expense')totals.expense+=amount;
+    else if(t.type==='Transfer'&&Number(t.fee||0))totals.expense+=Number(t.fee||0);
+  });
+  totals.net=totals.income-totals.expense;
+  return totals;
+}
+
+function reportComparisonLabel(current,previous,favorableIncrease=true){
+  const diff=Math.round((Number(current||0)-Number(previous||0))*100)/100;
+  const previousLabel=reportPeriod==='Today'?'yesterday':reportPeriod==='Week'?'last week':reportPeriod==='Year'?'last year':'last month';
+  if(Math.abs(diff)<.01)return {text:`No change vs ${previousLabel}`,tone:'neutral'};
+  const favorable=(diff>0)===favorableIncrease;
+  if(Math.abs(Number(previous||0))<.01){
+    return {text:`New vs ${previousLabel}`,tone:favorable?'good':'bad'};
+  }
+  const percent=Math.round((Math.abs(diff)/Math.abs(Number(previous)))*100);
+  return {text:`${diff>0?'+':'-'}${percent}% vs ${previousLabel}`,tone:favorable?'good':'bad'};
+}
+
+function setReportComparison(id,comparison){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.textContent=comparison.text;
+  el.className=`reportCompare ${comparison.tone}`;
+}
+
+function renderReportComparisons(current){
+  const previous=reportTotalsForRange(previousReportPeriodRange());
+  const comparisons={
+    income:reportComparisonLabel(current.income,previous.income,true),
+    expense:reportComparisonLabel(current.expense,previous.expense,false),
+    net:reportComparisonLabel(current.net,previous.net,true)
+  };
+  setReportComparison('hubIncomeCompare',comparisons.income);
+  setReportComparison('hubExpenseCompare',comparisons.expense);
+  setReportComparison('hubNetCompare',comparisons.net);
+  const trendCards=[...document.querySelectorAll('#cashFlowBars .trendSummary>div')];
+  ['income','expense','net'].forEach((key,index)=>{
+    const card=trendCards[index];
+    if(!card)return;
+    let compare=card.querySelector('.reportCompare');
+    if(!compare){compare=document.createElement('small');card.appendChild(compare)}
+    compare.textContent=comparisons[key].text;
+    compare.className=`reportCompare ${comparisons[key].tone}`;
+  });
+}
+
 function updateReportsHub(income,expense,txns){
   const net=income-expense;
   const set=(id,value,tone)=>{const el=document.getElementById(id);if(el){el.textContent=value;el.className=tone||''}};
@@ -323,6 +391,7 @@ function renderReports(){
     else if(t.type==='Transfer'&&Number(t.fee||0))expense+=Number(t.fee||0);
   });
   renderBars(income,expense,income-expense);
+  renderReportComparisons({income,expense,net:income-expense});
   try{renderIncomeSourceReport()}catch(e){console.warn('Income source report skipped',e)}
   try{if(typeof renderBalanceTrend==='function')renderBalanceTrend()}catch(e){console.warn('Balance trend skipped',e)}
   try{if(typeof updateReportsScope==='function')updateReportsScope()}catch(e){console.warn('Report scope skipped',e)}

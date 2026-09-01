@@ -1470,3 +1470,11 @@ button,input,select,textarea{font-family:var(--font-body)!important;font-size:14
 #reports .incomeAccountRow .expenseBarMeta span:last-child{text-align:right}
 .incomeTxnList{display:grid;gap:8px}
 .incomeTxnList .txnActions{display:none}
+
+/* Compact previous-period context for report totals. */
+.reportCompare{display:block!important;margin-top:4px;font-size:10px!important;line-height:1.3;font-weight:800!important;text-transform:none!important;letter-spacing:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)!important}
+.reportCompare.good{color:var(--ui-positive)!important}
+.reportCompare.bad{color:var(--ui-negative)!important}
+.reportCompare.neutral{color:var(--muted)!important}
+#reports .trendSummary .reportCompare{font-size:10px!important;margin-top:4px}
+.reportsHubSummary .reportCompare{font-size:9.5px!important}
