@@ -2,6 +2,7 @@
 let reportView='hub';
 let incomeDrillState={source:null,accountId:null};
 let expenseDrillState={category:null,accountId:null,showOther:false};
+let commitmentDrillState={kind:null};
 
 function reportHubViewDefinitions(){
   return {
@@ -49,7 +50,7 @@ function ensureReportsHub(){
 
   const commitment=document.createElement('section');
   commitment.className='reportPanel commitmentReportPanel';
-  commitment.innerHTML='<h3>Monthly Commitments</h3><div id="commitmentReport"></div>';
+  commitment.innerHTML='<h3>Commitments Overview</h3><div id="commitmentReport"></div>';
   const incomeSources=document.createElement('section');
   incomeSources.className='reportPanel incomeSourcePanel';
   incomeSources.innerHTML='<h3>Income by Source</h3><div id="incomeSourceReport"></div>';
@@ -125,6 +126,7 @@ function closeReportView(skipHistory=false){
   restoreReportPanels();
   resetIncomeDrill();
   if(typeof resetExpenseDrill==='function')resetExpenseDrill();
+  resetCommitmentDrill();
   reportView='hub';
   reports.classList.remove('reports-detail-open');
   document.getElementById('reportsHub')?.classList.remove('hide');
@@ -266,6 +268,10 @@ function backIncomeDrill(){
 }
 
 function handleReportHistoryState(state){
+  if(reportView==='commitments'){
+    const handled=handleCommitmentReportHistoryState(state);
+    if(handled)return true;
+  }
   if(reportView==='spending'&&typeof handleExpenseReportHistoryState==='function'){
     const handled=handleExpenseReportHistoryState(state);
     if(handled)return true;
@@ -279,21 +285,114 @@ function handleReportHistoryState(state){
   return true;
 }
 
-function renderCommitmentReport(income=0){
+function recurringDatesInRange(rule,start,end){
+  const dates=[];
+  const cursor=new Date(start.getFullYear(),start.getMonth(),1);
+  const created=rule.createdAt?new Date(rule.createdAt):null;
+  const createdMonth=created&&!isNaN(created.getTime())?new Date(created.getFullYear(),created.getMonth(),1):null;
+  while(cursor<end){
+    const day=Math.max(1,Math.min(31,Number(rule.day||1)));
+    const candidate=new Date(cursor.getFullYear(),cursor.getMonth(),Math.min(day,new Date(cursor.getFullYear(),cursor.getMonth()+1,0).getDate()),12);
+    if(candidate>=start&&candidate<end&&(!createdMonth||candidate>=createdMonth))dates.push(candidate);
+    cursor.setMonth(cursor.getMonth()+1);
+  }
+  return dates;
+}
+
+function recurringRecordedForDate(rule,date){
+  const occurrenceKey=date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+  const monthKey=occurrenceKey.slice(0,7);
+  return (data.txns||[]).some(t=>t&&t.recurringId===rule.id&&(t.occurrenceKey===occurrenceKey||t.occurrenceMonth===monthKey||String(t.occurrenceKey||'').slice(0,7)===monthKey));
+}
+
+function commitmentPeriodData(){
+  const range=periodStartEnd();
+  const recurring=(data.recurring||[]).filter(r=>r&&r.enabled!==false).map(rule=>{
+    const dates=recurringDatesInRange(rule,range.start,range.end);
+    return {rule,dates,total:roundMoney(Math.abs(Number(rule.amount||0))*dates.length),recorded:dates.filter(date=>recurringRecordedForDate(rule,date)).length};
+  }).filter(item=>item.dates.length);
+  const expenses=recurring.filter(item=>item.rule.type==='Expense').sort((a,b)=>a.dates[0]-b.dates[0]);
+  const incomes=recurring.filter(item=>item.rule.type==='Income').sort((a,b)=>a.dates[0]-b.dates[0]);
+  const bills=(data.bills||[]).map(bill=>{
+    const dueRaw=String(bill.dueDate||'').slice(0,10);
+    const dueDate=new Date(dueRaw+'T12:00:00');
+    const amount=typeof statementBilledAmount==='function'?statementBilledAmount(bill):Number(bill.amount||bill.remaining||0);
+    return {bill,dueDate,amount:roundMoney(amount),status:billStatus(bill)};
+  }).filter(item=>!isNaN(item.dueDate.getTime())&&item.dueDate>=range.start&&item.dueDate<range.end&&item.amount>0).sort((a,b)=>a.dueDate-b.dueDate);
+  const expenseTotal=roundMoney(expenses.reduce((sum,item)=>sum+item.total,0));
+  const incomeTotal=roundMoney(incomes.reduce((sum,item)=>sum+item.total,0));
+  const cardTotal=roundMoney(bills.reduce((sum,item)=>sum+item.amount,0));
+  return {range,expenses,incomes,bills,expenseTotal,incomeTotal,cardTotal};
+}
+
+function resetCommitmentDrill(){commitmentDrillState={kind:null}}
+function commitmentDrillActive(){return Boolean(commitmentDrillState.kind)}
+
+function commitmentMetricHtml(kind,label,total,count,tone){
+  return `<button type="button" class="commitmentMetric ${tone||''}" onclick="openCommitmentBreakdown('${kind}')"><span>${htmlText(label)}</span><b>${peso(total)}</b><em>${count} ${count===1?'item':'items'}</em></button>`;
+}
+
+function commitmentRecurringRow(item,kind){
+  const rule=item.rule;
+  const count=item.dates.length;
+  const action=kind==='income'?'received':'paid';
+  const schedule=count===1?item.dates[0].toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'}):`${count} occurrences - Day ${Number(rule.day||1)}`;
+  const status=item.recorded===count?(kind==='income'?'Received':'Paid'):item.recorded?`${item.recorded}/${count} ${action}`:'Scheduled';
+  return `<div class="commitmentDetailRow ${kind}"><span><b>${htmlText(rule.name||rule.category||'Recurring')}</b><small>${htmlText(rule.category||rule.type)} - ${htmlText(accountLabel(rule.accountId))}</small><small>${htmlText(schedule)}</small></span><span class="commitmentDetailValue"><strong>${peso(item.total)}</strong><em>${htmlText(status)}</em></span></div>`;
+}
+
+function commitmentBillRow(item){
+  const bill=item.bill;
+  return `<div class="commitmentDetailRow card"><span><b>${htmlText(bill.cardName||'Credit Card')}</b><small>Due ${htmlText(displayDate(item.dueDate))}</small><small>${htmlText(compactBillPeriod(bill))}</small></span><span class="commitmentDetailValue"><strong>${peso(item.amount)}</strong><em class="${statusClass(item.status)}">${htmlText(item.status)}</em></span></div>`;
+}
+
+function commitmentDrillTitle(kind){
+  return kind==='income'?'Recurring Income':kind==='cards'?'Credit Card Dues':'Recurring Expenses';
+}
+
+function renderCommitmentOverview(el,detail){
+  const outgoing=detail.expenseTotal+detail.cardTotal;
+  const note=detail.incomeTotal>0
+    ? `Outgoing commitments are ${Math.round((outgoing/detail.incomeTotal)*100)}% of scheduled recurring income.`
+    : `Outgoing commitments total ${peso(outgoing)} for ${reportPeriodTitle()}.`;
+  el.innerHTML=`<div class="commitmentSummary">${commitmentMetricHtml('expense','Recurring expenses',detail.expenseTotal,detail.expenses.length,'expense')}${commitmentMetricHtml('income','Recurring income',detail.incomeTotal,detail.incomes.length,'income')}${commitmentMetricHtml('cards','Card dues',detail.cardTotal,detail.bills.length,'cards')}</div><div class="commitmentOverviewNote">${htmlText(note)}</div>`;
+}
+
+function renderCommitmentBreakdown(el,detail,kind){
+  const title=commitmentDrillTitle(kind);
+  const items=kind==='income'?detail.incomes:kind==='cards'?detail.bills:detail.expenses;
+  const total=kind==='income'?detail.incomeTotal:kind==='cards'?detail.cardTotal:detail.expenseTotal;
+  const rows=kind==='cards'?items.map(commitmentBillRow).join(''):items.map(item=>commitmentRecurringRow(item,kind)).join('');
+  el.innerHTML=`<div class="incomeDrillHead commitmentDrillHead"><button type="button" onclick="backCommitmentDrill()" aria-label="Back">&lt;</button><div><b>${htmlText(title)}</b><span>${htmlText(reportPeriodTitle())}</span></div></div><div class="commitmentDrillTotal"><span>Total</span><b>${peso(total)}</b><em>${items.length} ${items.length===1?'item':'items'}</em></div><div class="commitmentList commitmentDetailList">${items.length?rows:`<div class="reportEmpty">No ${htmlText(title.toLowerCase())} for this period.</div>`}</div>`;
+}
+
+function renderCommitmentReport(){
   const el=document.getElementById('commitmentReport');
   if(!el)return;
-  const recurring=(data.recurring||[]).filter(r=>r.enabled!==false&&r.type==='Expense');
-  const recurringTotal=recurring.reduce((sum,r)=>sum+Math.abs(Number(r.amount||0)),0);
-  const openBills=(data.bills||[]).filter(b=>billStatus(b)!=='Paid'&&Number(b.remaining||0)>0);
-  const unpaidTotal=openBills.reduce((sum,b)=>sum+Number(b.remaining||0),0);
-  const fixedRate=income>0?Math.round((recurringTotal/income)*100):0;
-  const sorted=recurring.slice().sort((a,b)=>Number(a.day||0)-Number(b.day||0));
-  const upcoming=sorted.slice(0,4);
-  const remaining=sorted.slice(4);
-  const remainingTotal=remaining.reduce((sum,r)=>sum+Math.abs(Number(r.amount||0)),0);
-  const rows=upcoming.map(r=>`<div><span><b>${htmlText(r.name||r.category||'Recurring')}</b><small>Day ${Number(r.day||1)} - ${htmlText(accountLabel(r.accountId))}</small></span><strong>${peso(Math.abs(Number(r.amount||0)))}</strong></div>`).join('');
-  const remainder=remaining.length?`<div class="commitmentRemainder"><span><b>Other recurring</b><small>${remaining.length} more monthly item${remaining.length===1?'':'s'}</small></span><strong>${peso(remainingTotal)}</strong></div>`:'';
-  el.innerHTML=`<div class="commitmentSummary"><div><span>Recurring</span><b>${peso(recurringTotal)}</b></div><div><span>Card dues</span><b>${peso(unpaidTotal)}</b></div><div><span>Fixed / income</span><b>${income>0?fixedRate+'%':'-'}</b></div></div><div class="commitmentList">${upcoming.length?rows+remainder:'<div class="reportEmpty">No enabled recurring expenses.</div>'}</div>`;
+  const detail=commitmentPeriodData();
+  if(commitmentDrillState.kind)renderCommitmentBreakdown(el,detail,commitmentDrillState.kind);
+  else renderCommitmentOverview(el,detail);
+}
+
+function openCommitmentBreakdown(kind,skipHistory=false){
+  if(!['expense','income','cards'].includes(kind))return;
+  commitmentDrillState={kind};
+  renderCommitmentReport();
+  if(!skipHistory)try{history.pushState({pesoTrack:true,screen:'reports',reportView:'commitments',commitmentKind:kind},'','#reports-commitment-'+kind)}catch(e){}
+  document.getElementById('commitmentReport')?.scrollIntoView({block:'start',behavior:'smooth'});
+}
+
+function backCommitmentDrill(){
+  try{history.back()}catch(e){resetCommitmentDrill();renderCommitmentReport()}
+}
+
+function handleCommitmentReportHistoryState(state){
+  const isCommitmentState=Boolean(state&&state.reportView==='commitments'&&state.commitmentKind);
+  if(reportView!=='commitments'||(!commitmentDrillActive()&&!isCommitmentState))return false;
+  if(isCommitmentState)commitmentDrillState={kind:state.commitmentKind};
+  else resetCommitmentDrill();
+  renderCommitmentReport();
+  return true;
 }
 
 function previousReportPeriodRange(){
@@ -371,11 +470,11 @@ function updateReportsHub(income,expense,txns){
   set('hubExpense',peso(expense),'red');
   set('hubNet',peso(Math.abs(net)),net>=0?'green':'red');
   const liquid=(data.accounts||[]).filter(a=>['Savings','Cash','Wallet'].includes(a.type)).reduce((sum,a)=>sum+Number(a.balance||0),0);
-  const recurring=(data.recurring||[]).filter(r=>r.enabled!==false&&r.type==='Expense').reduce((sum,r)=>sum+Math.abs(Number(r.amount||0)),0);
+  const commitments=commitmentPeriodData();
   set('hubValue-cashflow',peso(Math.abs(net)),net>=0?'green':'red');
   set('hubValue-balance',peso(liquid));
   set('hubValue-spending',peso(expense),'red');
-  set('hubValue-commitments',peso(recurring));
+  set('hubValue-commitments',peso(commitments.expenseTotal+commitments.cardTotal));
   set('hubValue-transactions',`${txns.length} ${txns.length===1?'entry':'entries'}`);
   const insight=document.getElementById('reportsHubInsight');
   if(insight){
@@ -384,7 +483,7 @@ function updateReportsHub(income,expense,txns){
       : `No income recorded for ${reportPeriodTitle()}.`;
     insight.classList.toggle('negative',net<0);
   }
-  renderCommitmentReport(income);
+  renderCommitmentReport();
 }
 
 function renderReports(){

@@ -1503,3 +1503,39 @@ button,input,select,textarea{font-family:var(--font-body)!important;font-size:14
 #reports .expenseDrillSummary .expenseStat span{font-size:10.5px!important}
 #reports .expenseDrillSummary .expenseStat b{font-size:14px!important}
 .expenseTxnList .txnActions{display:none!important}
+
+/* Commitment overview and selected-period drill-downs. */
+#reports .commitmentSummary{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px;margin-bottom:10px}
+#reports .commitmentSummary>button{min-width:0;min-height:86px;padding:10px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card-inset);color:var(--text);text-align:left;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-start}
+#reports .commitmentSummary>button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#reports .commitmentSummary>button span{font-size:10px!important;line-height:1.25;font-weight:800!important;color:var(--muted)!important;text-transform:none!important;white-space:normal}
+#reports .commitmentSummary>button b{display:block;margin-top:6px;font-size:13px!important;line-height:1.2;font-weight:800!important;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+#reports .commitmentSummary>button em{display:block;margin-top:auto;padding-top:5px;font-size:9.5px;font-style:normal;font-weight:700;color:var(--muted)}
+#reports .commitmentSummary>button.expense{border-color:color-mix(in srgb,var(--ui-negative) 38%,var(--line))}
+#reports .commitmentSummary>button.expense b{color:var(--ui-negative)}
+#reports .commitmentSummary>button.income{border-color:color-mix(in srgb,var(--ui-positive) 38%,var(--line))}
+#reports .commitmentSummary>button.income b{color:var(--ui-positive)}
+#reports .commitmentSummary>button.cards{border-color:color-mix(in srgb,var(--accent) 38%,var(--line))}
+.commitmentOverviewNote{padding:10px 11px;border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--text);font-size:11px;font-weight:700;line-height:1.45}
+.commitmentDrillTotal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:end;margin-bottom:10px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card-inset)}
+.commitmentDrillTotal span{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase}
+.commitmentDrillTotal b{grid-column:1;font-size:18px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+.commitmentDrillTotal em{grid-column:2;grid-row:1/3;align-self:center;font-size:11px;font-style:normal;font-weight:700;color:var(--muted)}
+#reports .commitmentDetailList{border-top:0;gap:7px}
+#reports .commitmentDetailList>.commitmentDetailRow{padding:11px 10px!important;border:1px solid var(--line)!important;border-radius:8px;background:color-mix(in srgb,var(--card) 92%,var(--bg))}
+.commitmentDetailRow>span:first-child{min-width:0}
+.commitmentDetailRow small{line-height:1.35}
+.commitmentDetailValue{flex:0 0 auto;text-align:right}
+.commitmentDetailValue strong,.commitmentDetailValue em{display:block}
+.commitmentDetailValue strong{font-size:13px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.commitmentDetailRow.expense .commitmentDetailValue strong{color:var(--ui-negative)}
+.commitmentDetailRow.income .commitmentDetailValue strong{color:var(--ui-positive)}
+.commitmentDetailValue em{margin-top:4px;font-size:10px;font-style:normal;font-weight:800;color:var(--muted)}
+.commitmentDetailValue em.paid{color:var(--ui-positive)}
+.commitmentDetailValue em.unpaid{color:var(--ui-negative)}
+.commitmentDetailValue em.partial{color:var(--warning,#f4c56a)}
+@media(max-width:360px){
+  #reports .commitmentSummary{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #reports .commitmentSummary>button{min-height:82px;padding:9px 6px}
+  #reports .commitmentSummary>button b{font-size:12px!important}
+}
