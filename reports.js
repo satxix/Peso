@@ -5,7 +5,7 @@ let incomeDrillState={source:null,accountId:null};
 function reportHubViewDefinitions(){
   return {
     cashflow:{title:'Cash Flow',sub:'Income, expenses, and net performance',panels:['cashFlowBars','incomeSourceReport']},
-    balance:{title:'Balance',sub:'Ending balances and liquid-account trend',panels:['balanceTrendReport']},
+    balance:{title:'Balance',sub:'Ending balances and liquid-account trend',panels:['balanceTrendReport','balanceCompositionReport']},
     spending:{title:'Spending',sub:'Categories and monthly budget performance',panels:['categoryReport','budgetReport']},
     commitments:{title:'Commitments',sub:'Recurring expenses, card dues, and alerts',panels:['commitmentReport','insightReport']},
     transactions:{title:'Transactions',sub:'Search and review activity for this period',panels:['transactionReport']}
@@ -52,7 +52,11 @@ function ensureReportsHub(){
   const incomeSources=document.createElement('section');
   incomeSources.className='reportPanel incomeSourcePanel';
   incomeSources.innerHTML='<h3>Income by Source</h3><div id="incomeSourceReport"></div>';
+  const balanceComposition=document.createElement('section');
+  balanceComposition.className='reportPanel balanceCompositionPanel';
+  balanceComposition.innerHTML='<h3>Balance by Account</h3><div id="balanceCompositionReport"></div>';
   panels.push(incomeSources);
+  panels.push(balanceComposition);
   panels.push(commitment);
   panels.forEach(panel=>store.appendChild(panel));
 
@@ -394,6 +398,7 @@ function renderReports(){
   renderReportComparisons({income,expense,net:income-expense});
   try{renderIncomeSourceReport()}catch(e){console.warn('Income source report skipped',e)}
   try{if(typeof renderBalanceTrend==='function')renderBalanceTrend()}catch(e){console.warn('Balance trend skipped',e)}
+  try{renderBalanceComposition()}catch(e){console.warn('Balance composition skipped',e)}
   try{if(typeof updateReportsScope==='function')updateReportsScope()}catch(e){console.warn('Report scope skipped',e)}
   try{if(typeof renderExpenseBreakdown==='function')renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}
   try{if(typeof renderInsights==='function')renderInsights()}catch(e){console.warn('Report insights skipped',e)}
@@ -543,6 +548,43 @@ function renderBalanceTrend(){
     return `<g><text x="${x}" y="${valueY}" class="balanceValueLabel" text-anchor="middle">${htmlText(shortPeso(p.point.total))}</text><circle cx="${p.x}" cy="${p.y}" r="5" class="balancePoint"></circle><text x="${x}" y="158" class="balanceDateLabel" text-anchor="middle">${htmlText(p.point.label)}</text></g>`;
   }).join('');
   el.innerHTML=`<div class="balanceTrendTop"><div><span>Ending balance</span><b>${peso(latest.total)}</b></div><div><span>Change</span><b class="${tone}">${change>=0?'+':'-'}${peso(Math.abs(change))}</b></div></div><svg class="balanceLineChart" viewBox="0 0 600 180" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Balance trend"><path d="M30 132H570" class="axis"></path><polyline points="${coords}" class="line"></polyline>${labels}</svg>`;
+}
+
+function balanceCompositionData(){
+  const {end}=periodStartEnd();
+  const accounts=(data.accounts||[])
+    .filter(account=>account&&['Savings','Cash','Wallet'].includes(account.type))
+    .map(account=>({account,balance:roundMoney(liquidAccountBalanceAt(account,end))}))
+    .sort((a,b)=>b.balance-a.balance||(a.account.name||'').localeCompare(b.account.name||''));
+  const total=roundMoney(accounts.reduce((sum,item)=>sum+item.balance,0));
+  const positiveTotal=accounts.reduce((sum,item)=>sum+Math.max(0,item.balance),0);
+  return {accounts,total,positiveTotal,end};
+}
+
+function balanceAccountRowHtml(item,max,positiveTotal){
+  const account=item.account;
+  const positive=Math.max(0,item.balance);
+  const width=positive>0?Math.max(5,Math.round((positive/Math.max(1,max))*100)):0;
+  const share=positiveTotal>0?Math.round((positive/positiveTotal)*100):0;
+  const mark=typeof accountLogoSafe==='function'?accountLogoSafe(account):(typeof logo==='function'?logo(account):'');
+  const route=incomeRouteValue(account.id);
+  return `<div class="expenseBarRow balanceAccountRow" role="button" tabindex="0" onclick="openAccountDetail(decodeURIComponent('${route}'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAccountDetail(decodeURIComponent('${route}'))}"><div class="incomeAccountTop"><span class="incomeAccountIdentity">${mark}<span><b>${htmlText(account.name,'Unnamed Account')}</b><small>${htmlText(account.institution||account.type||'Account')}</small></span></span><strong class="${item.balance<0?'red':''}">${peso(item.balance)}</strong></div><div class="expenseTrack balanceCompositionTrack"><i style="width:${width}%"></i></div><div class="expenseBarMeta"><span>${share}% of liquid balance</span><span>${htmlText(account.type)}</span></div><div class="balanceAccountHint">Tap for current account details</div></div>`;
+}
+
+function renderBalanceComposition(){
+  const el=document.getElementById('balanceCompositionReport');
+  if(!el)return;
+  const result=balanceCompositionData();
+  if(!result.accounts.length){
+    el.innerHTML='<div class="expenseEmpty"><b>No liquid accounts available.</b><br>Add a savings, cash, or wallet account to see its balance contribution.</div>';
+    return;
+  }
+  const largest=result.accounts[0];
+  const largestName=largest.account.name||largest.account.institution||largest.account.type;
+  const max=Math.max(1,...result.accounts.map(item=>Math.max(0,item.balance)));
+  const summary=`<div class="expenseBreakdownSummary balanceCompositionSummary"><div class="expenseStat"><span>Total balance</span><b>${peso(result.total)}</b></div><div class="expenseStat"><span>Accounts</span><b>${result.accounts.length}</b></div><div class="expenseStat"><span>Largest</span><b>${htmlText(largestName)}</b></div></div>`;
+  const rows=result.accounts.map(item=>balanceAccountRowHtml(item,max,result.positiveTotal)).join('');
+  el.innerHTML=`<div class="balanceCompositionSub">Ending balances for ${htmlText(reportPeriodTitle())}</div>${summary}<div class="expenseBreakdownRows balanceAccountRows">${rows}</div>`;
 }
 
 /* Reports period navigation: previous/next day, week, month, year. */

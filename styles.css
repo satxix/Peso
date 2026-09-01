@@ -1478,3 +1478,16 @@ button,input,select,textarea{font-family:var(--font-body)!important;font-size:14
 .reportCompare.neutral{color:var(--muted)!important}
 #reports .trendSummary .reportCompare{font-size:10px!important;margin-top:4px}
 .reportsHubSummary .reportCompare{font-size:9.5px!important}
+
+/* Period-ending liquid balance composition. */
+.balanceCompositionSub{margin:-2px 0 10px;color:var(--muted);font-size:11px;font-weight:700}
+.balanceAccountRow{cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.balanceAccountRow:active{transform:scale(.995)}
+.balanceAccountRow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.balanceCompositionTrack i{background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 54%,var(--ui-positive)))!important}
+.balanceAccountRow .incomeAccountTop>strong.red{color:var(--ui-negative)!important}
+#reports .balanceAccountRow .expenseBarMeta{grid-template-columns:auto 1fr!important}
+#reports .balanceAccountRow .expenseBarMeta span:last-child{text-align:right}
+.balanceAccountHint{margin-top:7px;color:var(--accent);font-size:11px;font-weight:800}
+#reports .balanceCompositionPanel .expenseStat span{font-size:10.5px!important}
+#reports .balanceCompositionPanel .expenseStat b{font-size:14px!important}
