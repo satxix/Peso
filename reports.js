@@ -795,11 +795,11 @@ function moveTransactionsToReportEnd(){
     if(mEnd<=currentMonthStart){
       const variance=safeUsed-safeLimit;
       return variance>0
-        ?{label:'Final spend',value:peso(safeUsed),status:'Over budget',tone:'danger',detail:`${peso(variance)} over limit`}
-        :{label:'Final spend',value:peso(safeUsed),status:'Finished under',tone:'good',detail:`${peso(Math.abs(variance))} unused`};
+        ?{phase:'past',amount:safeUsed,label:'Final spend',value:peso(safeUsed),status:'Over budget',tone:'danger',detail:`${peso(variance)} over limit`}
+        :{phase:'past',amount:safeUsed,label:'Final spend',value:peso(safeUsed),status:'Finished under',tone:'good',detail:`${peso(Math.abs(variance))} unused`};
     }
     if(mStart>=nextMonthStart){
-      return {label:'Forecast',value:'Not available',status:'Not started',tone:'neutral',detail:'Begins when the month starts'};
+      return {phase:'future',amount:null,label:'Forecast',value:'Not available',status:'Not started',tone:'neutral',detail:'Begins when the month starts'};
     }
 
     const daysInMonth=new Date(mStart.getFullYear(),mStart.getMonth()+1,0).getDate();
@@ -807,12 +807,12 @@ function moveTransactionsToReportEnd(){
     const projected=Math.max(safeUsed,Math.round((safeUsed/elapsedDays)*daysInMonth*100)/100);
     const variance=projected-safeLimit;
     if(variance>0){
-      return {label:'Projected',value:peso(projected),status:'Likely over',tone:'danger',detail:differenceCopy(variance,true)};
+      return {phase:'current',amount:projected,label:'Projected',value:peso(projected),status:'Likely over',tone:'danger',detail:differenceCopy(variance,true)};
     }
     if(safeLimit&&projected>=safeLimit*.9){
-      return {label:'Projected',value:peso(projected),status:'Watch',tone:'warn',detail:differenceCopy(variance,false)};
+      return {phase:'current',amount:projected,label:'Projected',value:peso(projected),status:'Watch',tone:'warn',detail:differenceCopy(variance,false)};
     }
-    return {label:'Projected',value:peso(projected),status:'On track',tone:'good',detail:differenceCopy(variance,false)};
+    return {phase:'current',amount:projected,label:'Projected',value:peso(projected),status:'On track',tone:'good',detail:differenceCopy(variance,false)};
   }
   function renderBudgetReportForSelectedMonth(){
     const el=document.getElementById('budgetReport');
@@ -857,11 +857,36 @@ function moveTransactionsToReportEnd(){
       totalPill.classList.toggle('hide',!arr.length);
     }
     const monthName=monthLabelForSelectedPeriod();
-    el.innerHTML=arr.length?arr.map(b=>{
+    const budgetRows=arr.map(b=>{
       const used=Number(spend[b.category]||0),limit=Number(b.amount||0),pct=limit?Math.round((used/limit)*100):0,barClass=pct>=100?'danger':pct>=80?'warn':'';
       const forecast=budgetForecastForMonth(used,limit,mStart,mEnd);
+      return {budget:b,used,limit,pct,barClass,forecast};
+    });
+    if(!budgetRows.length){
+      el.innerHTML=`<div class="reportEmpty">No budgets yet. Budgets are monthly, so they follow the month that contains the selected period.</div>`;
+      return;
+    }
+    const totalUsed=budgetRows.reduce((sum,row)=>sum+row.used,0);
+    const phase=budgetRows[0].forecast.phase;
+    const forecastTotal=phase==='future'?null:budgetRows.reduce((sum,row)=>sum+Number(row.forecast.amount||0),0);
+    const riskCount=budgetRows.filter(row=>row.forecast.tone==='danger').length;
+    let overview={label:'Projected',value:'Not available',status:'Not started',tone:'neutral'};
+    if(phase==='past'){
+      overview=totalUsed>totalLimit
+        ?{label:'Final spend',value:shortPeso(totalUsed),status:'Over budget',tone:'danger'}
+        :{label:'Final spend',value:shortPeso(totalUsed),status:'Finished under',tone:'good'};
+    }else if(phase==='current'){
+      const isOver=forecastTotal>totalLimit;
+      const needsWatch=!isOver&&(riskCount>0||(totalLimit&&forecastTotal>=totalLimit*.9));
+      overview={label:'Projected',value:shortPeso(forecastTotal),status:isOver?'Likely over':needsWatch?'Watch':'On track',tone:isOver?'danger':needsWatch?'warn':'good'};
+    }
+    const riskCopy=phase==='future'?'Forecast pending':`${riskCount} ${riskCount===1?'category':'categories'} ${phase==='past'?'over budget':'likely over'}`;
+    const overviewHtml=`<div class="budgetOverview ${overview.tone}"><div class="budgetOverviewMetrics"><span><small>Total limit</small><b title="${htmlText(peso(totalLimit))}">${shortPeso(totalLimit)}</b></span><span><small>Spent</small><b title="${htmlText(peso(totalUsed))}">${shortPeso(totalUsed)}</b></span><span><small>${overview.label}</small><b title="${forecastTotal===null?'Not available':htmlText(peso(forecastTotal))}">${overview.value}</b></span></div><div class="budgetOverviewFooter"><span><small>Overall</small><strong>${overview.status}</strong></span><em>${riskCopy}</em></div></div>`;
+    const cardsHtml=budgetRows.map(row=>{
+      const {budget:b,used,limit,pct,barClass,forecast}=row;
       return `<div class="budgetCard"><div class="budgetTop"><div><b>${catIcon(b.category)} ${htmlText(b.category)}</b><div class="sub">${htmlText(monthName)} monthly limit ${peso(limit)}</div></div><span class="budgetPct">${pct}%</span></div><div class="budgetBar ${barClass}"><i style="width:${Math.min(100,pct)}%"></i></div><div class="budgetMeta"><span>Used ${peso(used)}</span><span>Left ${peso(Math.max(0,limit-used))}</span></div><div class="budgetForecast ${forecast.tone}"><span><small>${forecast.label}</small><b>${forecast.value}</b></span><span class="budgetForecastStatus"><strong>${forecast.status}</strong><em>${forecast.detail}</em></span></div><div class="budgetActions"><button class="tiny" onclick="openBudget('${jsString(b.id)}')">Edit</button><button class="tiny danger" onclick="deleteBudget('${jsString(b.id)}')">Delete</button></div></div>`;
-    }).join(''):`<div class="reportEmpty">No budgets yet. Budgets are monthly, so they follow the month that contains the selected period.</div>`;
+    }).join('');
+    el.innerHTML=overviewHtml+cardsHtml;
   }
   function updateReportsScope(){
     syncReportPeriodButtons();

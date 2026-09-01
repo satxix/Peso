@@ -1442,6 +1442,19 @@ button,input,select,textarea{font-family:var(--font-body)!important;font-size:14
 .budgetForecast.danger{border-color:color-mix(in srgb,var(--ui-negative) 40%,var(--line))}.budgetForecast.danger strong{color:#ffb4ad}
 .budgetForecast.neutral strong{color:color-mix(in srgb,var(--text) 72%,var(--muted))}
 @media(max-width:370px){.budgetForecast{gap:7px;padding:9px}.budgetForecast b{font-size:13px}.budgetForecast em{font-size:10px}}
+
+.budgetOverview{padding:12px;border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 10%,var(--theme-surface)),color-mix(in srgb,var(--theme-surface-inset) 80%,var(--theme-surface)))}
+.budgetOverviewMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.budgetOverviewMetrics>span{min-width:0;padding:9px 8px;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));border-radius:11px;background:color-mix(in srgb,var(--theme-surface-inset) 72%,var(--theme-surface))}
+.budgetOverview small{display:block;font-size:10px;font-weight:800;color:var(--muted)}
+.budgetOverviewMetrics b{display:block;margin-top:4px;overflow:hidden;text-overflow:ellipsis;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text)}
+.budgetOverviewFooter{display:flex;align-items:end;justify-content:space-between;gap:10px;margin-top:10px;padding:0 2px}
+.budgetOverviewFooter strong{display:block;margin-top:2px;font-size:13px;font-weight:800}.budgetOverviewFooter em{font-size:10.5px;line-height:1.3;font-style:normal;font-weight:600;text-align:right;color:var(--muted)}
+.budgetOverview.good{border-color:color-mix(in srgb,var(--ui-positive) 38%,var(--line))}.budgetOverview.good strong{color:color-mix(in srgb,var(--ui-positive) 78%,#fff)}
+.budgetOverview.warn{border-color:color-mix(in srgb,var(--orange) 42%,var(--line))}.budgetOverview.warn strong{color:#ffd38a}
+.budgetOverview.danger{border-color:color-mix(in srgb,var(--ui-negative) 42%,var(--line))}.budgetOverview.danger strong{color:#ffb4ad}
+.budgetOverview.neutral strong{color:color-mix(in srgb,var(--text) 72%,var(--muted))}
+@media(max-width:370px){.budgetOverview{padding:9px}.budgetOverviewMetrics{gap:5px}.budgetOverviewMetrics>span{padding:8px 6px}.budgetOverviewMetrics b{font-size:12px}.budgetOverviewFooter{align-items:flex-start}.budgetOverviewFooter em{max-width:48%}}
 #pickerSheet .meta,.pickerAccountDetail,.billAccountIdentity em{font-size:12px!important;color:var(--muted)!important;font-weight:600!important}
 .accountPickerGroupTitle{font-size:11px!important;color:var(--muted)!important;font-weight:800!important}
 
