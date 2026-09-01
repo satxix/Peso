@@ -784,6 +784,36 @@ function moveTransactionsToReportEnd(){
     const {start}=periodStartEnd();
     return start.toLocaleDateString('en-PH',{month:'long',year:'numeric'});
   }
+  function budgetForecastForMonth(used,limit,mStart,mEnd){
+    const now=new Date();
+    const currentMonthStart=new Date(now.getFullYear(),now.getMonth(),1);
+    const nextMonthStart=new Date(now.getFullYear(),now.getMonth()+1,1);
+    const safeUsed=Math.max(0,Number(used||0));
+    const safeLimit=Math.max(0,Number(limit||0));
+    const differenceCopy=(amount,over)=>`${peso(Math.abs(amount))} ${over?'over limit':'projected buffer'}`;
+
+    if(mEnd<=currentMonthStart){
+      const variance=safeUsed-safeLimit;
+      return variance>0
+        ?{label:'Final spend',value:peso(safeUsed),status:'Over budget',tone:'danger',detail:`${peso(variance)} over limit`}
+        :{label:'Final spend',value:peso(safeUsed),status:'Finished under',tone:'good',detail:`${peso(Math.abs(variance))} unused`};
+    }
+    if(mStart>=nextMonthStart){
+      return {label:'Forecast',value:'Not available',status:'Not started',tone:'neutral',detail:'Begins when the month starts'};
+    }
+
+    const daysInMonth=new Date(mStart.getFullYear(),mStart.getMonth()+1,0).getDate();
+    const elapsedDays=Math.max(1,Math.min(now.getDate(),daysInMonth));
+    const projected=Math.max(safeUsed,Math.round((safeUsed/elapsedDays)*daysInMonth*100)/100);
+    const variance=projected-safeLimit;
+    if(variance>0){
+      return {label:'Projected',value:peso(projected),status:'Likely over',tone:'danger',detail:differenceCopy(variance,true)};
+    }
+    if(safeLimit&&projected>=safeLimit*.9){
+      return {label:'Projected',value:peso(projected),status:'Watch',tone:'warn',detail:differenceCopy(variance,false)};
+    }
+    return {label:'Projected',value:peso(projected),status:'On track',tone:'good',detail:differenceCopy(variance,false)};
+  }
   function renderBudgetReportForSelectedMonth(){
     const el=document.getElementById('budgetReport');
     if(!el)return;
@@ -829,7 +859,8 @@ function moveTransactionsToReportEnd(){
     const monthName=monthLabelForSelectedPeriod();
     el.innerHTML=arr.length?arr.map(b=>{
       const used=Number(spend[b.category]||0),limit=Number(b.amount||0),pct=limit?Math.round((used/limit)*100):0,barClass=pct>=100?'danger':pct>=80?'warn':'';
-      return `<div class="budgetCard"><div class="budgetTop"><div><b>${catIcon(b.category)} ${htmlText(b.category)}</b><div class="sub">${htmlText(monthName)} monthly limit ${peso(limit)}</div></div><span class="budgetPct">${pct}%</span></div><div class="budgetBar ${barClass}"><i style="width:${Math.min(100,pct)}%"></i></div><div class="budgetMeta"><span>Used ${peso(used)}</span><span>Left ${peso(Math.max(0,limit-used))}</span></div><div class="budgetActions"><button class="tiny" onclick="openBudget('${jsString(b.id)}')">Edit</button><button class="tiny danger" onclick="deleteBudget('${jsString(b.id)}')">Delete</button></div></div>`;
+      const forecast=budgetForecastForMonth(used,limit,mStart,mEnd);
+      return `<div class="budgetCard"><div class="budgetTop"><div><b>${catIcon(b.category)} ${htmlText(b.category)}</b><div class="sub">${htmlText(monthName)} monthly limit ${peso(limit)}</div></div><span class="budgetPct">${pct}%</span></div><div class="budgetBar ${barClass}"><i style="width:${Math.min(100,pct)}%"></i></div><div class="budgetMeta"><span>Used ${peso(used)}</span><span>Left ${peso(Math.max(0,limit-used))}</span></div><div class="budgetForecast ${forecast.tone}"><span><small>${forecast.label}</small><b>${forecast.value}</b></span><span class="budgetForecastStatus"><strong>${forecast.status}</strong><em>${forecast.detail}</em></span></div><div class="budgetActions"><button class="tiny" onclick="openBudget('${jsString(b.id)}')">Edit</button><button class="tiny danger" onclick="deleteBudget('${jsString(b.id)}')">Delete</button></div></div>`;
     }).join(''):`<div class="reportEmpty">No budgets yet. Budgets are monthly, so they follow the month that contains the selected period.</div>`;
   }
   function updateReportsScope(){
