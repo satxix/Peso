@@ -1440,3 +1440,33 @@ button,input,select,textarea{font-family:var(--font-body)!important;font-size:14
 #reports .reportsHubList>button:not(:last-child){
   border-bottom:1px solid color-mix(in srgb,var(--theme-text) 24%,transparent)!important;
 }
+
+/* Income source and account drill-downs. */
+#reports .incomeSourcePanel .expenseStat span{font-size:10.5px!important}
+#reports .incomeSourcePanel .expenseStat b{font-size:14px!important}
+#reports .incomeSourcePanel .expenseBarTop b,
+#reports .incomeSourcePanel .expenseBarTop strong{font-size:14px!important}
+#reports .incomeSourcePanel .expenseBarMeta{font-size:11px!important;line-height:1.3!important}
+.incomeSourceRow,.incomeAccountRow{cursor:pointer;transition:transform .16s ease,border-color .16s ease,background .16s ease}
+.incomeSourceRow:active,.incomeAccountRow:active{transform:scale(.995)}
+.incomeSourceRow:focus-visible,.incomeAccountRow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.incomeTrack i{background:linear-gradient(90deg,var(--ui-positive),color-mix(in srgb,var(--ui-positive) 56%,var(--accent)))!important}
+.incomeDrillHint{margin-top:7px;font-size:11px;font-weight:800;color:var(--ui-positive)}
+.incomeDrillHead{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:center;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid color-mix(in srgb,var(--theme-text) 24%,transparent)}
+.incomeDrillHead>button{width:38px;height:38px;border:1px solid color-mix(in srgb,var(--accent) 28%,var(--line));border-radius:8px;background:var(--card-inset);color:var(--text);font-size:19px;font-weight:800;cursor:pointer}
+.incomeDrillHead>div{min-width:0}
+.incomeDrillHead b{display:block;font-size:16px;font-weight:800;color:var(--text)}
+.incomeDrillHead span{display:block;margin-top:2px;font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.incomeAccountTop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.incomeAccountIdentity{display:flex;align-items:center;gap:9px;min-width:0}
+.incomeAccountIdentity>.bank{width:36px!important;height:36px!important;flex:0 0 36px!important;margin:0!important;border-radius:8px!important}
+.incomeAccountIdentity>span:last-child{min-width:0}
+.incomeAccountIdentity b,.incomeAccountIdentity small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.incomeAccountIdentity b{font-size:14px;font-weight:800;color:var(--text)}
+.incomeAccountIdentity small{margin-top:2px;font-size:11px;font-weight:600;color:var(--muted)}
+.incomeAccountTop>strong{font-size:14px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.incomeAccountFallback{width:36px;height:36px;flex:0 0 36px;border-radius:8px;display:grid;place-items:center;background:var(--card-inset);color:var(--muted);font-weight:800}
+#reports .incomeAccountRow .expenseBarMeta{grid-template-columns:auto 1fr!important}
+#reports .incomeAccountRow .expenseBarMeta span:last-child{text-align:right}
+.incomeTxnList{display:grid;gap:8px}
+.incomeTxnList .txnActions{display:none}

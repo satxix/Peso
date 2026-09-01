@@ -167,6 +167,9 @@ function closeSheets(){
       restoreCurrentState();
       return;
     }
+    if(activeScreen()==='reports'&&typeof handleReportHistoryState==='function'&&handleReportHistoryState(e.state)){
+      return;
+    }
     if(activeScreen()==='reports'&&typeof reportSubviewActive==='function'&&reportSubviewActive()){
       closeReportView(true);
       return;

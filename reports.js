@@ -1,9 +1,10 @@
 /* PesoTrack reports, budgets, insights, period controls, and expense breakdown views. Loaded before app.js. */
 let reportView='hub';
+let incomeDrillState={source:null,accountId:null};
 
 function reportHubViewDefinitions(){
   return {
-    cashflow:{title:'Cash Flow',sub:'Income, expenses, and net performance',panels:['cashFlowBars']},
+    cashflow:{title:'Cash Flow',sub:'Income, expenses, and net performance',panels:['cashFlowBars','incomeSourceReport']},
     balance:{title:'Balance',sub:'Ending balances and liquid-account trend',panels:['balanceTrendReport']},
     spending:{title:'Spending',sub:'Categories and monthly budget performance',panels:['categoryReport','budgetReport']},
     commitments:{title:'Commitments',sub:'Recurring expenses, card dues, and alerts',panels:['commitmentReport','insightReport']},
@@ -48,6 +49,10 @@ function ensureReportsHub(){
   const commitment=document.createElement('section');
   commitment.className='reportPanel commitmentReportPanel';
   commitment.innerHTML='<h3>Monthly Commitments</h3><div id="commitmentReport"></div>';
+  const incomeSources=document.createElement('section');
+  incomeSources.className='reportPanel incomeSourcePanel';
+  incomeSources.innerHTML='<h3>Income by Source</h3><div id="incomeSourceReport"></div>';
+  panels.push(incomeSources);
   panels.push(commitment);
   panels.forEach(panel=>store.appendChild(panel));
 
@@ -113,6 +118,7 @@ function closeReportView(skipHistory=false){
   const reports=document.getElementById('reports');
   if(!reports||reportView==='hub')return;
   restoreReportPanels();
+  resetIncomeDrill();
   reportView='hub';
   reports.classList.remove('reports-detail-open');
   document.getElementById('reportsHub')?.classList.remove('hide');
@@ -130,6 +136,138 @@ function backFromReportView(){
 }
 
 function reportSubviewActive(){return reportView!=='hub'}
+
+function resetIncomeDrill(){incomeDrillState={source:null,accountId:null}}
+function incomeDrillActive(){return Boolean(incomeDrillState.source)}
+
+function incomeSourceData(){
+  const {start,end}=periodStartEnd();
+  const sourceMap=new Map();
+  (data.txns||[]).filter(t=>t&&t.type==='Income'&&txInPeriod(t,start,end)).forEach(t=>{
+    const amount=Number(t.amount||0);
+    if(!amount)return;
+    const label=String(t.category||'Uncategorized').trim()||'Uncategorized';
+    const key=label.toLocaleLowerCase();
+    if(!sourceMap.has(key))sourceMap.set(key,{name:label,total:0,txns:[],accounts:new Map()});
+    const source=sourceMap.get(key);
+    source.total+=amount;
+    source.txns.push(t);
+    const accountId=t.from||'missing';
+    if(!source.accounts.has(accountId))source.accounts.set(accountId,{accountId,total:0,txns:[]});
+    const account=source.accounts.get(accountId);
+    account.total+=amount;
+    account.txns.push(t);
+  });
+  const sources=[...sourceMap.values()].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
+  return {sources,total:sources.reduce((sum,item)=>sum+item.total,0)};
+}
+
+function incomeSourceByName(name){
+  return incomeSourceData().sources.find(item=>item.name.toLocaleLowerCase()===String(name||'').toLocaleLowerCase())||null;
+}
+
+function incomeRouteValue(value){
+  return encodeURIComponent(String(value??'')).replace(/'/g,'%27');
+}
+
+function incomeDrillHeader(title,sub){
+  return `<div class="incomeDrillHead"><button type="button" onclick="backIncomeDrill()" aria-label="Back">&lt;</button><div><b>${htmlText(title)}</b><span>${htmlText(sub)}</span></div></div>`;
+}
+
+function incomeSummaryHtml(total,count,biggestLabel,biggestValue){
+  return `<div class="expenseBreakdownSummary incomeBreakdownSummary"><div class="expenseStat"><span>Total income</span><b>${peso(total)}</b></div><div class="expenseStat"><span>${htmlText(count.label)}</span><b>${htmlText(count.value)}</b></div><div class="expenseStat"><span>${htmlText(biggestLabel)}</span><b>${htmlText(biggestValue)}</b></div></div>`;
+}
+
+function incomeSourceRowHtml(source,total,max){
+  const pct=Math.round((source.total/Math.max(1,total))*100);
+  const width=Math.max(5,Math.round((source.total/Math.max(1,max))*100));
+  const icon=typeof catIcon==='function'?catIcon(source.name):'';
+  const route=incomeRouteValue(source.name);
+  return `<div class="expenseBarRow incomeSourceRow" role="button" tabindex="0" onclick="openIncomeSourceBreakdown(decodeURIComponent('${route}'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openIncomeSourceBreakdown(decodeURIComponent('${route}'))}"><div class="expenseBarTop"><b>${icon} ${htmlText(source.name)}</b><strong>${peso(source.total)}</strong></div><div class="expenseTrack incomeTrack"><i style="width:${width}%"></i></div><div class="expenseBarMeta"><span>${pct}% of income</span><span>${source.txns.length} ${source.txns.length===1?'entry':'entries'}</span><span>${htmlText(reportPeriodTitle())}</span></div><div class="incomeDrillHint">Tap to see accounts</div></div>`;
+}
+
+function renderIncomeSourceOverview(el){
+  const result=incomeSourceData();
+  const label=reportPeriodTitle();
+  if(!result.sources.length){
+    el.innerHTML=`<div class="expenseEmpty"><b>No income for ${htmlText(label)}.</b><br>Record income and choose a source such as Salary, Interest, or Business.</div>`;
+    return;
+  }
+  const top=result.sources[0];
+  const rows=result.sources.map(source=>incomeSourceRowHtml(source,result.total,top.total)).join('');
+  el.innerHTML=incomeSummaryHtml(result.total,{label:'Sources',value:result.sources.length},'Biggest',top.name)+`<div class="expenseBreakdownRows incomeSourceRows">${rows}</div>`;
+}
+
+function incomeAccountRowHtml(item,sourceTotal,max){
+  const account=(data.accounts||[]).find(a=>a.id===item.accountId);
+  const pct=Math.round((item.total/Math.max(1,sourceTotal))*100);
+  const width=Math.max(5,Math.round((item.total/Math.max(1,max))*100));
+  const accountName=account?(account.name||account.institution||account.type):'Missing account';
+  const institution=account?(account.institution||account.type):'Previously recorded income';
+  const mark=account&&typeof logo==='function'?logo(account):'<span class="incomeAccountFallback">?</span>';
+  const sourceRoute=incomeRouteValue(incomeDrillState.source);
+  const accountRoute=incomeRouteValue(item.accountId);
+  return `<div class="expenseBarRow incomeAccountRow" role="button" tabindex="0" onclick="openIncomeAccountBreakdown(decodeURIComponent('${sourceRoute}'),decodeURIComponent('${accountRoute}'))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openIncomeAccountBreakdown(decodeURIComponent('${sourceRoute}'),decodeURIComponent('${accountRoute}'))}"><div class="incomeAccountTop"><span class="incomeAccountIdentity">${mark}<span><b>${htmlText(accountName)}</b><small>${htmlText(institution)}</small></span></span><strong>${peso(item.total)}</strong></div><div class="expenseTrack incomeTrack"><i style="width:${width}%"></i></div><div class="expenseBarMeta"><span>${pct}% of ${htmlText(incomeDrillState.source)}</span><span>${item.txns.length} ${item.txns.length===1?'entry':'entries'}</span></div><div class="incomeDrillHint">Tap to see transactions</div></div>`;
+}
+
+function renderIncomeSourceAccounts(el,source){
+  const accounts=[...source.accounts.values()].sort((a,b)=>b.total-a.total);
+  const top=accounts[0]||{total:0,accountId:''};
+  const topAccount=(data.accounts||[]).find(a=>a.id===top.accountId);
+  const rows=accounts.map(item=>incomeAccountRowHtml(item,source.total,top.total)).join('');
+  const topName=topAccount?(topAccount.name||topAccount.institution||topAccount.type):'Account';
+  el.innerHTML=incomeDrillHeader(source.name,`Accounts earning ${source.name.toLocaleLowerCase()} in ${reportPeriodTitle()}`)+incomeSummaryHtml(source.total,{label:'Accounts',value:accounts.length},'Biggest',topName)+`<div class="expenseBreakdownRows incomeAccountRows">${rows}</div>`;
+}
+
+function renderIncomeAccountTransactions(el,source,accountId){
+  const accountData=source.accounts.get(accountId);
+  const account=(data.accounts||[]).find(a=>a.id===accountId);
+  if(!accountData){incomeDrillState.accountId=null;renderIncomeSourceAccounts(el,source);return}
+  const accountName=account?(account.name||account.institution||account.type):'Missing account';
+  const txns=accountData.txns.slice().sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));
+  el.innerHTML=incomeDrillHeader(accountName,`${source.name} transactions in ${reportPeriodTitle()}`)+incomeSummaryHtml(accountData.total,{label:'Entries',value:txns.length},'Source',source.name)+`<div class="incomeTxnList">${txns.map(t=>txnRow(t,true)).join('')}</div>`;
+}
+
+function renderIncomeSourceReport(){
+  const el=document.getElementById('incomeSourceReport');
+  if(!el)return;
+  if(!incomeDrillState.source){renderIncomeSourceOverview(el);return}
+  const source=incomeSourceByName(incomeDrillState.source);
+  if(!source){resetIncomeDrill();renderIncomeSourceOverview(el);return}
+  if(incomeDrillState.accountId)renderIncomeAccountTransactions(el,source,incomeDrillState.accountId);
+  else renderIncomeSourceAccounts(el,source);
+}
+
+function openIncomeSourceBreakdown(source,skipHistory=false){
+  incomeDrillState={source,accountId:null};
+  renderIncomeSourceReport();
+  if(!skipHistory)try{history.pushState({pesoTrack:true,screen:'reports',reportView:'cashflow',incomeSource:source},'','#reports-income-source')}catch(e){}
+  document.getElementById('incomeSourceReport')?.scrollIntoView({block:'start',behavior:'smooth'});
+}
+
+function openIncomeAccountBreakdown(source,accountId,skipHistory=false){
+  incomeDrillState={source,accountId};
+  renderIncomeSourceReport();
+  if(!skipHistory)try{history.pushState({pesoTrack:true,screen:'reports',reportView:'cashflow',incomeSource:source,incomeAccount:accountId},'','#reports-income-account')}catch(e){}
+  document.getElementById('incomeSourceReport')?.scrollIntoView({block:'start',behavior:'smooth'});
+}
+
+function backIncomeDrill(){
+  try{history.back()}catch(e){
+    if(incomeDrillState.accountId){incomeDrillState.accountId=null;renderIncomeSourceReport()}
+    else{resetIncomeDrill();renderIncomeSourceReport()}
+  }
+}
+
+function handleReportHistoryState(state){
+  const isIncomeState=Boolean(state&&state.reportView==='cashflow'&&state.incomeSource);
+  if(reportView!=='cashflow'||(!incomeDrillActive()&&!isIncomeState))return false;
+  if(isIncomeState){
+    incomeDrillState={source:state.incomeSource,accountId:state.incomeAccount||null};
+  }else resetIncomeDrill();
+  renderIncomeSourceReport();
+  return true;
+}
 
 function renderCommitmentReport(income=0){
   const el=document.getElementById('commitmentReport');
@@ -185,6 +323,7 @@ function renderReports(){
     else if(t.type==='Transfer'&&Number(t.fee||0))expense+=Number(t.fee||0);
   });
   renderBars(income,expense,income-expense);
+  try{renderIncomeSourceReport()}catch(e){console.warn('Income source report skipped',e)}
   try{if(typeof renderBalanceTrend==='function')renderBalanceTrend()}catch(e){console.warn('Balance trend skipped',e)}
   try{if(typeof updateReportsScope==='function')updateReportsScope()}catch(e){console.warn('Report scope skipped',e)}
   try{if(typeof renderExpenseBreakdown==='function')renderExpenseBreakdown()}catch(e){console.warn('Expense breakdown skipped',e)}
