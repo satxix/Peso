@@ -1,6 +1,7 @@
 /* PesoTrack reports, budgets, insights, period controls, and expense breakdown views. Loaded before app.js. */
 let reportView='hub';
 let incomeDrillState={source:null,accountId:null};
+let expenseDrillState={category:null,accountId:null,showOther:false};
 
 function reportHubViewDefinitions(){
   return {
@@ -123,6 +124,7 @@ function closeReportView(skipHistory=false){
   if(!reports||reportView==='hub')return;
   restoreReportPanels();
   resetIncomeDrill();
+  if(typeof resetExpenseDrill==='function')resetExpenseDrill();
   reportView='hub';
   reports.classList.remove('reports-detail-open');
   document.getElementById('reportsHub')?.classList.remove('hide');
@@ -264,6 +266,10 @@ function backIncomeDrill(){
 }
 
 function handleReportHistoryState(state){
+  if(reportView==='spending'&&typeof handleExpenseReportHistoryState==='function'){
+    const handled=handleExpenseReportHistoryState(state);
+    if(handled)return true;
+  }
   const isIncomeState=Boolean(state&&state.reportView==='cashflow'&&state.incomeSource);
   if(reportView!=='cashflow'||(!incomeDrillActive()&&!isIncomeState))return false;
   if(isIncomeState){
@@ -837,24 +843,113 @@ function moveTransactionsToReportEnd(){
     var cat=item.name,val=item.value,pct=Math.round((val/Math.max(1,total))*100),width=Math.max(5,Math.round((val/max)*100));
     var icon=typeof catIcon==='function'?catIcon(cat):'';
     var comparison=compareLabel(val,item.previous);
-    var open=item.grouped?' role="button" tabindex="0" onclick="openExpenseOtherBreakdown()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openExpenseOtherBreakdown()}"':'';
-    return '<div class="expenseBarRow '+(item.grouped?'otherBreakdownTrigger':'')+'"'+open+'><div class="expenseBarTop"><b>'+icon+' '+esc(cat)+'</b><strong>'+peso(val)+'</strong></div><div class="expenseTrack"><i style="width:'+width+'%"></i></div><div class="expenseBarMeta"><span>'+pct+'% of expenses</span><span class="expenseCompare '+comparison.tone+'"><i>'+esc(comparison.icon)+'</i>'+esc(comparison.text)+'</span><span>'+esc(label)+'</span></div>'+(item.grouped?'<div class="expenseDrillHint">Tap to see what makes up Other</div>':'')+'</div>';
+    var route=typeof incomeRouteValue==='function'?incomeRouteValue(cat):encodeURIComponent(cat);
+    var action=item.grouped?'openExpenseOtherBreakdown()':"openExpenseCategoryBreakdown(decodeURIComponent('"+route+"'))";
+    var hint=item.grouped?'Tap to see smaller categories':'Tap to see accounts';
+    return '<div class="expenseBarRow expenseCategoryRow '+(item.grouped?'otherBreakdownTrigger':'')+'" role="button" tabindex="0" onclick="'+action+'" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();'+action+'}"><div class="expenseBarTop"><b>'+icon+' '+esc(cat)+'</b><strong>'+peso(val)+'</strong></div><div class="expenseTrack"><i style="width:'+width+'%"></i></div><div class="expenseBarMeta"><span>'+pct+'% of expenses</span><span class="expenseCompare '+comparison.tone+'"><i>'+esc(comparison.icon)+'</i>'+esc(comparison.text)+'</span><span>'+esc(label)+'</span></div><div class="expenseDrillHint">'+hint+'</div></div>';
   }
-  window.openExpenseOtherBreakdown=function(){
+
+  function expenseDrillHeader(title,sub){
+    return '<div class="incomeDrillHead expenseDrillHead"><button type="button" onclick="backExpenseDrill()" aria-label="Back">&lt;</button><div><b>'+esc(title)+'</b><span>'+esc(sub)+'</span></div></div>';
+  }
+  function expenseSummaryHtml(total,countLabel,countValue,biggestLabel,biggestValue){
+    return '<div class="expenseBreakdownSummary expenseDrillSummary"><div class="expenseStat"><span>Total spent</span><b>'+peso(total)+'</b></div><div class="expenseStat"><span>'+esc(countLabel)+'</span><b>'+esc(countValue)+'</b></div><div class="expenseStat"><span>'+esc(biggestLabel)+'</span><b>'+esc(biggestValue)+'</b></div></div>';
+  }
+  function categoryExpenseData(category){
+    var range=typeof periodStartEnd==='function'?periodStartEnd():currentReportMonthRange();
+    var accounts=new Map(),entries=[],total=0;
+    (data.txns||[]).forEach(function(t){
+      if(!t||!txInPeriod(t,range.start,range.end))return;
+      var amount=0;
+      if(t.type==='Expense'&&(t.category||'Other')===category)amount=Number(t.amount||0);
+      else if(category==='Transfer Fees'&&t.type==='Transfer')amount=Number(t.fee||0);
+      if(!amount)return;
+      var accountId=t.from||'missing';
+      if(!accounts.has(accountId))accounts.set(accountId,{accountId:accountId,total:0,entries:[]});
+      var entry={txn:t,amount:amount};
+      var account=accounts.get(accountId);
+      account.total+=amount;
+      account.entries.push(entry);
+      entries.push(entry);
+      total+=amount;
+    });
+    return {category:category,total:total,entries:entries,accounts:accounts};
+  }
+  function expenseAccountRowHtml(item,categoryTotal,max){
+    var account=(data.accounts||[]).find(function(a){return a.id===item.accountId});
+    var pct=Math.round((item.total/Math.max(1,categoryTotal))*100);
+    var width=Math.max(5,Math.round((item.total/Math.max(1,max))*100));
+    var name=account?(account.name||account.institution||account.type):'Missing account';
+    var institution=account?(account.institution||account.type):'Previously recorded expense';
+    var mark=account&&typeof accountLogoSafe==='function'?accountLogoSafe(account):(account&&typeof logo==='function'?logo(account):'<span class="incomeAccountFallback">?</span>');
+    var categoryRoute=incomeRouteValue(expenseDrillState.category),accountRoute=incomeRouteValue(item.accountId);
+    return '<div class="expenseBarRow expenseAccountRow" role="button" tabindex="0" onclick="openExpenseAccountBreakdown(decodeURIComponent(\''+categoryRoute+'\'),decodeURIComponent(\''+accountRoute+'\'))" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openExpenseAccountBreakdown(decodeURIComponent(\''+categoryRoute+'\'),decodeURIComponent(\''+accountRoute+'\'))}"><div class="incomeAccountTop"><span class="incomeAccountIdentity">'+mark+'<span><b>'+esc(name)+'</b><small>'+esc(institution)+'</small></span></span><strong class="expenseAmount">'+peso(item.total)+'</strong></div><div class="expenseTrack expenseDrillTrack"><i style="width:'+width+'%"></i></div><div class="expenseBarMeta"><span>'+pct+'% of '+esc(expenseDrillState.category)+'</span><span>'+item.entries.length+' '+(item.entries.length===1?'entry':'entries')+'</span></div><div class="expenseDrillHint">Tap to see transactions</div></div>';
+  }
+  function expenseTransactionRow(entry,category){
+    var t=entry.txn;
+    if(category!=='Transfer Fees'||t.type!=='Transfer')return txnRow(t,true);
+    var account=typeof safeAccountLabel==='function'?safeAccountLabel(t.from):accountLabel(t.from);
+    return '<div class="row txnRow txn-expense"><div class="txnMain"><div class="txnTitleLine"><span class="txnTypePill">Fee</span></div><div class="txnMeta">'+esc(txnDate(t))+' - Transfer fee - '+account+'</div></div><b class="txnAmount">-'+peso(entry.amount)+'</b></div>';
+  }
+  function renderExpenseOther(el){
     var detail=window.__expenseOtherBreakdown;
-    if(!detail||!detail.entries||!detail.entries.length)return;
-    var sheet=document.getElementById('expenseOtherSheet');
-    if(!sheet){
-      sheet=document.createElement('section');
-      sheet.id='expenseOtherSheet';
-      sheet.className='sheet';
-      document.body.appendChild(sheet);
-    }
+    if(!detail||!detail.entries||!detail.entries.length){resetExpenseDrill();window.renderExpenseBreakdown();return}
     var max=Math.max(1,detail.entries[0].value);
     var rows=detail.entries.map(function(item){return expenseRowHtml(item,detail.total,max,detail.label)}).join('');
-    sheet.innerHTML='<div class="top"><div><div class="title">Other</div><div class="sub">Smaller categories in '+esc(detail.label)+'</div></div><button class="ghost" onclick="closeTopModal()">Close</button></div><div class="expenseBreakdownSummary otherSummary"><div class="expenseStat"><span>Total</span><b>'+peso(detail.otherTotal)+'</b></div><div class="expenseStat"><span>Items</span><b>'+detail.entries.length+'</b></div><div class="expenseStat"><span>Share</span><b>'+Math.round((detail.otherTotal/Math.max(1,detail.total))*100)+'%</b></div></div><div class="expenseBreakdownRows">'+rows+'</div>';
-    showModal();
-    sheet.classList.add('show');
+    el.innerHTML=expenseDrillHeader('Other','Smaller categories in '+detail.label)+expenseSummaryHtml(detail.otherTotal,'Categories',detail.entries.length,'Share',Math.round((detail.otherTotal/Math.max(1,detail.total))*100)+'%')+'<div class="expenseBreakdownRows">'+rows+'</div>';
+  }
+  function renderExpenseCategoryAccounts(el,detail){
+    var accounts=[...detail.accounts.values()].sort(function(a,b){return b.total-a.total});
+    var top=accounts[0]||{total:0,accountId:''};
+    var topAccount=(data.accounts||[]).find(function(a){return a.id===top.accountId});
+    var topName=topAccount?(topAccount.name||topAccount.institution||topAccount.type):'Account';
+    var rows=accounts.map(function(item){return expenseAccountRowHtml(item,detail.total,top.total)}).join('');
+    el.innerHTML=expenseDrillHeader(detail.category,'Accounts used for '+detail.category.toLocaleLowerCase()+' in '+reportPeriodTitle())+expenseSummaryHtml(detail.total,'Accounts',accounts.length,'Biggest',topName)+'<div class="expenseBreakdownRows expenseAccountRows">'+rows+'</div>';
+  }
+  function renderExpenseAccountTransactions(el,detail,accountId){
+    var accountData=detail.accounts.get(accountId);
+    var account=(data.accounts||[]).find(function(a){return a.id===accountId});
+    if(!accountData){expenseDrillState.accountId=null;renderExpenseCategoryAccounts(el,detail);return}
+    var accountName=account?(account.name||account.institution||account.type):'Missing account';
+    var entries=accountData.entries.slice().sort(function(a,b){return new Date(b.txn.date||0)-new Date(a.txn.date||0)});
+    var rows=entries.map(function(entry){return expenseTransactionRow(entry,detail.category)}).join('');
+    el.innerHTML=expenseDrillHeader(accountName,detail.category+' transactions in '+reportPeriodTitle())+expenseSummaryHtml(accountData.total,'Entries',entries.length,'Category',detail.category)+'<div class="incomeTxnList expenseTxnList">'+rows+'</div>';
+  }
+  window.resetExpenseDrill=function(){expenseDrillState={category:null,accountId:null,showOther:false}};
+  window.expenseDrillActive=function(){return Boolean(expenseDrillState.category||expenseDrillState.showOther)};
+  window.openExpenseOtherBreakdown=function(skipHistory){
+    if(!window.__expenseOtherBreakdown?.entries?.length)return;
+    expenseDrillState={category:null,accountId:null,showOther:true};
+    window.renderExpenseBreakdown();
+    if(!skipHistory)try{history.pushState({pesoTrack:true,screen:'reports',reportView:'spending',expenseOther:true},'','#reports-expense-other')}catch(e){}
+    document.getElementById('categoryReport')?.scrollIntoView({block:'start',behavior:'smooth'});
+  };
+  window.openExpenseCategoryBreakdown=function(category,skipHistory){
+    expenseDrillState={category:category,accountId:null,showOther:false};
+    window.renderExpenseBreakdown();
+    if(!skipHistory)try{history.pushState({pesoTrack:true,screen:'reports',reportView:'spending',expenseCategory:category},'','#reports-expense-category')}catch(e){}
+    document.getElementById('categoryReport')?.scrollIntoView({block:'start',behavior:'smooth'});
+  };
+  window.openExpenseAccountBreakdown=function(category,accountId,skipHistory){
+    expenseDrillState={category:category,accountId:accountId,showOther:false};
+    window.renderExpenseBreakdown();
+    if(!skipHistory)try{history.pushState({pesoTrack:true,screen:'reports',reportView:'spending',expenseCategory:category,expenseAccount:accountId},'','#reports-expense-account')}catch(e){}
+    document.getElementById('categoryReport')?.scrollIntoView({block:'start',behavior:'smooth'});
+  };
+  window.backExpenseDrill=function(){
+    try{history.back()}catch(e){
+      if(expenseDrillState.accountId){expenseDrillState.accountId=null;window.renderExpenseBreakdown()}
+      else{resetExpenseDrill();window.renderExpenseBreakdown()}
+    }
+  };
+  window.handleExpenseReportHistoryState=function(state){
+    var isExpenseState=Boolean(state&&state.reportView==='spending'&&(state.expenseOther||state.expenseCategory));
+    if(reportView!=='spending'||(!expenseDrillActive()&&!isExpenseState))return false;
+    if(state&&state.expenseOther)expenseDrillState={category:null,accountId:null,showOther:true};
+    else if(state&&state.expenseCategory)expenseDrillState={category:state.expenseCategory,accountId:state.expenseAccount||null,showOther:false};
+    else resetExpenseDrill();
+    window.renderExpenseBreakdown();
+    return true;
   };
   window.renderExpenseBreakdown=function(){
     var el=document.getElementById('categoryReport');
@@ -872,6 +967,14 @@ function moveTransactionsToReportEnd(){
     var rest=hiddenEntries.reduce(function(sum,pair){return sum+pair[1]},0);
     var restPrevious=hiddenEntries.reduce(function(sum,pair){return sum+Number((d.previousCats||{})[pair[0]]||0)},0);
     window.__expenseOtherBreakdown={label:label,total:d.total,otherTotal:rest,entries:hiddenEntries.map(function(pair){return {name:pair[0],value:pair[1],previous:(d.previousCats||{})[pair[0]]||0}})};
+    if(expenseDrillState.showOther){renderExpenseOther(el);return}
+    if(expenseDrillState.category){
+      var detail=categoryExpenseData(expenseDrillState.category);
+      if(!detail.total){resetExpenseDrill();window.renderExpenseBreakdown();return}
+      if(expenseDrillState.accountId)renderExpenseAccountTransactions(el,detail,expenseDrillState.accountId);
+      else renderExpenseCategoryAccounts(el,detail);
+      return;
+    }
     if(rest)visibleEntries.push({name:'Other',value:rest,previous:restPrevious,grouped:true});
     var rows=visibleEntries.map(function(item){return expenseRowHtml(item,d.total,max,label)}).join('');
     el.innerHTML='<div class="expenseBreakdownSummary"><div class="expenseStat"><span>Total spent</span><b>'+peso(d.total)+'</b></div><div class="expenseStat"><span>Categories</span><b>'+d.entries.length+'</b></div><div class="expenseStat"><span>Biggest</span><b>'+esc(top[0])+'</b></div></div><div class="expenseBreakdownRows">'+rows+'</div>';
