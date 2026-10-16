@@ -32,6 +32,8 @@ function openTxn(id){
     return;
   }
   amount=old?String(old.amount||0):'0';
+  calcAccum=null;
+  calcOp=null;
   txnType=old?old.type:'Expense';
   txn={from:old?.from||null,to:old?.to||null,category:old?.category||'Food',fee:Number(old?.fee||0),note:old?.note||''};
   txnTitle.textContent=old?'Edit Transaction':'Add Transaction';
@@ -86,14 +88,17 @@ function renderTxn(){
   else if(txnType==='Income')txnPick.innerHTML=accountPickButton('from','Deposit To')+categoryPickButton('Source');
   else txnPick.innerHTML=accountPickButton('from','Account')+categoryPickButton('Category');
   updateAmountDisplay();
-  pad.innerHTML=['7','8','9','4','5','6','1','2','3','.','0','backspace'].map(keypadButtonHtml).join('');
+  pad.innerHTML=['7','8','9','/','4','5','6','*','1','2','3','-','.','0','backspace','+','='].map(keypadButtonHtml).join('');
   updateInstallmentVisibility();
 }
 
+const OPERATOR_SYMBOLS={'+':'+','-':'\u2212','*':'\u00d7','/':'\u00f7'};
 function keypadButtonHtml(x){
-  let label=x==='backspace'?'Delete last digit':x==='.'?'Decimal point':'Number '+x;
-  let text=x==='backspace'?'<span aria-hidden="true">Del</span>':x;
-  let kind=x==='backspace'?'backspace keypadDelete':x==='.'?'keypadDecimal':'keypadNumber';
+  let isOp=Object.prototype.hasOwnProperty.call(OPERATOR_SYMBOLS,x);
+  let opName={'+':'Plus','-':'Minus','*':'Multiply','/':'Divide'}[x];
+  let label=x==='backspace'?'Delete last digit':x==='.'?'Decimal point':x==='='?'Equals':isOp?opName:'Number '+x;
+  let text=x==='backspace'?'<span aria-hidden="true">Del</span>':isOp?OPERATOR_SYMBOLS[x]:x;
+  let kind=x==='backspace'?'backspace keypadDelete':x==='.'?'keypadDecimal':x==='='?'keypadEquals':isOp?'keypadOperator':'keypadNumber';
   return `<button type="button" class="keypadKey ${kind}" aria-label="${label}" onclick="tap('${x}')">${text}</button>`;
 }
 
@@ -115,8 +120,14 @@ function displayInputAmount(v){
   return peso(s);
 }
 
+function displayExpression(){
+  if(data.settings&&data.settings.privacy)return '\u2022\u2022\u2022\u2022';
+  if(calcOp!==null)return displayInputAmount(calcAccum)+' '+OPERATOR_SYMBOLS[calcOp]+' '+displayInputAmount(amount);
+  return displayInputAmount(amount);
+}
+
 function updateAmountDisplay(){
-  if(document.getElementById('amtDisplay'))amtDisplay.textContent=displayInputAmount(amount);
+  if(document.getElementById('amtDisplay'))amtDisplay.textContent=displayExpression();
   renderInstallmentPreview();
 }
 
@@ -165,7 +176,7 @@ function renderInstallmentPreview(){
   let row=document.getElementById('installmentMonthsRow');
   let preview=document.getElementById('installmentPreview');
   if(!row||!preview||row.classList.contains('hide')){if(preview)preview.textContent='';return;}
-  let total=Number(amount||0);
+  let total=Number(resolvedAmount()||0);
   let months=Number(document.getElementById('installmentMonths').value||1);
   if(!total||months<2){preview.textContent='Enter an amount to preview the schedule.';return;}
   let parts=installmentSplit(total,months);
@@ -197,8 +208,52 @@ function toggleTxnNote(force){
   if(open)setTimeout(()=>input.focus(),0);
 }
 
+function calcApply(a,op,b){
+  a=Number(a||0);b=Number(b||0);
+  if(op==='+')return a+b;
+  if(op==='-')return a-b;
+  if(op==='*')return a*b;
+  if(op==='/')return b===0?a:a/b;
+  return b;
+}
+
+function trimFloat(n){
+  n=Math.round(Number(n||0)*100)/100;
+  return String(n);
+}
+
+function resolvedAmount(){
+  if(calcOp!==null){
+    if(amount==='0'||amount==='0.')return cleanAmountInput(trimFloat(calcAccum));
+    return cleanAmountInput(trimFloat(calcApply(calcAccum,calcOp,Number(amount||0))));
+  }
+  return amount;
+}
+
 function tap(x){
-  if(x==='backspace')amount=amount.length>1?amount.slice(0,-1):'0';
+  if(x==='='){
+    if(calcOp!==null){
+      amount=cleanAmountInput(trimFloat(calcApply(calcAccum,calcOp,Number(amount||0))));
+      calcAccum=null;calcOp=null;
+    }
+    updateAmountDisplay();
+    return;
+  }
+  if(Object.prototype.hasOwnProperty.call(OPERATOR_SYMBOLS,x)){
+    calcAccum=calcOp!==null?calcApply(calcAccum,calcOp,Number(amount||0)):Number(amount||0);
+    calcOp=x;
+    amount='0';
+    updateAmountDisplay();
+    return;
+  }
+  if(x==='backspace'){
+    if(amount==='0'&&calcOp!==null){
+      amount=cleanAmountInput(trimFloat(calcAccum));
+      calcAccum=null;calcOp=null;
+    }else{
+      amount=amount.length>1?amount.slice(0,-1):'0';
+    }
+  }
   else if(x==='.'&&!amount.includes('.'))amount=amount==='0'?'0.':amount+'.';
   else if(x!=='.'){
     let parts=String(amount).split('.');
@@ -359,7 +414,7 @@ function reverseTxn(t){let amt=Number(t.amount||0),from=data.accounts.find(a=>a.
 
 function saveTxn(){
   try{
-    let amt=Number(amount||0);
+    let amt=Number(resolvedAmount()||0);
     if(!amt || amt<=0) return alert('Enter amount');
     if(txnType==='Expense'&&!txn.from) return alert('Choose account');
     if(txnType==='Income'&&!txn.from) return alert('Choose deposit account');
